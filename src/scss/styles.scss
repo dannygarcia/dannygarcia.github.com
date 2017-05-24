@@ -1,0 +1,268 @@
+/*
+	Author: Danny Garcia
+	http://danny-garcia.com
+	Copyright © 2016 Danny Garcia. All rights reserved.
+*/
+
+// @import "_normalize";
+
+$queries: (
+	small: 740px, //600
+	large: 1200px
+);
+
+@mixin mq($size) {
+	@media (min-width: map-get($queries, $size)) {
+		@content;
+	}
+}
+
+// Colors
+// $swatch-background: hsl(207, 2%, 93%);
+$swatch-background: #E5E5EA;
+$swatch-lowlight: #979690;
+$swatch-highlight: lighten(saturate($swatch-lowlight, 25%), 5%);
+$swatch-copy: darken($swatch-lowlight, 50%);
+
+@function grad-background($deg) {
+	@return linear-gradient($deg, saturate(mix($swatch-highlight, $swatch-background, 15%), 20%) 0%, $swatch-background 50%);
+}
+
+* {
+	font-size: 1em;
+	font-weight: normal;
+	box-sizing: border-box;
+}
+
+html {
+	// background: grad-background(180deg);
+	background: $swatch-background;
+}
+
+body {
+	margin: 0;
+	line-height: 1.5;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+	background: $swatch-background;
+	// background: grad-background(0deg);
+	// background-attachment: fixed;
+	// background-size: 100% 100%;
+	color: $swatch-copy;
+	font-size: 20px;
+	padding-top: 12px;
+}
+
+a {
+	color: $swatch-highlight;
+}
+
+header, main, footer {
+	position: relative;
+}
+
+.shiny {
+	will-change: color;
+}
+
+.inner-content {
+	margin-left: auto;
+	margin-right: auto;
+	width: 87%;
+	max-width: map-get($queries, small);
+}
+
+#playground {
+	display: block;
+	background: $swatch-copy;
+	width: 100%;
+	height: 30vh;
+	image-rendering: -webkit-optimize-contrast;
+	image-rendering: pixelated;
+}
+
+.hero {
+	position: sticky;
+	position: -webkit-sticky;
+	top: -30vh;
+	background: $swatch-copy;
+	color: $swatch-background;
+	z-index: 1;
+	width: calc(87% + 1em);
+	max-width: calc(#{map-get($queries, small)} + 1em);
+	margin: 0 auto;
+
+	@include mq(large) {
+		margin: 0 auto;
+	}
+
+	.bottom {
+		display: flex;
+		position: relative;
+	}
+
+	h1 {
+		flex: 1;
+		margin: 0;
+		a {
+			line-height: 2.5;
+		}
+	}
+
+	a {
+		display: block;
+		color: white;
+		text-decoration: none;
+		&:hover {
+			text-decoration: none;
+		}
+	}
+
+	nav a {
+		width: 2em;
+		text-align: right;
+		font-size: 1.5em;
+		transition: transform 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+		&:hover {
+			transform: scale(1.1);
+		}
+	}
+
+	input {
+		display: none;
+	}
+
+	.menu {
+		position: fixed;
+		visibility: hidden;
+		transition: all 1s ease;
+		opacity: 0;
+		top: 0;
+		right: 0;
+		left: 0;
+		bottom: 0;
+		pointer-events: none;
+	}
+
+	input:checked ~ .menu {
+		pointer-events: auto;
+		opacity: 1;
+		visibility: visible;
+		background: rgba($swatch-copy, 0.9);
+	}
+
+	// margin-left: -0.05rem;
+
+
+	// @include mq(small) {
+	// }
+
+	// &:hover {
+	// 	text-decoration: none;
+	// }
+}
+
+a {
+	// text-decoration: none;
+
+	&:hover {
+		text-decoration: overline;
+	}
+}
+
+.link-arrow:after {
+	content: " →";
+}
+
+.sidebar {
+	margin-top: 2em;
+
+	@include mq(large) {
+		display: flex;
+
+		aside {
+			width: 50%;
+		}
+	}
+}
+
+.blog-container {
+	margin-top: 2em;
+}
+
+article {
+	position: relative;
+	margin-bottom: 3em;
+	margin-left: 2em;
+	color: #403e32;
+
+	@include mq(large) {
+		width: 50%;
+	}
+
+	&.has-hero-image {
+		margin-top: 3em;
+	}
+
+	h1, h2, h3, h4, h5, h6 {
+		margin-bottom: 0rem;
+	}
+
+	h1 {
+		margin-top: 0;
+		// font-size: 1.75rem;
+		// line-height: 1rem;
+	}
+
+	&.has-hero-image h1 {
+		position: absolute;
+		top: 0;
+	}
+
+	p {
+		// font-family: Times, sans-serif;
+		// font-size: 1.5rem;
+		// line-height: 1.2rem;
+	}
+
+	img {
+		max-width: calc(100% + 2em);
+		margin-left: -2em;
+		transform: translate(-0.5em, -1em);
+	}
+
+	img.hero-image {
+		display: block;
+		max-width: none;
+		width: calc(100% + 3em);
+		margin-left: -2em;
+		// margin-left: 0;
+		// max-width: auto;
+		// position: absolute;
+		// top: -100%;
+		// left: -100%;
+	}
+
+	blockquote {
+		border-left: 2px solid $swatch-lowlight;
+		margin: 1em 0 1em;
+		padding-left: 1em;
+		font-style: italic;
+	}
+
+	footer {
+		position: absolute;
+		top: 0.5em;
+		left: 0;
+		transform: rotate(90deg);
+		transform-origin: 0 0;
+		color: $swatch-lowlight;
+		height: 2em;
+		line-height: 1em;
+		white-space: nowrap;
+
+		.dot {
+			margin-right: 1em;
+		}
+	}
+}

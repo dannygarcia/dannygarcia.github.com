@@ -1,0 +1,211 @@
+<!doctype html>
+<html class="no-js" lang="en">
+	<head>
+
+		<meta charset="utf-8" />
+  		<link rel="dns-prefetch" href="/static/" />
+		<link rel="static-url" href="/static/" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>Blog | Danny Garcia</title>
+
+		<meta name="description" content="Danny Garcia, building nice things for good people." />
+		<meta name="author" content="Danny Garcia" />
+		<meta property="ga:property_id" content="UA-442818-5"/>
+		<meta property="ga:domain" content="danny-garcia.com"/>
+
+		<link rel="stylesheet" href="/static/css/styles.css" />
+
+	</head>
+
+	<body class="blog">
+
+		<header class="hero">
+			<canvas id="playground"></canvas>
+			<div class="bottom inner-content">
+				<h1><a href="/">DG</a></h1>
+				<nav>
+					<a href=""><label for="menu">⌸</label></a>
+					<input type="checkbox" id="menu">
+					<div class="menu">
+						<label for="menu">×</label>
+						<ol>
+							<li><a href="/articles">Articles</a></li>
+						</ol>
+					</div>
+				</nav>
+			</div>
+		</header>
+
+		
+
+		<main role="main" class="inner-content">
+			<section class="blog-container">
+
+	<h2>Thoughts on technology, liberal arts and the humanities:</h2>
+
+	<div class="articles">
+		
+			<article class="has-hero-image" type="formal">
+
+					<header>
+						
+							<img class="hero-image" src="https://instagram.com/p/BKhNqFwAe0g/media/?size=l" alt="Image for Back to Basics.">
+						
+						<h1><a class="shiny" href="/blog/back-to-basics/">Back to Basics</a></h1>
+					</header>
+
+					<blockquote>
+  <p>A good programmer working intensively on his own code can hold it in his mind the way a mathematician holds a problem he’s working on. […] Your code is your understanding of the problem you’re exploring.</p>
+</blockquote>
+
+<p>– Paul Graham on <a href="http://paulgraham.com/head.html">Holding a Program in One’s Head</a></p>
+
+<!-- 
+
+<p>My first lines of JavaScript involved too much jQuery. Understanding programming meant understanding certain <code class="highlighter-rouge">$</code> methods. I didn’t even know what a method was. JavaScript was magic and writing it involved hours of googling things like “jquery click outside menu”. It was frustrating not understanding what was going on. To Graham’s definition, I was not a good programmer and, honestly, I didn’t consider myself to be one.</p>
+
+<p>Eventually curiosity took its course and I learned about variables, methods, constructors, for loops, type systems, and everything else that comes with learning a programming language. JavaScript was no longer magic because I understood how it worked. But knowing how something works is different than knowing <em>why</em> something works. Why is code structured the way it is? Why does it perform the way it does?</p>
+
+<p>Let’s forget about JavaScript or whatever programming language and think about code as code – as a system of communication. Then we can focus on learning about this system through the computational perspective. This will expand our understanding of the problem we’re exploring (that of programming), by learning about the theoretical aspects of computer science.</p>
+
+<h2 id="core-concepts">Core Concepts</h2>
+
+<p>One of the core aspects of theoretical computer science is <a href="http://en.wikipedia.org/wiki/Algorithms">algorithms</a>. My goal is to learn about algorithms and become proficient enough use them to my advantage to solve whatever programatic or mathematical problem. I’ve chosen to start this process by taking <a href="https://www.coursera.org/course/algs4partI">this free Coursea.org course on algorithms</a> and I’ll be documenting each step on this blog.</p>
+
+<p>Because the course is geared toward developers, there’s some emphasis on knowing Java (not JavaScript). I’ve never written more than 100 lines of Java so the first step here will be to get familiar with the syntax. I’ll do that by taking <a href="http://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html">The Java Tutorials</a> at Oracle’s site. I don’t think this process will take more than a couple of days because I’m already familiar with most basic programming concepts but I’m also not used to the <a href="http://en.wikipedia.org/wiki/Type_system#Static_typing">static typing</a> system so it should be an interesting challenge.</p>
+
+<p>Take this course with me, maybe we can learn something new!</p>
+
+ -->
+
+
+					<p><a href="/blog/back-to-basics/" class="link-arrow shiny">Keep reading</a></p>
+
+					<footer>
+						<p><span class="dot shiny">•</span> <span class="split">Feb 02, 2013</span></p>
+					</footer>
+
+			</article>
+		
+			<article  type="formal">
+
+					<header>
+						
+						<h1><a class="shiny" href="/blog/blogging-with-github/">Blogging with GitHub</a></h1>
+					</header>
+
+					<p>Owning a part of the web is like owning an island – a sandbox without limits. This blog took a bit of work and was fun to build. So in this post I’ll share the process for doing so.</p>
+
+<!-- 
+
+<p>I began by trying to find the easiest, most flexible way to publish articles. Whatever method would also have to meet the following requirements:</p>
+
+<ol>
+  <li>Full content and management capabilities. The ability to control the content and choice of back-end / front-end is invaluable. As a web developer this is a given.</li>
+  <li>Easy publishing. This means, no more than three steps from writing to published. <code class="highlighter-rouge">Write &gt; Click Save &gt; Published</code> is ideal.</li>
+  <li><a href="http://daringfireball.net/projects/markdown/">Markdown</a>. If I was going to do any sort of significant writing it better be done with Markdown – a super-easy-to-use <em>“text-to-HTML conversion tool for web writers”</em>.</li>
+</ol>
+
+<h2 id="full-content--management-capabilities">Full Content &amp; Management Capabilities</h2>
+
+<p>Requirement #1 removes the option of publishing via many popular online services like <a href="http://www.tumblr.com/">Tumblr</a> and <a href="http://www.squarespace.com/">Squarespace</a>. This was a diffcult decision to make, because I’ve spent years curating content on <a href="http://dannygarcia.tumblr.com/">my tumblelog</a>. Regardless, I want to own and control 100% of what I publish.</p>
+
+<p>The easy solution here is to simply publish locally and not give in to the cloud. Generally this is a heck of a lot of work. It usually means purchasing a domain, managing a server, choosing a back-end language, setting up a database &amp; <abbr title="Content Management System">CMS</abbr> and building out the front-end as well.</p>
+
+<p>Thankfully, we have <a href="http://github.com/">GitHub</a> and <a href="http://pages.github.com/">GitHub Pages</a> to make this process easy. By using GH Pages, we can eliminate the back-end completely. This is not only a form of liberation but a key component to managing content. There’s a local copy of everything with the right to redistribute it as I see fit.</p>
+
+<h3 id="managing-content-without-a-cms">Managing Content Without a CMS</h3>
+
+<p>Think of CMS as less of a tool or app and more as a <em>system</em>. Managing content is as simple as it is defined, meaning we are not limited to server-side programs. <a href="https://github.com/mojombo/jekyll">Jekyll</a> is an amazing tool for managing static content. It’s geared toward blog-type site structures and is also a flexible templating system. It’s also loaded with many <a href="https://github.com/mojombo/jekyll/wiki/configuration">configuration options</a>. Best of all, GitHub Pages supports it right out of the box.</p>
+
+<p>To make a simple Jekyll site just publish an <code class="highlighter-rouge">index.html</code> file to the remote <code class="highlighter-rouge">gh-pages</code> branch of your project and GitHub will take care of the rest. GitHub also gives us the option of creating a repo that is formated like so <code class="highlighter-rouge">[username].github.com</code>. This tells GitHub that the whole repo is a dedicated Jekyll site and uses the <code class="highlighter-rouge">master</code> branch to deploy. You’ll probably want to read the <a href="https://github.com/mojombo/jekyll/wiki/">wiki</a> for more on setting up a Jekyll blog. You can also take a peek at the <a href="https://github.com/dannygarcia/dannygarcia.github.com">source code</a> for this site.</p>
+
+<h3 id="the-front-end">The Front-end</h3>
+
+<p>All front-end developers should have a workflow in place for the development and publication of projects. There are many tools and libraries for maintaining a sane working environment, ranging from <a href="http://incident57.com/codekit/">simple</a> apps to <a href="http://yeoman.io/">complex</a> <abbr title="Command Line Interface">CLI</abbr>s.</p>
+
+<p>I’ve chosen the <a href="https://github.com/ff0000/red-boilerplate">RED Boilerplate</a> (RBP) for this site – not just because I work with the folks that build it but because I’m familiar with its process. The RBP project templates are setup with <a href="http://html5boilerplate.com/">HTML5 Boilerplate</a>, <a href="http://sass-lang.com/">SASS</a> and <a href="http://compass-style.org/">Compass</a> make compiling CSS a breeze, <a href="https://github.com/ff0000/rosy">Rosy</a> is my AMD framework of choice, and the CLI workflow ties it nicely together with <a href="http://gruntjs.com">grunt.js</a>.</p>
+
+<p>RBP also makes it easy to add grunt tasks. I was able to use its extendability to create a <a href="https://github.com/dannygarcia/grunt-jekyll">grunt plugin and task for Jekyll</a> making development as easy as typing <code class="highlighter-rouge">grunt watch:jekyll</code> in the command line.</p>
+
+<h2 id="easy-publishing">Easy Publishing</h2>
+
+<p>I began by publishing articles with <a href="http://prose.io/">prose.io</a>. But recently, GitHub has added both the ability to edit and publish files in a super cool <a href="https://github.com/blog/1379-zen-writing-mode">Zen Writing Mode</a>. This writing mode is perfect for blogging.</p>
+
+<h2 id="markdown">Markdown</h2>
+
+<p><a href="http://daringfireball.net/projects/markdown/">Markdown</a> is great! it makes it easy for me to neatly write HTML. Here’s an image of this article in progress:</p>
+
+<p><img src="http://i.imgur.com/OlND0.jpg" alt="Writing in Sublime Text 2" /></p>
+
+<h2 id="progress">Progress</h2>
+
+<p>This process is in progress. Front-end development appeals to me because it changes so constantly and drastically. There is always something new to learn – a level above my own. This makes consistency a bit challenging but I look forward to how this site will evolve.</p>
+
+ -->
+
+
+					<p><a href="/blog/blogging-with-github/" class="link-arrow shiny">Keep reading</a></p>
+
+					<footer>
+						<p><span class="dot shiny">•</span> <span class="split">Sep 21, 2012</span></p>
+					</footer>
+
+			</article>
+		
+			<article  type="formal">
+
+					<header>
+						
+						<h1><a class="shiny" href="/blog/format-shift/">Format Shift</a></h1>
+					</header>
+
+					<p><a href="http://blog.danny-garcia.com/">This blog</a> has been managed on Tumblr for a few years and is followed by about a thousand people. It’s been a great platform for publishing and reblogging awesome images and artwork. Image posts actually <a href="http://blog.danny-garcia.com/archive">make up the majority</a> and I plan to continue that tradition, especially for cool <a href="http://blog.danny-garcia.com/tagged/shark">sharks</a> and awesome <a href="http://blog.danny-garcia.com/tagged/astronaut">astronauts</a>.</p>
+
+<!-- 
+
+<p><img src="http://i.imgur.com/sV7kE.jpg" alt="Space Man!" /></p>
+
+<h2 id="other-cool-things">Other Cool Things</h2>
+
+<p>Graphic design, normally at the forefront of my mind, has been nearly replaced with ideas of programming and front-end web development. Most of this year has been dedicated to learning and growing in that area since front-end development is a moving target that takes discipline to master and dedication follow. While programming and mathematical theory has been around for many many years, the high-level programming layer we call front-end development is still in its infancy. It’s a continual but fruitful challenge to gain full understanding of its components.</p>
+
+<p>This challenge is of great interest to me. This article, and others like it, will serve to better understand web development from its practical and conceptual perspectives. It will fuel my own growth and hopefully it’ll be useful to someone else as well.</p>
+
+<p>I’ll cover the technical details of this transition in another post.</p>
+
+ -->
+
+
+					<p><a href="/blog/format-shift/" class="link-arrow shiny">Keep reading</a></p>
+
+					<footer>
+						<p><span class="dot shiny">•</span> <span class="split">Sep 20, 2012</span></p>
+					</footer>
+
+			</article>
+		
+	</div>
+
+</section>
+
+		</main>
+
+		<footer class="inner-content">
+			Copyright &copy; 2016 Danny Garcia. All rights reserved.
+		</footer>
+
+		<script src="/static/js/math.js"></script>
+
+		<script src="/static/js/colorcycle.js"></script>
+
+		<script src="/static/js/vector.js"></script>
+		<script src="/static/js/canvas.js"></script>
+		<script src="/static/js/constraint.js"></script>
+		<script src="/static/js/walker.js"></script>
+		<script src="/static/js/playground.js"></script>
+
+	</body>
+</html>

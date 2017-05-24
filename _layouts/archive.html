@@ -1,0 +1,32 @@
+---
+layout: base
+class: blog
+---
+<section class="blog-container">
+
+	<h2>Thoughts on technology, liberal arts and the humanities:</h2>
+
+	<div class="articles">
+		{% for post in site.posts %}
+			<article {% if post.image %}class="has-hero-image"{% endif %} type="formal">
+
+					<header>
+						{% if post.image %}
+							<img class="hero-image" src="{{ post.image }}" alt="Image for {{ post.title }}.">
+						{% endif %}
+						<h1><a class="shiny" href="{{ post.url }}">{{ post.title }}</a></h1>
+					</header>
+
+					{{ post.content | replace:'more start -->','' | replace:'<!-- more end','' }}
+
+					<p><a href="{{ post.url }}" class="link-arrow shiny">Keep reading</a></p>
+
+					<footer>
+						<p><span class="dot shiny">•</span> <span class="split">{{ post.date | date: '%b %d, %Y' }}</span></p>
+					</footer>
+
+			</article>
+		{% endfor %}
+	</div>
+
+</section>

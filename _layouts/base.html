@@ -1,0 +1,72 @@
+---
+---
+<!doctype html>
+<html class="no-js" lang="en">
+	<head>
+
+		<meta charset="utf-8" />
+  		<link rel="dns-prefetch" href="/static/" />
+		<link rel="static-url" href="/static/" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>{% if page.title %}{{ page.title }} | {% endif %}Danny Garcia</title>
+
+		<meta name="description" content="Danny Garcia, building nice things for good people." />
+		<meta name="author" content="Danny Garcia" />
+		<meta property="ga:property_id" content="UA-442818-5"/>
+		<meta property="ga:domain" content="danny-garcia.com"/>
+
+		<link rel="stylesheet" href="/static/css/styles.css" />
+
+	</head>
+
+	<body class="{{ page.class }}">
+
+		<header class="hero">
+			<canvas id="playground"></canvas>
+			<div class="bottom inner-content">
+				<h1><a href="/">DG</a></h1>
+				<nav>
+					<a href=""><label for="menu">⌸</label></a>
+					<input type="checkbox" id="menu">
+					<div class="menu">
+						<label for="menu">×</label>
+						<ol>
+							<li><a href="/articles">Articles</a></li>
+						</ol>
+					</div>
+				</nav>
+			</div>
+		</header>
+
+		{% if page.class == "home" %}
+			<div class="sidebar inner-content">
+				<aside>
+					<p>Hi, I'm Danny!</p>
+					<p>I lead web development for various product launch projects at <a target="_blank" href="https://www.apple.com" class="shiny">Apple</a>. This site is my blog and creative tech lab.</p>
+					<p><a href="" class="link-arrow shiny">About me</a></p>
+				</aside>
+			</div>
+		{% endif %}
+
+		<main role="main" class="inner-content">
+			{{ content }}
+		</main>
+
+		<footer class="inner-content">
+			Copyright &copy; 2016 Danny Garcia. All rights reserved.
+		</footer>
+
+		<script src="/static/js/math.js"></script>
+
+		<script src="/static/js/colorcycle.js"></script>
+
+		<script src="/static/js/vector.js"></script>
+		<script src="/static/js/canvas.js"></script>
+		<script src="/static/js/constraint.js"></script>
+		<script src="/static/js/walker.js"></script>
+		<script src="/static/js/playground.js"></script>
+
+	</body>
+</html>
