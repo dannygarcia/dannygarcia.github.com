@@ -3,7 +3,7 @@ layout: post
 title: Back to Basics
 published: true
 class: blog
-image: https://instagram.com/p/BKhNqFwAe0g/media/?size=l
+image: /static/img/back-to-basics-hero.jpg
 ---
 
 > A good programmer working intensively on his own code can hold it in his mind the way a mathematician holds a problem he's working on. \[...\] Your code is your understanding of the problem you're exploring.

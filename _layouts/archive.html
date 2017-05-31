@@ -12,12 +12,14 @@ class: blog
 
 					<header>
 						{% if post.image %}
-							<img class="hero-image" src="{{ post.image }}" alt="Image for {{ post.title }}.">
+							<div class="hero-image">
+								<img src="{{ post.image }}" alt="Image for {{ post.title }}.">
+							</div>
 						{% endif %}
 						<h1><a class="shiny" href="{{ post.url }}">{{ post.title }}</a></h1>
 					</header>
 
-					{{ post.content | replace:'more start -->','' | replace:'<!-- more end','' }}
+					{{ post.content | split:'<!-- break -->' | first }}
 
 					<p><a href="{{ post.url }}" class="link-arrow shiny">Keep reading</a></p>
 

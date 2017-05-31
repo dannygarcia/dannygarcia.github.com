@@ -39,4 +39,4 @@ requestAnimationFrame(raf = () => {
 	}
 });
 
-// addEventListener('scroll', raf);
+addEventListener('scroll', raf);

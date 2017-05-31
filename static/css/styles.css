@@ -104,25 +104,21 @@ a:hover {
 
 .sidebar {
   margin-top: 2em; }
-  @media (min-width: 1200px) {
-    .sidebar {
-      display: flex; }
-      .sidebar aside {
-        width: 50%; } }
 
 .blog-container {
   margin-top: 2em; }
+  .blog-container > h2 {
+    margin-bottom: 2em; }
 
 article {
   position: relative;
   margin-bottom: 3em;
   margin-left: 2em;
   color: #403e32; }
-  @media (min-width: 1200px) {
-    article {
-      width: 50%; } }
   article.has-hero-image {
-    margin-top: 3em; }
+    padding-top: 1em; }
+    article.has-hero-image footer {
+      top: 1.5em; }
   article h1, article h2, article h3, article h4, article h5, article h6 {
     margin-bottom: 0rem; }
   article h1 {
@@ -134,11 +130,18 @@ article {
     max-width: calc(100% + 2em);
     margin-left: -2em;
     transform: translate(-0.5em, -1em); }
-  article img.hero-image {
+  article .hero-image {
     display: block;
-    max-width: none;
     width: calc(100% + 3em);
-    margin-left: -2em; }
+    margin-left: -2.5em;
+    overflow: hidden;
+    transform: translateY(-1em);
+    padding-bottom: 2px; }
+    article .hero-image img {
+      max-width: 100%;
+      margin-left: 0;
+      transform: none;
+      display: block; }
   article blockquote {
     border-left: 2px solid #979690;
     margin: 1em 0 1em;

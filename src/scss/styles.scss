@@ -175,19 +175,26 @@ a {
 }
 
 .sidebar {
+	// text-align: center;
 	margin-top: 2em;
-
-	@include mq(large) {
-		display: flex;
-
-		aside {
-			width: 50%;
-		}
-	}
+	// font-size: 1.2em;
+	//
+	// @include mq(small) {
+	// 	font-size: 1.8em;
+	// }
 }
 
 .blog-container {
 	margin-top: 2em;
+
+	> h2 {
+		margin-bottom: 2em;
+	}
+}
+
+.articles {
+	// display: flex;
+	// flex-wrap: wrap;
 }
 
 article {
@@ -196,12 +203,17 @@ article {
 	margin-left: 2em;
 	color: #403e32;
 
-	@include mq(large) {
-		width: 50%;
-	}
+	// @include mq(small) {
+	// 	width: calc(50% - 5em);
+	// 	margin-right: 3em;
+	// }
 
 	&.has-hero-image {
-		margin-top: 3em;
+		padding-top: 1em;
+
+		footer {
+			top: 1.5em;
+		}
 	}
 
 	h1, h2, h3, h4, h5, h6 {
@@ -231,16 +243,20 @@ article {
 		transform: translate(-0.5em, -1em);
 	}
 
-	img.hero-image {
+	.hero-image {
 		display: block;
-		max-width: none;
 		width: calc(100% + 3em);
-		margin-left: -2em;
-		// margin-left: 0;
-		// max-width: auto;
-		// position: absolute;
-		// top: -100%;
-		// left: -100%;
+		margin-left: -2.5em;
+		overflow: hidden;
+		transform: translateY(-1em);
+		padding-bottom: 2px;
+
+		img {
+			max-width: 100%;
+			margin-left: 0;
+			transform: none;
+			display: block;
+		}
 	}
 
 	blockquote {
