@@ -1,2 +1,3 @@
 permalink: /blog/:title/
 exclude: ['src', 'package.json', 'Gemfile', 'Gemfile.lock', 'README.md', 'node_modules']
+github: [metadata]
