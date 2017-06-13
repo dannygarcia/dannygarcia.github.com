@@ -1,6 +1,6 @@
 'use strict';
 
-const c = new Canvas('playground', 0.5);
+const c = new Canvas('playground', 1);
 
 const walkers = [];
 const maxWalkers = 500;
@@ -31,15 +31,15 @@ const setup = () => {
 
 	// constraints.add(new Constraint(firstWalker, third, secondWalker, 1));
 
-	document.body.addEventListener('mousemove', (e) => {
-		// moved = true;
-		// center.x = e.pageX / 2;
-		// center.y = e.pageY / 2;
-		// center.add({x: e.pageX, y: e.pageY});
-		// tree[0].mass = 500;
-		tree[1].x = e.pageX / 2;
-		tree[1].y = e.pageY / 2;
-	});
+	// document.body.addEventListener('mousemove', (e) => {
+	// 	// moved = true;
+	// 	// center.x = e.pageX / 2;
+	// 	// center.y = e.pageY / 2;
+	// 	// center.add({x: e.pageX, y: e.pageY});
+	// 	// tree[0].mass = 500;
+	// 	tree[1].x = e.pageX / 2;
+	// 	tree[1].y = e.pageY / 2;
+	// });
 
 }
 
@@ -78,10 +78,15 @@ const render = () => {
 			if (stuck) {
 				walker.isStuck = true;
 				tree.push(walker);
+				stuck.x += (walker.x - walker.oldX) * 0.02;
+				stuck.y += (walker.y - walker.oldY) * 0.02;
 				walker.oldX = walker.x;
 				walker.oldY = walker.y;
 				walkers.splice(i, 1);
-				constraints.push(new Constraint(stuck.parent, stuck, walker, walker.friction));
+				constraints.push(new Constraint(stuck.parent, stuck));
+				// constraints.push(new Constraint(stuck.parent, stuck));
+				// constraints.push(new Constraint(stuck.parent, walker));
+				// constraints.push(new AngleConstraint(stuck.parent, stuck, walker, walker.friction));
 			}
 		}
 	}
@@ -126,11 +131,11 @@ const render = () => {
 	// 	walkers[i].draw();
 	// }
 
-	if (frame < 60) {
+	if (frame < 60*30) {
 		c.render();
 	}
 
 }
 
-// setup();
-// render();
+setup();
+render();

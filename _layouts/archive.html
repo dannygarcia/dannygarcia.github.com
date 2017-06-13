@@ -4,8 +4,6 @@ class: blog
 ---
 <section class="blog-container">
 
-	<h2>Thoughts on technology, liberal arts and the humanities:</h2>
-
 	<div class="articles">
 		{% for post in site.posts %}
 			<article {% if post.image %}class="has-hero-image"{% endif %} type="formal">

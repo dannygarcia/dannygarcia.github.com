@@ -4,28 +4,49 @@
 
 class Vector {
 	constructor(x, y) {
-		this.x = x;
-		this.y = y;
+		[this.x, this.y] = [x, y];
 	}
 
-	add(vector) {
-		this.x += vector.x;
-		this.y += vector.y;
+	equals(v) {
+		if (v instanceof Vector) {
+			return this.x === v.x && this.y === v.y;
+		} else {
+			return this.x === v && this.y === v;
+		}
 	}
 
-	subtract(vector) {
-		this.x -= vector.x;
-		this.y -= vector.y;
+	set(v) {
+		[ this.x, this.y ] = v instanceof Vector ?
+		[ v.x, v.y ]:[ v, v ];
+		return this;
 	}
 
-	multiply(vector) {
-		this.x *= vector.x;
-		this.y *= vector.y;
+	add(v) {
+		[this.x, this.y] = v instanceof Vector ?
+		[ this.x + v.x, this.y + v.y ] :
+		[ this.x + v, this.y + v ];
+		return this;
 	}
 
-	divide(vector) {
-		this.x /= vector.x;
-		this.y /= vector.y;
+	subtract(v) {
+		[this.x, this.y] = v instanceof Vector ?
+		[ this.x - v.x, this.y - v.y ] :
+		[ this.x - v, this.y - v ];
+		return this;
+	}
+
+	multiply(v) {
+		[this.x, this.y] = v instanceof Vector ?
+		[ this.x * v.x, this.y * v.y ] :
+		[ this.x * v, this.y * v ];
+		return this;
+	}
+
+	divide(v) {
+		[this.x, this.y] = v instanceof Vector ?
+		[ this.x / v.x, this.y / v.y ] :
+		[ this.x / v, this.y / v ];
+		return this;
 	}
 
 	randomize(minX, maxX, minY, maxY) {
@@ -33,20 +54,32 @@ class Vector {
 		this.y = Math.randFloat(minY, maxY);
 	}
 
-	rotate(vector, theta) {
-		let x = this.x - vector.x;
-		let y = this.y - vector.y;
-		this.x = x*Math.cos(theta) - y*Math.sin(theta) + vector.x;
-		this.y = x*Math.sin(theta) + y*Math.cos(theta) + vector.y;
+	clone() {
+		return new Vector(this.x, this.y);
 	}
 
-	// distance(vector) {
-	// 	return Math.hypot(vector.x-this.x, vector.y-this.y);
-	// }
-	distance(vector) {
-		let dx = vector.x - this.x;
-		let dy = vector.y - this.y;
-		return dx * dx + dy * dy;
+	distance(v) {
+		const d = this.clone().subtract(v);
+		return Math.sqrt(d.x * d.x + d.y * d.y);
+	}
+
+	length() {
+		return Math.sqrt(this.x * this.x + this.y * this.y);
+	}
+
+	angle(v) {
+		return Math.atan2(this.x * v.y - this.y * v.x, this.x * v.x + this.y * v.y);
+	}
+
+	angleBetween(vA, vB) {
+		const vAdiff = vA.clone().subtract(this);
+		const vBdiff = vB.clone().subtract(this);
+		return vAdiff.angle(vBdiff);
+	}
+
+	rotate(origin, angle) {
+		const diff = this.clone().subtract(origin);
+		[this.x, this.y] = [diff.x * Math.cos(angle) - diff.y * Math.sin(angle) + origin.x, diff.x * Math.sin(angle) + diff.y * Math.cos(angle) + origin.y];
+		return this;
 	}
 }
-

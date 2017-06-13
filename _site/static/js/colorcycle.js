@@ -31,12 +31,12 @@ cycleColors = () => {
 };
 
 let y = scrollY;
-requestAnimationFrame(raf = () => {
-	if (y !== scrollY) {
-		y = scrollY;
-		cycleColors();
-		raf();
-	}
-});
+// requestAnimationFrame(raf = () => {
+// 	if (y !== scrollY) {
+// 		y = scrollY;
+// 		cycleColors();
+// 		raf();
+// 	}
+// });
 
-addEventListener('scroll', raf);
+// addEventListener('scroll', raf);

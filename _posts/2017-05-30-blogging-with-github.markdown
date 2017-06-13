@@ -1,8 +1,9 @@
 ---
 layout: post
 title: Blogging with GitHub
-published: true
+published: false
 class: blog
+image: /static/img/back-to-basics-hero.jpg
 ---
 
 Anyone can make a static site with GitHub Pages. It's really easy! Although there are some limitations, you can't beat free, versioned, secure, (mostly) stable, templated publishing.

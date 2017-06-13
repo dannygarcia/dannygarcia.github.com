@@ -8,7 +8,15 @@ class Walker extends Vector {
 		this.radius = radius;
 		this.mass = radius * 1.5;
 		this.friction = 0.99;
+		this.baseColor = [Math.randFloat(0.5, 0.8), Math.randFloat(0.45, 0.55), Math.randFloat(0.45, 0.55), Math.randInt(250, 255)];
 	}
+
+	correct(v) {
+      if (this.pinned) {
+        return;
+      }
+      this.add(v);
+    }
 
 	integrate(stuck) {
 
@@ -31,21 +39,20 @@ class Walker extends Vector {
 
 		}
 
+		// console.log(this.x, this.y);
+
 	}
 
 	walk(radius) {
 		let dx = center.x - this.x;
 		let dy = center.y - this.y;
 		this.radius = Math.map((dx * dx + dy * dy)/20000, 1, 7, 7, 1);
-		super.add({
-			x: Math.randFloat(-1, 1),
-			y: Math.randFloat(-1, 1)
-		});
-		// this.oldX = this.x;
-		// this.oldY = this.y;
+		super.add(new Vector(
+			Math.randFloat(-1, 1),
+			Math.randFloat(-1, 1)
+		));
 		this.x = Math.constrain(this.x, -this.radius, c.width + this.radius);
 		this.y = Math.constrain(this.y, -this.radius, c.height + this.radius);
-		// this.pos.randomize(0, width, 0, height);
 	}
 
 	stuck(tree) {
@@ -79,7 +86,7 @@ class Walker extends Vector {
 	draw(index) {
 
 		if (typeof index !== 'undefined') {
-			index = Math.hslToRgb(Math.lerp((index/tree.length), 0.5, 0.8), 0.5, 0.5, 255);
+			index = Math.hslToRgb(Math.lerp((index/tree.length), this.baseColor[0], 0.8), this.baseColor[1], this.baseColor[2], this.baseColor[3]);
 		} else {
 			index = [127, 127, 127, 255];
 		}

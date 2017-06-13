@@ -10,15 +10,15 @@
   box-sizing: border-box; }
 
 html {
-  background: #E5E5EA; }
+  background: #e5e7ea; }
 
 body {
   margin: 0;
   line-height: 1.5;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background: #E5E5EA;
+  background: #e5e7ea;
   color: #151413;
-  font-size: 20px;
+  font-size: 18px;
   padding-top: 12px; }
 
 a {
@@ -38,18 +38,17 @@ header, main, footer {
 
 #playground {
   display: block;
-  background: #151413;
   width: 100%;
-  height: 30vh;
+  height: 50vh;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: pixelated; }
 
 .hero {
   position: sticky;
   position: -webkit-sticky;
-  top: -30vh;
+  top: -50vh;
   background: #151413;
-  color: #E5E5EA;
+  color: #e5e7ea;
   z-index: 1;
   width: calc(87% + 1em);
   max-width: calc(740px + 1em);
@@ -102,8 +101,34 @@ a:hover {
 .link-arrow:after {
   content: " →"; }
 
-.sidebar {
+.sidebar-container {
+  display: flex;
+  align-items: baseline;
+  flex-direction: column;
   margin-top: 2em; }
+  @media (min-width: 740px) {
+    .sidebar-container {
+      flex-direction: row; } }
+
+.sidebar {
+  font-size: 1.4em;
+  padding-bottom: 1em; }
+  .sidebar:nth-child(2) {
+    border-top: 1px solid #979690;
+    padding-top: 1em; }
+  @media (min-width: 740px) {
+    .sidebar {
+      padding-bottom: 0; }
+      .sidebar:nth-child(1) {
+        padding-right: 1em; }
+      .sidebar:nth-child(2) {
+        border-top: none;
+        padding-top: 0;
+        border-left: 1px solid #979690;
+        padding-left: 1em; } }
+  @media (min-width: 740px) {
+    .home .sidebar {
+      width: 50%; } }
 
 .blog-container {
   margin-top: 2em; }
