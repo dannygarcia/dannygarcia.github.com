@@ -46,8 +46,8 @@ a:hover {
 .inner-content {
     margin-left: auto;
     margin-right: auto;
-    max-width: 340px;
-    padding: 0 10px;
+    max-width: 620px;
+    padding: 0 1em;
 }
 
 main {
@@ -80,7 +80,8 @@ header a  {
 }
 
 hr {
-    border-top: 1px solid var(--swatch-lowlight);
+    border: none;
+    border-top: 2px solid var(--swatch-lowlight);
 }
 
 footer {
