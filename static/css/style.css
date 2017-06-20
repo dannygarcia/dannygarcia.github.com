@@ -5,10 +5,12 @@
 */
 
 :root {
-    --swatch-background: #f8f8f8;
-    --swatch-lowlight: #979690;
-    --swatch-highlight: #0000FF;
-    --swatch-copy: #151413;
+    --swatch-background: #000;
+    --swatch-lowlight: hsl(51,20%,14%);
+    --swatch-highlight: #ffffff;
+    --swatch-copy: #979690;
+    --space: 3em;
+    --ease: cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 * {
@@ -17,13 +19,19 @@
 	box-sizing: border-box;
 }
 
+h1, p, hr {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 html {
 	background: var(--swatch-background);
+	font-smoothing: subpixel-antialiased;
+	text-rendering:optimizeLegibility;
 }
 
 body {
 	margin: 0;
-	line-height: 1.5;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 	background: var(--swatch-background);
 	color: var(--swatch-copy);
@@ -52,31 +60,35 @@ a:hover {
 
 main {
     font-size: 1.4em;
-    line-height: 1.6em;
+    line-height: 1.8em;
 }
 
 .bigcopy {
-    font-size: 1.5em;
-    line-height: 1.4em;
+    font-size: 1.4em;
+    line-height: 1.5em;
 }
 
-header {
-    background: var(--swatch-copy);
-    color: var(--swatch-lowlight);
-    padding-top: 2em;
-    padding-bottom: 2em;
+.section-header {
+    background: var(--swatch-lowlight);
+    padding-top: var(--space);
+    padding-bottom: var(--space);
 }
 
-header h1 {
+.section-header h1 {
     margin-top: 0;
 }
 
-header p:last-child {
+.section-header p:last-child {
     margin-bottom: 0;
 }
 
-header a  {
-    color: var(--swatch-background);
+p {
+    margin-bottom: var(--space);
+    margin-top: var(--space);
+}
+
+h1 + p {
+    margin-top: calc(var(--space) / 2);
 }
 
 hr {
@@ -87,4 +99,68 @@ hr {
 footer {
     color: var(--swatch-lowlight);
     margin-bottom: 2em;
+}
+
+.tin-pre.tin-swipe {
+	will-change: opacity, transform;
+	opacity: 0;
+	transform: scale(0.9) translateY(100px);
+}
+
+.tin.tin-swipe {
+	will-change: opacity, transform;
+    animation-name: tin-swipe;
+    animation-duration: 600ms;
+    animation-fill-mode: forwards;
+    animation-timing-function: var(--ease);
+}
+
+@media (prefers-reduced-motion) {
+	.tin-pre.tin-swipe,
+	.tin.tin-swipe {
+		opacity: 1;
+		transform: none;
+		animation: none;
+	}
+}
+
+.tin-pre.tin-bg {
+	will-change: background-color;
+	background-color: hsl(51,0%,0%);
+}
+
+.tin.tin-bg {
+	will-change: background-color;
+    animation-name: tin-bg;
+    animation-duration: 1000ms;
+    animation-fill-mode: forwards;
+    animation-timing-function: var(--ease);
+}
+
+@media (prefers-reduced-motion) {
+	.tin-pre.tin-bg,
+	.tin.tin-bg {
+		background-color: var(--swatch-lowlight);
+		animation: none;
+	}
+}
+
+@keyframes tin-swipe {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(100px);
+    }
+    100% {
+        opactiy: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes tin-bg {
+	0% {
+		background-color: hsl(51,0%,0%);
+	}
+	100% {
+		background-color: var(--swatch-lowlight);
+	}
 }
