@@ -4,5 +4,5 @@ tins.forEach((tin, i) => {
 	setTimeout(() => {
 		tin.classList.remove('tin-pre');
 		tin.classList.add('tin');
-	}, 160 * i);
+	}, 140 * i);
 });

@@ -6,7 +6,7 @@
 
 :root {
     --swatch-background: #000;
-    --swatch-lowlight: hsl(51,20%,14%);
+    --swatch-lowlight: hsl(200,5%,15%);
     --swatch-highlight: #ffffff;
     --swatch-copy: #979690;
     --space: 3em;
@@ -65,21 +65,60 @@ main {
 
 .bigcopy {
     font-size: 1.4em;
-    line-height: 1.5em;
+    line-height: 1.6em;
+}
+
+.bigcopy,
+.bigcopy a {
+	font-weight: 300;
 }
 
 .section-header {
+	position: relative;
+/* 	display: flex; */
     background: var(--swatch-lowlight);
+/*     padding: var(--space); */
     padding-top: var(--space);
     padding-bottom: var(--space);
+    outline: 1px solid margin;
 }
 
-.section-header h1 {
-    margin-top: 0;
+#playground {
+	position: absolute;
+	top: 0;
+	left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+    pointer-events: none;
 }
 
-.section-header p:last-child {
-    margin-bottom: 0;
+.intro {
+	display: flex;
+	align-items: center;
+	margin-bottom: calc(var(--space) / 2);
+}
+
+.intro .bigcopy {
+	line-height: 1.2em;
+}
+
+.section-header * {
+/* outline: 1px solid orange;  */
+}
+
+.intro img {
+	border-radius: 1em;
+	width: 25vw;
+	margin-right: 1em;
+}
+
+.intro h1 {
+    margin: 0;
+}
+
+.section-header p {
+    margin: 0;
 }
 
 p {

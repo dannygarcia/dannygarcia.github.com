@@ -1,141 +1,213 @@
-'use strict';
+const canvas = document.getElementById('playground');
+const ctx = canvas.getContext('2d');
 
-const c = new Canvas('playground', 1);
+const rect = canvas.getBoundingClientRect();
+canvas.width = rect.width;
+canvas.height = rect.height;
 
-const walkers = [];
-const maxWalkers = 500;
-const walkerRadius = 2;
-let walkerCount = 0;
-
-const tree = [];
-const constraints = [];
-// let moved = false;
-let globalRadius = 10;
-let i, j;
-
-let center = new Vector(c.width / 2, c.height / 2);
-
-const setup = () => {
-
-	// const size = globalRadius;
-
-	// for (let i = 0; i < 300; i++) {
-	// 	walkers.push(new Walker(size));
-	// }
-	const center = new Walker(c.width/2, c.height/2, globalRadius);
-	const centerBase = new Walker(c.width/2 + 10, c.height/2, globalRadius);
-	center.parent = centerBase;
-	centerBase.parent = center;
-	// center.fixed = centerBase.fixed = true;
-	tree.push(centerBase, center);
-
-	// constraints.add(new Constraint(firstWalker, third, secondWalker, 1));
-
-	// document.body.addEventListener('mousemove', (e) => {
-	// 	// moved = true;
-	// 	// center.x = e.pageX / 2;
-	// 	// center.y = e.pageY / 2;
-	// 	// center.add({x: e.pageX, y: e.pageY});
-	// 	// tree[0].mass = 500;
-	// 	tree[1].x = e.pageX / 2;
-	// 	tree[1].y = e.pageY / 2;
-	// });
-
+class Vec {
+	constructor(x, y) {
+		[this.x, this.y] = [ x, y ];
+	}
+	set(v) {
+		[this.x, this.y] = v instanceof Vec ?
+			[ v.x, v.y ]:[ v, v ];
+		return this;
+	}
+	add(v) {
+		[this.x, this.y] = v instanceof Vec ?
+			[ this.x + v.x, this.y + v.y ] :
+			[ this.x + v, this.y + v ];
+		return this;
+	}
+	subtract(v) {
+		[this.x, this.y] = v instanceof Vec ?
+			[ this.x - v.x, this.y - v.y ] :
+			[ this.x - v, this.y - v ];
+		return this;
+	}
+	multiply(v) {
+		[this.x, this.y] = v instanceof Vec ?
+			[ this.x * v.x, this.y * v.y ] :
+			[ this.x * v, this.y * v ];
+		return this;
+	}
+	divide(v) {
+		[this.x, this.y] = v instanceof Vec ?
+			[ this.x / v.x, this.y / v.y ] :
+			[ this.x / v, this.y / v ];
+		return this;
+	}
+	clone() {
+		return new Vec(this.x, this.y);
+	}
+	distance(v) {
+		const d = this.clone().subtract(v);
+		return Math.sqrt(d.x * d.x + d.y * d.y);
+	}
+	length() {
+		return Math.sqrt(this.x * this.x + this.y * this.y);
+	}
 }
 
-// render loop
-let frame = 0;
-let treeInx = tree.length;
-const render = () => {
-	frame++;
-	requestAnimationFrame(render);
-
-	if (walkerCount < maxWalkers && frame % 2 === 0) {
-		let along = Math.random() < 0.5 ? 'width' : 'height';
-		let point = Math.random() * c[along];
-		walkers.push(new Walker(
-			along === 'width' ? point : Math.random() < 0.5 ? 0 : c.width,
-			along === 'height' ? point : Math.random() < 0.5 ? 0 : c.height,
-			walkerRadius
-		));
-		// walkers.push();
-		walkerCount++;
-		along = point = null;
+class Constraint {
+	constructor(p1, p2) {
+		[this.p1, this.p2] = [p1, p2];
+		this.target = p1.position.distance(p2.position);
 	}
+	resolve() {
+		const [pos1, pos2] = [ this.p1.position.clone(), this.p2.position.clone() ];
+		const direction = pos2.subtract(pos1);
+		const len = direction.length();
+		const factor = (len - this.target) / (len * 2.1);
+		let correction = direction.multiply(factor);
+		
+		if (!this.p1.pinned) {
+			this.p1.correct(correction);
+		}
+		
+		correction.multiply(-1);
+		
+		if (!this.p2.pinned) {
+			this.p2.correct(correction);
+		}
+	}
+	draw() {
+		ctx.strokeStyle = '#979690';
+		ctx.beginPath();
+		ctx.moveTo(this.p1.position.x, this.p1.position.y);
+		ctx.lineTo(this.p2.position.x, this.p2.position.y);
+		ctx.stroke();
+	}
+}
 
-	c.clear();
+class Particle {
+	constructor(pos) {
+		this.position = pos;
+		this.previous = this.position.clone();
+		this.acceleration = new Vec(0, 0);
+		this.pinned = false;
+		this.trail = [];
+	}
+	accelerate(v) {
+		if (this.pinned) {
+			return;
+		}
+		this.acceleration.add(v);
+	}
+	correct(v) {
+		if (this.pinned) {
+			return;
+		}
+		this.position.add(v);
+	}
+	simulate(delta) {
+		if (this.pinned) {
+			return;
+		}
+		this.acceleration.multiply(delta * delta);
+		const pos = this.position
+			.clone()
+			.subtract(this.previous)
+			// .multiply(0.999) // friction
+			.add(this.acceleration);
+		
+		this.previous.set(this.position);
+		this.position.add(pos);
+		this.acceleration.set(0);
+	}
+	draw() {
+		ctx.beginPath();
+		ctx.arc(this.position.x, this.position.y, 3, 0, 2 * Math.PI, false);
+		ctx.fillStyle = '#ffffff';
+		ctx.fill();
+	}
+	drawTrail() {
+		this.trail.push(this.position.clone());
+		if (this.trail.length > 50) {
+			this.trail.shift();
+		}
+		for (let i = 0; i < this.trail.length; i++) {
+		  
+			if (this.trail[i - 1]) {
+				ctx.strokeStyle = 'hsla(200, 5%, 10%, '+ (i/this.trail.length) +')';
+				ctx.beginPath();
+				ctx.moveTo(this.trail[i].x, this.trail[i].y);
+				ctx.lineTo(this.trail[i - 1].x, this.trail[i - 1].y);
+				ctx.stroke();
+			}
+		  
+			ctx.beginPath();
+			ctx.arc(this.trail[i].x, this.trail[i].y, 2, 0, 2 * Math.PI, false);
+			ctx.fillStyle = 'hsla(200, 5%, 10%, '+ i/this.trail.length +')';
+			ctx.fill();
+		}
+	}
+}
 
-	// console.log(walkers.values().next());
-	// walkers.forEach(function () {console.log(arguments)});
-
-	for (i = 0; i < walkers.length; i++) {
-		let walker = walkers[i];
-		if (!walker.isStuck) {
-			walker.integrate();
-			walker.walk();
-			walker.draw();
-			const stuck = walker.stuck(tree);
-			if (stuck) {
-				walker.isStuck = true;
-				tree.push(walker);
-				stuck.x += (walker.x - walker.oldX) * 0.02;
-				stuck.y += (walker.y - walker.oldY) * 0.02;
-				walker.oldX = walker.x;
-				walker.oldY = walker.y;
-				walkers.splice(i, 1);
-				constraints.push(new Constraint(stuck.parent, stuck));
-				// constraints.push(new Constraint(stuck.parent, stuck));
-				// constraints.push(new Constraint(stuck.parent, walker));
-				// constraints.push(new AngleConstraint(stuck.parent, stuck, walker, walker.friction));
+class ParticleSystem {
+	constructor() {
+		this.particles = [];
+		this.constraints = [];
+		this.gravity = new Vec(0, 1);
+		this.friction = 0.5;
+	}
+	update() {
+		const steps = 16;
+		const delta = 1/steps;
+		for (let j = 0; j < this.particles.length; j++) {
+			this.particles[j].accelerate(this.gravity);
+			this.particles[j].simulate(delta);
+		}
+		for (let i = 0; i < steps; i++) {
+			for (let j = 0; j < this.constraints.length; j++) {
+				this.constraints[j].resolve(delta);
 			}
 		}
 	}
-
-	for (let i = 0; i < tree.length; i++) {
-		let node = tree[i];
-		node.integrate(true);
-		// node.friction = 1-(i / tree.length);
-		// if (i > 1) {
-		// }
-		node.draw(i);
-	}
-
-	for (i = 0; i < 16; i++) {
-		for (let c in constraints) {
-			constraints[c].solve(0.0625); // 1/16
-			// c.draw();
+	draw() {
+		let r = 3;
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.lineWidth = 2;
+		for (let i = 0; i < this.particles.length; i++) {
+			this.particles[i].drawTrail();
+		}
+		for (let i = 0; i < this.constraints.length; i++) {
+			this.constraints[i].draw();
+		}
+		for (let i = 0; i < this.particles.length; i++) {
+			this.particles[i].draw();
 		}
 	}
-
-
-/*	for (i = 0; i < tree.length; i++) {
-		console.log('treeloop');
-		// tree[i].solve();
-		if (i !== 0) {
-		}
-			tree[i].integrate(true);
-
-		tree[i].friction = 1-(i / tree.length);
-
-		// if (i !== 0) {
-		// } else if (!moved) {
-		// 	tree[i].pos.x = c.width/2;
-		// 	tree[i].pos.y = c.height/2;
-		// }
-		tree[i].draw(i);
-	}
-*/
-
-	// for (i = 0; i < walkers.length; i++) {
-	// 	walkers[i].integrate();
-	// 	walkers[i].draw();
-	// }
-
-	if (frame < 60*30) {
-		c.render();
-	}
-
 }
 
-setup();
-render();
+const ps = new ParticleSystem();
+
+function random(min, max) {
+	return +(Math.random() * (max - min) + min).toFixed(3);
+}
+
+const center = new Vec(canvas.width / 2, canvas.height / 2);
+const centerParticle = new Particle(center);
+centerParticle.pinned = true;
+ps.particles.push(centerParticle);
+
+let addParticle = (v) => {
+	const lastP = ps.particles[ps.particles.length - 1];
+	const newP = new Particle(v);
+	ps.particles.push(newP);
+	ps.constraints.push(new Constraint(lastP, newP));
+}
+
+addParticle(center.clone().add(new Vec(80, -10)));
+addParticle(center.clone().add(new Vec(60, -80)));
+
+// ps.particles[ps.particles.length - 1].acceleration.add(100);
+
+/* const draw = () => {
+	requestAnimationFrame(draw);
+	ps.update();
+	ps.draw();
+}
+
+draw(); */
