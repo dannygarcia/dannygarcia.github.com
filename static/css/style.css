@@ -110,6 +110,7 @@ main {
 .intro img {
 	border-radius: 1em;
 	width: 25vw;
+	max-width: 240px;
 	margin-right: 1em;
 }
 
