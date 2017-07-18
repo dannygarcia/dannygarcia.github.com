@@ -141,66 +141,22 @@ footer {
     margin-bottom: 2em;
 }
 
-.tin-pre.tin-swipe {
+.tin-swipe,
+.tin-bg {
 	will-change: opacity, transform;
+	transition-property: opacity, transform;
+	transition-duration: 600ms;
+	transition-timing-function: var(--ease);
 	opacity: 0;
-	transform: scale(0.9) translateY(100px);
-}
-
-.tin.tin-swipe {
-	will-change: opacity, transform;
-    animation-name: tin-swipe;
-    animation-duration: 600ms;
-    animation-fill-mode: forwards;
-    animation-timing-function: var(--ease);
+	transform: scale(0.92) translateY(100px);
 }
 
 @media (prefers-reduced-motion) {
-	.tin-pre.tin-swipe,
-	.tin.tin-swipe {
+	.tin-swipe,
+	.tin-bg {
+		will-change: none;
+		transition-property: none;
 		opacity: 1;
 		transform: none;
-		animation: none;
-	}
-}
-
-.tin-pre.tin-bg {
-	will-change: background-color;
-	background-color: hsl(51,0%,0%);
-}
-
-.tin.tin-bg {
-	will-change: background-color;
-    animation-name: tin-bg;
-    animation-duration: 1000ms;
-    animation-fill-mode: forwards;
-    animation-timing-function: var(--ease);
-}
-
-@media (prefers-reduced-motion) {
-	.tin-pre.tin-bg,
-	.tin.tin-bg {
-		background-color: var(--swatch-lowlight);
-		animation: none;
-	}
-}
-
-@keyframes tin-swipe {
-    0% {
-        opacity: 0;
-        transform: scale(0.9) translateY(100px);
-    }
-    100% {
-        opactiy: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-@keyframes tin-bg {
-	0% {
-		background-color: hsl(51,0%,0%);
-	}
-	100% {
-		background-color: var(--swatch-lowlight);
 	}
 }

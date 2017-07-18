@@ -105,7 +105,7 @@ class Particle {
 		if (this.pinned) {
 			return;
 		}
-		this.acceleration.multiply(delta * delta);
+		this.acceleration.multiply(delta);
 		const pos = this.position
 			.clone()
 			.subtract(this.previous)
@@ -199,15 +199,15 @@ let addParticle = (v) => {
 	ps.constraints.push(new Constraint(lastP, newP));
 }
 
-addParticle(center.clone().add(new Vec(80, -10)));
-addParticle(center.clone().add(new Vec(60, -80)));
+addParticle(center.clone().add(new Vec(10, -80)));
+addParticle(center.clone().add(new Vec(-10, -140)));
 
 // ps.particles[ps.particles.length - 1].acceleration.add(100);
 
-/* const draw = () => {
+const draw = () => {
 	requestAnimationFrame(draw);
 	ps.update();
 	ps.draw();
 }
 
-draw(); */
+draw();
