@@ -106,11 +106,21 @@ main {
 /* outline: 1px solid orange;  */
 }
 
-.intro img {
+.intro .img {
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: cover;
 	border-radius: 1em;
 	width: 25vw;
+	height: 27vw;
 	max-width: 240px;
 	margin-right: 1em;
+	mix-blend-mode: lighten;
+/*	-webkit-backdrop-filter: blur(50px) brightness(205%);
+	backdrop-filter: blur(50px) brightness(205%);
+*/}
+.intro {
+
 }
 
 .intro h1 {

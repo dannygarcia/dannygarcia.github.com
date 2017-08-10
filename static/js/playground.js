@@ -1,4 +1,4 @@
-const playground = document.getElementById('playground');
+const container = document.getElementById('playground');
 
 const frag = `
 precision mediump float;
@@ -6,44 +6,77 @@ uniform vec2 resolution;
 uniform float time;
 uniform vec4 color;
 
-float sphere(vec3 rayOrigin, vec3 rayDirection, vec3 point, float radius) {
-	vec3 rayCenter = rayOrigin - point;
-	float c = dot(rayCenter, rayCenter) - (radius * radius);
-	float b = dot(rayDirection, rayCenter);
-	float d = b * b - c;
-	float t = -b - sqrt(abs(d));
-	float st = step(0., min(t, d));
-	return mix(-1., t, st);
+const mat2 m2 = mat2(0.8,-0.6,0.6,0.8);
+const float veinWidth = 0.1;
+const float detail = 3.4;
+const float scale1 = 3.;
+const float scale2 = 6.;
+const float scale3 = 9.;
+const float diffusion = 0.20;
+const int softVein = 1;
+
+float noise(vec2 x) {
+	return sin(1.5*x.x)*sin(1.5*x.y);
 }
 
-vec3 background(float time, vec3 rayDirection) {
-	vec3 light = normalize(vec3(sin(time), 0.6, cos(time)));
-	float sun = max(0., dot(rayDirection, light));
-	float sky = max(0., dot(rayDirection, vec3(0., 1., 0.)));
-	float ground = max(0., -dot(rayDirection, vec3(0., 1., 0.)));
-	return (pow(sun, 256.) + 0.2 * pow(sun, 2.)) * vec3(2., 1.6, 1.) +
-		pow(ground, 0.5) * vec3(0.4, 0.3, 0.2) +
-		pow(sky, 1.) * vec3(0.5, 0.6, 0.7);
+// 2D Fractional Brownian Motion
+// iq https://www.shadertoy.com/view/lsl3RH
+float fbm(vec2 p) {
+    float f = 0.0;
+    f += 0.5000*noise(p); p = m2*p*2.02;
+    f += 0.2500*noise(p); p = m2*p*2.03;
+    f += 0.1250*noise(p); p = m2*p*2.01;
+    f += 0.0625*noise(p);
+    return f/0.9375;
+}
+
+vec3 rgb(int r, int g, int b) {
+	return vec3(float(r)/255., float(g)/255., float(b)/255.);
+}
+
+float marble(vec2 p) {
+    float a = abs(fbm(
+        (p + vec2(5. * scale1, -3. * scale1))*
+        1.33 + detail
+	));
+
+    float b = abs(fbm(
+        (p + vec2(8. * scale2, 0.))*
+        2. + detail
+	));
+
+    float c = abs(fbm(
+        p * scale1*
+        2.67 + detail
+	));
+
+	float d = max(max(a, b), c);
+
+	float shape = d * (1. + veinWidth) - veinWidth;
+
+    float absShape = abs(shape);
+
+    float diff = pow(absShape, diffusion);
+
+    if (softVein == 1 || shape > 0.) {
+    	return diff;
+    } else {
+    	return absShape;
+    }
 }
 
 void main() {
-	//vec2 uv = gl_FragCoord.xy / resolution;
-	vec2 uv = (-1. + 2. * gl_FragCoord.xy / resolution) * vec2(resolution.x / resolution.y, 1.);
-	vec3 rayOrigin = vec3(0., 0., -3.);
-	vec3 rayDirection = normalize(vec3(uv, 1.));
-	vec3 point = vec3(0., 0., 0.);
-	float t = sphere(rayOrigin, rayDirection, point, 1.);
-	vec3 normal = normalize(point - (rayOrigin + rayDirection * t));
-	vec3 bg = background(time, rayDirection);
-	rayDirection = reflect(rayDirection, normal);
-	vec3 color = background(time, rayDirection) * vec3(0.9, 0.8, 1.0);
-	gl_FragColor = vec4(mix(bg, color, step(0., t)), 1.);
+	vec2 uv = gl_FragCoord.xy/resolution;
+	vec3 veinColor = rgb(11, 12, 14);
+	vec3 baseColor = rgb(67, 85, 95);
+	vec3 color = mix(baseColor, veinColor, marble(uv + vec2(0., -time * .05)));
+	gl_FragColor = vec4(color, 1.);
 }
 `;
 
 const init = () => {
-	const regl = createREGL(playground);
-	const drawTriangle = regl({
+	const regl = createREGL(container);
+	const draw = regl({
 		frag: frag,
 		vert: `
 			precision mediump float;
@@ -71,13 +104,13 @@ const init = () => {
 		},
 		count: 6
 	});
-	
+
 	regl.frame(({time}) => {
 		regl.clear({
 			color: [0, 0, 0, 0],
 			depth: 1
 		});
-		drawTriangle({
+		draw({
 			color: [
 				Math.cos(time),
 				Math.sin(time),
