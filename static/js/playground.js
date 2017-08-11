@@ -1,9 +1,13 @@
 const container = document.getElementById('playground');
+const random = Math.random() * 100;
+const rect = container.getBoundingClientRect();
+const resolution = [rect.width, rect.height];
 
 const frag = `
 precision mediump float;
 uniform vec2 resolution;
 uniform float time;
+uniform float rtime;
 uniform vec4 color;
 
 const mat2 m2 = mat2(0.8,-0.6,0.6,0.8);
@@ -16,7 +20,7 @@ const float diffusion = 0.20;
 const int softVein = 1;
 
 float noise(vec2 x) {
-	return sin(1.5*x.x)*sin(1.5*x.y);
+	return sin(1.5*x.x)*sin(1.5*x.y) * cos(time * 0.2);
 }
 
 // 2D Fractional Brownian Motion
@@ -69,8 +73,8 @@ void main() {
 	vec2 uv = gl_FragCoord.xy/resolution;
 	vec3 veinColor = rgb(11, 12, 14);
 	vec3 baseColor = rgb(67, 85, 95);
-	vec3 color = mix(baseColor, veinColor, marble(uv + vec2(0., -time * .05)));
-	gl_FragColor = vec4(color, 1.);
+	vec3 color = mix(baseColor, veinColor, marble(uv + vec2(0., -rtime * .05)));
+	gl_FragColor = vec4(mix(veinColor, color, smoothstep(0., 1., time * 0.3)), 1.);
 }
 `;
 
@@ -81,7 +85,9 @@ const init = () => {
 		vert: `
 			precision mediump float;
 			attribute vec2 position;
+			varying vec2 uv;
 			void main() {
+				uv = position * 0.13;
 				gl_Position = vec4(position, 0., 1.);
 			}
 		`,
@@ -96,11 +102,12 @@ const init = () => {
 			]
 		},
 		uniforms: {
-			resolution: context => {
-				return [context.viewportWidth, context.viewportHeight];
-			},
 			color: regl.prop('color'),
-			time: regl.context('time')
+			time: regl.context('time'),
+			resolution: resolution,
+			rtime: context => {
+				return context.time + random;
+			}
 		},
 		count: 6
 	});
