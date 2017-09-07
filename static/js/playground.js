@@ -1,10 +1,4 @@
-const container = document.getElementById('playground');
-const random = Math.random() * 100;
-const rect = container.getBoundingClientRect();
-const resolution = [rect.width, rect.height];
-
-const frag = `
-precision mediump float;
+let frag = `
 uniform vec2 resolution;
 uniform float time;
 uniform float rtime;
@@ -71,6 +65,7 @@ float marble(vec2 p) {
 
 void main() {
 	vec2 uv = gl_FragCoord.xy/resolution;
+	// gl_FragColor = vec4(uv.x, uv.y, 1., 1.);
 	vec3 veinColor = rgb(11, 12, 14);
 	vec3 baseColor = rgb(67, 85, 95);
 	vec3 color = mix(baseColor, veinColor, marble(uv + vec2(0., -rtime * .05)));
@@ -79,52 +74,113 @@ void main() {
 `;
 
 const init = () => {
-	const regl = createREGL(container);
-	const draw = regl({
-		frag: frag,
-		vert: `
-			precision mediump float;
-			attribute vec2 position;
-			varying vec2 uv;
+	let container = document.getElementById('playground');
+	let random = Math.random() * 100;
+
+	let camera = new THREE.Camera();
+	camera.position.z = 1;
+	let scene = new THREE.Scene();
+	let geometry = new THREE.PlaneBufferGeometry(2, 2);
+	let rect;
+
+	let uniforms = {
+		color: { value: new THREE.Vector4() },
+		time: { value: 1 },
+		resolution: { value: new THREE.Vector2() },
+		rtime: { value: 1 + random }
+	};
+
+	let material = new THREE.ShaderMaterial({
+		uniforms: uniforms,
+		vertexShader: `
 			void main() {
-				uv = position * 0.13;
-				gl_Position = vec4(position, 0., 1.);
-			}
-		`,
-		attributes: {
-			position: [
-				[-1, 1],
-				[1, 1],
-				[-1, -1],
-				[1, 1],
-				[1, -1],
-				[-1, -1]
-			]
-		},
-		uniforms: {
-			color: regl.prop('color'),
-			time: regl.context('time'),
-			resolution: resolution,
-			rtime: context => {
-				return context.time + random;
-			}
-		},
-		count: 6
+				gl_Position = vec4(position, 1.0);
+			}`,
+		fragmentShader: frag
 	});
 
-	regl.frame(({time}) => {
-		regl.clear({
-			color: [0, 0, 0, 0],
-			depth: 1
-		});
-		draw({
-			color: [
-				Math.cos(time),
-				Math.sin(time),
-				Math.cos(time * 0.003),
-				1
-			]
-		});
-	});
+	let mesh = new THREE.Mesh(geometry, material);
+	scene.add(mesh);
+
+	let renderer = new THREE.WebGLRenderer();
+	renderer.setPixelRatio(window.devicePixelRatio);
+	container.appendChild(renderer.domElement);
+
+	let onWindowResize = (e) => {
+		rect = container.getBoundingClientRect();
+		renderer.setSize(rect.width, rect.height);
+		uniforms.resolution.value.x = rect.width;
+		uniforms.resolution.value.y = rect.height;
+	};
+
+	onWindowResize();
+	window.addEventListener('resize', onWindowResize, false);
+
+	let render = () => {
+		uniforms.time.value += 0.05;
+		uniforms.rtime.value = uniforms.time.value + random;
+		uniforms.color.value = [
+			Math.cos(uniforms.time.value),
+			Math.sin(uniforms.time.value),
+			Math.cos(uniforms.time.value * 0.003),
+			1
+		];
+		renderer.render(scene, camera);
+	}
+
+	let animate = () => {
+		requestAnimationFrame(animate);
+		render();
+	}
+
+	animate();
+
+	// const regl = createREGL(container);
+	// const draw = regl({
+	// 	frag: frag,
+	// 	vert: `
+	// 		precision mediump float;
+	// 		attribute vec2 position;
+	// 		varying vec2 uv;
+	// 		void main() {
+	// 			uv = position * 0.13;
+	// 			gl_Position = vec4(position, 0., 1.);
+	// 		}
+	// 	`,
+	// 	attributes: {
+	// 		position: [
+	// 			[-1, 1],
+	// 			[1, 1],
+	// 			[-1, -1],
+	// 			[1, 1],
+	// 			[1, -1],
+	// 			[-1, -1]
+	// 		]
+	// 	},
+	// 	uniforms: {
+	// 		color: regl.prop('color'),
+	// 		time: regl.context('time'),
+	// 		resolution: resolution,
+	// 		rtime: context => {
+	// 			return context.time + random;
+	// 		}
+	// 	},
+	// 	count: 6
+	// });
+
+	// regl.frame(({time}) => {
+	// 	regl.clear({
+	// 		color: [0, 0, 0, 0],
+	// 		depth: 1
+	// 	});
+	// 	draw({
+	// 		color: [
+	// 			Math.cos(time),
+	// 			Math.sin(time),
+	// 			Math.cos(time * 0.003),
+	// 			1
+	// 		]
+	// 	});
+	// });
 }
 init();

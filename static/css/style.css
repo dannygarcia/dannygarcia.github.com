@@ -83,7 +83,7 @@ main {
     outline: 1px solid margin;
 }
 
-#playground {
+#playground, #playground canvas {
 	position: absolute;
 	top: 0;
 	left: 0;
