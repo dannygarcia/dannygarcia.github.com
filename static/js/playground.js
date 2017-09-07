@@ -4,12 +4,13 @@ uniform float time;
 uniform float rtime;
 uniform vec4 color;
 
+const float baseScale = 0.1;
 const mat2 m2 = mat2(0.8,-0.6,0.6,0.8);
 const float veinWidth = 0.1;
 const float detail = 3.4;
-const float scale1 = 3.;
-const float scale2 = 6.;
-const float scale3 = 9.;
+const float scale1 = 1. * baseScale;
+const float scale2 = 2. * baseScale;
+const float scale3 = 3. * baseScale;
 const float diffusion = 0.20;
 const int softVein = 1;
 
@@ -65,7 +66,6 @@ float marble(vec2 p) {
 
 void main() {
 	vec2 uv = gl_FragCoord.xy/resolution;
-	// gl_FragColor = vec4(uv.x, uv.y, 1., 1.);
 	vec3 veinColor = rgb(11, 12, 14);
 	vec3 baseColor = rgb(67, 85, 95);
 	vec3 color = mix(baseColor, veinColor, marble(uv + vec2(0., -rtime * .05)));
