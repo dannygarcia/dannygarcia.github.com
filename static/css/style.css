@@ -95,7 +95,8 @@ main {
 }
 
 .intro {
-	visibility: hidden;
+	padding-top: 300px;
+	/*visibility: hidden;*/
 	display: flex;
 	align-items: center;
 	margin-bottom: calc(var(--space) / 2);
