@@ -1,4 +1,17 @@
-let frag = `
+const logo = {
+	paths: [
+		"M66.713,5.752 c20.946,0,34.681,12.731,34.681,34.555 c0,32.548-19.065,55.94-47.725,55.94 H8.577 L27.83,5.752 H66.713 M39.934,75.176 h9.909 c14.173,0,24.208-11.79,24.208-31.482 c0-10.097-5.519-16.933-14.926-16.933 h-8.968 L39.934,75.176 Z",
+		"M152.919,78.249 h-27.594 l-8.78,17.999 H89.202 l49.794-90.496 h33.364 l9.281,90.496 h-27.97 L152.919,78.249 M134.231,59.498 h18.187 l-1.38-31.545 h-1.317 L134.231,59.498 Z",
+		"M188.694,96.248 l19.253-90.496 h17.936 l26.528,46.784 h1.254 l9.971-46.784 h25.399 l-19.253,90.496 h-17.56 L225.13,50.091 h-1.254 l-9.784,46.157 H188.694 Z",
+		"M278.604,96.248 l19.253-90.496 h17.936 l26.527,46.784 h1.255 l9.972-46.784 h25.398 l-19.253,90.496 h-17.56 L315.04,50.091 h-1.254 l-9.784,46.157 H278.604 Z",
+		"M394.725,96.248 l6.083-28.66 L382.997,5.752 h27.845 l7.839,35.935 h1.255 l23.016-35.935 h28.472 l-44.024,61.835 l-6.084,28.66 H394.725 Z"
+	],
+	amounts: [30,30,30,30,30],
+	colors: [0xffffff,0xffffff,0xffffff,0xffffff,0xffffff],
+	center: {x: 230, y: 50}
+};
+
+const frag = `
 uniform vec2 resolution;
 uniform float time;
 uniform float rtime;
@@ -73,114 +86,162 @@ void main() {
 }
 `;
 
-const init = () => {
-	let container = document.getElementById('playground');
-	let random = Math.random() * 100;
+class WebGLTransitioner extends Transitioner {
+	constructor(tin) {
+		super(tin);
 
-	let camera = new THREE.Camera();
-	camera.position.z = 1;
-	let scene = new THREE.Scene();
-	let geometry = new THREE.PlaneBufferGeometry(2, 2);
-	let rect;
+		this.random = Math.random() * 100;
 
-	let uniforms = {
-		color: { value: new THREE.Vector4() },
-		time: { value: 1 },
-		resolution: { value: new THREE.Vector2() },
-		rtime: { value: 1 + random }
-	};
+		// Camera
 
-	let material = new THREE.ShaderMaterial({
-		uniforms: uniforms,
-		vertexShader: `
-			void main() {
-				gl_Position = vec4(position, 1.0);
-			}`,
-		fragmentShader: frag
-	});
+		this.camera = new THREE.OrthographicCamera(
+			this.width / -2,
+			this.width / 2,
+			this.height / 2,
+			this.height / -2,
+			1, 1000);
 
-	let mesh = new THREE.Mesh(geometry, material);
-	scene.add(mesh);
+		this.camera.position.set(0, 400, 700);
+		this.camera.target = new THREE.Vector3(0, 150, 0);
 
-	let renderer = new THREE.WebGLRenderer();
-	renderer.setPixelRatio(window.devicePixelRatio);
-	container.appendChild(renderer.domElement);
+		// Scene
 
-	let onWindowResize = (e) => {
-		rect = container.getBoundingClientRect();
-		renderer.setSize(rect.width, rect.height);
-		uniforms.resolution.value.x = rect.width;
-		uniforms.resolution.value.y = rect.height;
-	};
+		this.scene = new THREE.Scene();
+		this.scene.fog = new THREE.Fog(0x000000, 250, 1400);
 
-	onWindowResize();
-	window.addEventListener('resize', onWindowResize, false);
+		// Lights
 
-	let render = () => {
-		uniforms.time.value += 0.05;
-		uniforms.rtime.value = uniforms.time.value + random;
-		uniforms.color.value = [
-			Math.cos(uniforms.time.value),
-			Math.sin(uniforms.time.value),
-			Math.cos(uniforms.time.value * 0.003),
+		const directionalLight = new THREE.DirectionalLight(0xffffff, 0.125);
+		directionalLight.position.set(0, 0, 1).normalize();
+
+		this.scene.add(directionalLight);
+
+		// Materials
+
+		this.uniforms = {
+			color: { value: new THREE.Color() },
+			time: { value: 1 },
+			resolution: { value: new THREE.Vector2() },
+			rtime: { value: 1 + this.random }
+		};
+
+		const fancyMaterial = new THREE.ShaderMaterial({
+			side: THREE.DoubleSide,
+			wireframe: false,
+			uniforms: this.uniforms,
+			vertexShader: `
+				void main() {
+					gl_Position = vec4(position, 1.0);
+				}`,
+			fragmentShader: `
+				uniform float time;
+				uniform vec2 resolution;
+				uniform vec4 color;
+				void main() {
+					gl_FragColor = vec4(1.);
+				}
+			`
+		});
+
+		// Text Group
+
+		this.textGroup = new THREE.Group();
+		// this.textGroup.position.y = this.height / 2;
+
+		this.logoMesh = new THREE.Group();
+		for (let i = 0; i < logo.paths.length; i++) {
+			let path = window.transformSVGPath(logo.paths[i]);
+			let color = new THREE.Color(logo.colors[i]);
+			let material = new THREE.MeshLambertMaterial({
+				color: color,
+				emissive: color
+			});
+			// material = new THREE.MeshBasicMaterial( { wireframe: true } ); // wireframe
+			let amount = logo.amounts[i];
+			let geometry = path.toShapes(true);
+			for (let j = 0; j < geometry.length; j++) {
+				let extrudedGeometry = new THREE.ExtrudeGeometry(geometry[j], {
+					amount: amount,
+					bevelEnabled: false
+				});
+
+				extrudedGeometry.translate(-logo.center.x,-logo.center.y,-amount/2);
+				let mesh = new THREE.Mesh(extrudedGeometry, material);
+				mesh.rotation.x = Math.PI;
+				this.logoMesh.add(mesh);
+			}
+		}
+
+		// for (let i = this.logoMesh.children.length - 1; i >= 0; --i) {
+		for (let i = 0; i < this.logoMesh.children.length; i++) {
+
+			// this.logoMesh.children[i].translate(-logo.center.x,-logo.center.y,1);
+			this.logoMesh.children[i].rotation.x += -i * 0.4;
+			// this.logoMesh.children[i].translateY(-logo.center.y);
+		}
+
+		this.logoMesh.rotation.z = 0.2;
+		this.logoMesh.rotation.y += 0.5;
+		// console.log('lm', this.logoMesh);
+
+		this.textGroup.add(this.logoMesh);
+
+		this.scene.add(this.textGroup);
+
+		this.renderer = new THREE.WebGLRenderer();
+		this.renderer.setPixelRatio(window.devicePixelRatio);
+		this.tin.appendChild(this.renderer.domElement);
+
+		this.updateRenderer();
+
+	}
+	setBoundaries() {
+		super.setBoundaries(0, -1);
+		this.width = this.rect.width;
+		this.height = this.rect.height;
+		this.updateRenderer();
+	}
+	updateRenderer() {
+		if (this.camera) {
+			this.camera.left = this.width / -2;
+			this.camera.right = this.width / 2;
+			this.camera.top = this.height / 2;
+			this.camera.bottom = this.height / -2;
+			this.camera.updateProjectionMatrix();
+		}
+		if (this.textGroup) {
+			this.textGroup.position.y = 550;
+		}
+		if (this.renderer) {
+			this.renderer.setSize(this.width, this.height);
+		}
+		if (this.uniforms) {
+			this.uniforms.resolution.value.x = this.width;
+			this.uniforms.resolution.value.y = this.height;
+		}
+	}
+	update(target) {
+		super.update(target);
+		const rotationby = 0.01 * (1-this.progress);
+		// console.log(this.progress, rotationby);
+		this.logoMesh.children[0].rotation.x += rotationby;
+		this.logoMesh.children[1].rotation.x += rotationby;
+		this.logoMesh.children[2].rotation.x += rotationby;
+		this.logoMesh.children[3].rotation.x += rotationby;
+		this.logoMesh.children[4].rotation.x += rotationby;
+
+		this.uniforms.time.value += 0.05;
+		this.uniforms.rtime.value = this.uniforms.time.value + this.random;
+		this.uniforms.color.value = [
+			Math.cos(this.uniforms.time.value),
+			Math.sin(this.uniforms.time.value),
+			Math.cos(this.uniforms.time.value * 0.003),
 			1
 		];
-		renderer.render(scene, camera);
 	}
-
-	let animate = () => {
-		requestAnimationFrame(animate);
-		render();
+	draw() {
+		this.renderer.render(this.scene, this.camera);
 	}
-
-	animate();
-
-	// const regl = createREGL(container);
-	// const draw = regl({
-	// 	frag: frag,
-	// 	vert: `
-	// 		precision mediump float;
-	// 		attribute vec2 position;
-	// 		varying vec2 uv;
-	// 		void main() {
-	// 			uv = position * 0.13;
-	// 			gl_Position = vec4(position, 0., 1.);
-	// 		}
-	// 	`,
-	// 	attributes: {
-	// 		position: [
-	// 			[-1, 1],
-	// 			[1, 1],
-	// 			[-1, -1],
-	// 			[1, 1],
-	// 			[1, -1],
-	// 			[-1, -1]
-	// 		]
-	// 	},
-	// 	uniforms: {
-	// 		color: regl.prop('color'),
-	// 		time: regl.context('time'),
-	// 		resolution: resolution,
-	// 		rtime: context => {
-	// 			return context.time + random;
-	// 		}
-	// 	},
-	// 	count: 6
-	// });
-
-	// regl.frame(({time}) => {
-	// 	regl.clear({
-	// 		color: [0, 0, 0, 0],
-	// 		depth: 1
-	// 	});
-	// 	draw({
-	// 		color: [
-	// 			Math.cos(time),
-	// 			Math.sin(time),
-	// 			Math.cos(time * 0.003),
-	// 			1
-	// 		]
-	// 	});
-	// });
 }
-init();
+
+transitions.add(new WebGLTransitioner(document.getElementById('playground')));

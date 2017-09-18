@@ -87,12 +87,15 @@ main {
 	position: absolute;
 	top: 0;
 	left: 0;
-    width: 100%;
+    width: 100% !important; /* overwrites fixed dimensions set inline by three.js */
     height: 100%;
     pointer-events: none;
+    /*z-index: 2;*/
+    /*outline: 1px solid magenta;*/
 }
 
 .intro {
+	visibility: hidden;
 	display: flex;
 	align-items: center;
 	margin-bottom: calc(var(--space) / 2);

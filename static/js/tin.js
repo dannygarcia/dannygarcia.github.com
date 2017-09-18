@@ -22,16 +22,29 @@ class Transitioner {
 		this.tin = tin;
 		this.setBoundaries();
 		this.progress = 0;
+	}
+	setBoundaries(min, max) {
+		this.rect = this.tin.getBoundingClientRect();
+		this.top = this.rect.top;
+		this.bottom = clamp(this.rect.top + (min || 50), this.rect.top + (max || 100), this.rect.bottom);
+	}
+	update(target) {
+		// set forward-only progress
+		this.progress = Math.max(clamp(0, 1, lmap(target, this.top, this.bottom, 0, 1)), this.progress);
+	}
+	draw() {}
+}
+
+class ElementTransitioner extends Transitioner {
+	constructor(tin) {
+		super(tin);
 		this.transitions = {};
 	}
 	setBoundaries() {
-		const rect = this.tin.getBoundingClientRect();
-		this.top = rect.top;
-		this.bottom = clamp(rect.top + 50, rect.top + 100, rect.bottom);
+		super.setBoundaries();
 	}
-	update(target, resizing) {
-		// set forward-only progress
-		this.progress = Math.max(clamp(0, 1, lmap(target, this.top, this.bottom, 0, 1)), this.progress);
+	update(target) {
+		super.update(target);
 		this.transitions.opacity = this.progress;
 		this.transitions.scale = lerp(0.9, 1, this.progress);
 		this.transitions.translateY = lerp(100, 0, this.progress);
@@ -42,14 +55,14 @@ class Transitioner {
 	}
 }
 
-tinEls.forEach(tin => transitions.add(new Transitioner(tin)));
+tinEls.forEach(tin => transitions.add(new ElementTransitioner(tin)));
 
 const initialTransitionDuration = 60; // factored in fps
 let tick = 0,
 	progress = 0,
 	target = 0,
 	resizing = false;
-	
+
 const raf = () => {
 	requestAnimationFrame(raf);
 	tick++;
@@ -72,7 +85,7 @@ const raf = () => {
 
 if (!matchMedia('(prefers-reduced-motion)').matches) {
 	raf();
-	
+
 	addEventListener('resize', () => {
 		if (resizing) {
 			return;
