@@ -125,23 +125,23 @@ class WebGLTransitioner extends Transitioner {
 			rtime: { value: 1 + this.random }
 		};
 
-		const fancyMaterial = new THREE.ShaderMaterial({
-			side: THREE.DoubleSide,
-			wireframe: false,
-			uniforms: this.uniforms,
-			vertexShader: `
-				void main() {
-					gl_Position = vec4(position, 1.0);
-				}`,
-			fragmentShader: `
-				uniform float time;
-				uniform vec2 resolution;
-				uniform vec4 color;
-				void main() {
-					gl_FragColor = vec4(1.);
-				}
-			`
-		});
+		// const fancyMaterial = new THREE.ShaderMaterial({
+		// 	side: THREE.DoubleSide,
+		// 	wireframe: false,
+		// 	uniforms: this.uniforms,
+		// 	vertexShader: `
+		// 		void main() {
+		// 			gl_Position = vec4(position, 1.0);
+		// 		}`,
+		// 	fragmentShader: `
+		// 		uniform float time;
+		// 		uniform vec2 resolution;
+		// 		uniform vec4 color;
+		// 		void main() {
+		// 			gl_FragColor = vec4(1.);
+		// 		}
+		// 	`
+		// });
 
 		// Text Group
 
