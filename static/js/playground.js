@@ -7,7 +7,7 @@ const logo = {
 		"M394.725,96.248 l6.083-28.66 L382.997,5.752 h27.845 l7.839,35.935 h1.255 l23.016-35.935 h28.472 l-44.024,61.835 l-6.084,28.66 H394.725 Z"
 	],
 	amounts: [30,30,30,30,30],
-	colors: [0xffffff,0xffffff,0xffffff,0xffffff,0xffffff],
+	colors: [0x333333,0x333333,0x333333,0x333333,0x333333],
 	center: {x: 230, y: 50}
 };
 
@@ -107,7 +107,7 @@ class WebGLTransitioner extends Transitioner {
 		// Scene
 
 		this.scene = new THREE.Scene();
-		this.scene.fog = new THREE.Fog(0x000000, 250, 1400);
+		// this.scene.fog = new THREE.Fog(0x000000, 250, 1400);
 
 		// Lights
 
@@ -150,12 +150,16 @@ class WebGLTransitioner extends Transitioner {
 
 		this.logoMesh = new THREE.Group();
 		for (let i = 0; i < logo.paths.length; i++) {
-			let path = window.transformSVGPath(logo.paths[i]);
+			let path = THREE.transformSVGPath(logo.paths[i]);
 			let color = new THREE.Color(logo.colors[i]);
-			let material = new THREE.MeshLambertMaterial({
+			let material = new THREE.MeshStandardMaterial( {
 				color: color,
-				emissive: color
+				metalness: 1.18
 			});
+			// let material = new THREE.MeshLambertMaterial({
+			// 	color: color,
+			// 	emissive: color
+			// });
 			// material = new THREE.MeshBasicMaterial( { wireframe: true } ); // wireframe
 			let amount = logo.amounts[i];
 			let geometry = path.toShapes(true);
@@ -189,8 +193,20 @@ class WebGLTransitioner extends Transitioner {
 		this.scene.add(this.textGroup);
 
 		this.renderer = new THREE.WebGLRenderer();
+		this.renderer.toneMapping = THREE.LinearToneMapping;
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.tin.appendChild(this.renderer.domElement);
+
+		const renderScene = new THREE.RenderPass(this.scene, this.camera);
+		const copyShader = new THREE.ShaderPass(THREE.CopyShader);
+		copyShader.renderToScreen = true;
+		const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(this.width, this.height), 1.7, 0.7, 0.0);
+		this.composer = new THREE.EffectComposer(this.renderer);
+		this.composer.addPass(renderScene);
+		this.composer.addPass(bloomPass);
+		this.composer.addPass(copyShader);
+		this.renderer.gammaInput = true;
+		this.renderer.gammaOutput = true;
 
 		this.updateRenderer();
 
@@ -214,6 +230,9 @@ class WebGLTransitioner extends Transitioner {
 		}
 		if (this.renderer) {
 			this.renderer.setSize(this.width, this.height);
+		}
+		if (this.composer) {
+			this.composer.setSize(this.width, this.height);
 		}
 		if (this.uniforms) {
 			this.uniforms.resolution.value.x = this.width;
@@ -240,7 +259,10 @@ class WebGLTransitioner extends Transitioner {
 		];
 	}
 	draw() {
-		this.renderer.render(this.scene, this.camera);
+		this.renderer.toneMappingExposure = Math.pow(2.5, 4.0 );
+		this.composer.render();
+		// this.renderer.render(this.scene, this.camera);
+
 	}
 }
 

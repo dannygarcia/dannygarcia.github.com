@@ -94,6 +94,10 @@ main {
     /*outline: 1px solid magenta;*/
 }
 
+#playground canvas {
+	border-bottom: 1px solid var(--swatch-lowlight);
+}
+
 .intro {
 	padding-top: 300px;
 	/*visibility: hidden;*/
