@@ -8,7 +8,7 @@ const logo = {
 	],
 	amounts: [30,30,30,30,30],
 	colors: [0x333333,0x333333,0x333333,0x333333,0x333333],
-	center: {x: 230, y: 50}
+	center: {x: 240, y: 50}
 };
 
 const frag = `
@@ -91,6 +91,8 @@ class WebGLTransitioner extends Transitioner {
 		super(tin);
 
 		this.random = Math.random() * 100;
+		this.tick = 0;
+		this.rotationOffset = 0;
 
 		// Camera
 
@@ -118,12 +120,12 @@ class WebGLTransitioner extends Transitioner {
 
 		// Materials
 
-		this.uniforms = {
-			color: { value: new THREE.Color() },
-			time: { value: 1 },
-			resolution: { value: new THREE.Vector2() },
-			rtime: { value: 1 + this.random }
-		};
+		// this.uniforms = {
+		// 	color: { value: new THREE.Color() },
+		// 	time: { value: 1 },
+		// 	resolution: { value: new THREE.Vector2() },
+		// 	rtime: { value: 1 + this.random }
+		// };
 
 		// const fancyMaterial = new THREE.ShaderMaterial({
 		// 	side: THREE.DoubleSide,
@@ -176,13 +178,9 @@ class WebGLTransitioner extends Transitioner {
 			}
 		}
 
-		// for (let i = this.logoMesh.children.length - 1; i >= 0; --i) {
-		for (let i = 0; i < this.logoMesh.children.length; i++) {
-
-			// this.logoMesh.children[i].translate(-logo.center.x,-logo.center.y,1);
-			this.logoMesh.children[i].rotation.x += -i * 0.4;
-			// this.logoMesh.children[i].translateY(-logo.center.y);
-		}
+		// for (let i = 0; i < this.logoMesh.children.length; i++) {
+		// 	this.logoMesh.children[i].rotation.x += -i * 0.4;
+		// }
 
 		this.logoMesh.rotation.z = 0.2;
 		this.logoMesh.rotation.y += 0.5;
@@ -200,7 +198,7 @@ class WebGLTransitioner extends Transitioner {
 		const renderScene = new THREE.RenderPass(this.scene, this.camera);
 		const copyShader = new THREE.ShaderPass(THREE.CopyShader);
 		copyShader.renderToScreen = true;
-		const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(this.width, this.height), 1.7, 0.7, 0.0);
+		const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(this.width/4, this.height/4), 1.7, 0.7, 0.0);
 		this.composer = new THREE.EffectComposer(this.renderer);
 		this.composer.addPass(renderScene);
 		this.composer.addPass(bloomPass);
@@ -212,17 +210,20 @@ class WebGLTransitioner extends Transitioner {
 
 	}
 	setBoundaries() {
-		super.setBoundaries(0, -1);
+		super.setBoundaries();
 		this.width = this.rect.width;
 		this.height = this.rect.height;
 		this.updateRenderer();
 	}
 	updateRenderer() {
 		if (this.camera) {
-			this.camera.left = this.width / -2;
-			this.camera.right = this.width / 2;
-			this.camera.top = this.height / 2;
-			this.camera.bottom = this.height / -2;
+			// const cameraScale = THREE.Math.lerp(this.width/400, 0, 1);
+			const cameraScale = 1;
+			// console.log(cameraScale);
+			this.camera.left = (this.width / -2) * cameraScale;
+			this.camera.right = (this.width / 2) * cameraScale;
+			this.camera.top = (this.height / 2) * cameraScale;
+			this.camera.bottom = (this.height / -2) * cameraScale;
 			this.camera.updateProjectionMatrix();
 		}
 		if (this.textGroup) {
@@ -234,36 +235,45 @@ class WebGLTransitioner extends Transitioner {
 		if (this.composer) {
 			this.composer.setSize(this.width, this.height);
 		}
-		if (this.uniforms) {
-			this.uniforms.resolution.value.x = this.width;
-			this.uniforms.resolution.value.y = this.height;
-		}
+		// if (this.uniforms) {
+		// 	this.uniforms.resolution.value.x = this.width;
+		// 	this.uniforms.resolution.value.y = this.height;
+		// }
 	}
-	update(target) {
+	ease(t) {
+		return t*t;
+	}
+	update(target, mouse) {
 		super.update(target);
-		const rotationby = 0.01 * (1-this.progress);
-		// console.log(this.progress, rotationby);
-		this.logoMesh.children[0].rotation.x += rotationby;
-		this.logoMesh.children[1].rotation.x += rotationby;
-		this.logoMesh.children[2].rotation.x += rotationby;
-		this.logoMesh.children[3].rotation.x += rotationby;
-		this.logoMesh.children[4].rotation.x += rotationby;
+		this.tick += 0.5;
+		// const rotationby = 0.01 * (1-this.progress);
+		// console.log(target);
 
-		this.uniforms.time.value += 0.05;
-		this.uniforms.rtime.value = this.uniforms.time.value + this.random;
-		this.uniforms.color.value = [
-			Math.cos(this.uniforms.time.value),
-			Math.sin(this.uniforms.time.value),
-			Math.cos(this.uniforms.time.value * 0.003),
-			1
-		];
+		this.rotationOffset += ((mouse.down ? 0 : 1) - this.rotationOffset) * 0.15;
+
+		// this.rotationOffset = this.ease(this.rotationOffset);
+
+		for (let i = 0; i < this.logoMesh.children.length; i++) {
+			this.logoMesh.children[i].rotation.x = (i * (this.rotationOffset * -0.4)) + ((this.tick * 0.01) % Math.PI * 2 * this.rotationOffset) + Math.PI;
+			this.logoMesh.children[i].rotation.x += mouse.distanceend * 0.001;
+		}
+
+		// this.uniforms.time.value += 0.05;
+		// this.uniforms.rtime.value = this.uniforms.time.value + this.random;
+		// this.uniforms.color.value = [
+		// 	Math.cos(this.uniforms.time.value),
+		// 	Math.sin(this.uniforms.time.value),
+		// 	Math.cos(this.uniforms.time.value * 0.003),
+		// 	1
+		// ];
+
+		this.renderer.toneMappingExposure = Math.pow(2.5, 4.0 );
 	}
 	draw() {
-		this.renderer.toneMappingExposure = Math.pow(2.5, 4.0 );
 		this.composer.render();
 		// this.renderer.render(this.scene, this.camera);
 
 	}
 }
 
-transitions.add(new WebGLTransitioner(document.getElementById('playground')));
+transitions.push(new WebGLTransitioner(playgroundEl));

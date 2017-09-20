@@ -89,7 +89,7 @@ main {
 	left: 0;
     width: 100% !important; /* overwrites fixed dimensions set inline by three.js */
     height: 100%;
-    pointer-events: none;
+    /*pointer-events: none;*/
     /*z-index: 2;*/
     /*outline: 1px solid magenta;*/
 }

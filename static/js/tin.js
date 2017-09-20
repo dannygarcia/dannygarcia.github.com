@@ -15,7 +15,8 @@ function clamp(min, max, p) {
 // tin (transition-in)
 
 const tinEls = document.querySelectorAll('.tin-bg,.tin-swipe');
-const transitions = new Set();
+const playgroundEl = document.getElementById('playground');
+const transitions = [];
 
 class Transitioner {
 	constructor(tin) {
@@ -55,13 +56,56 @@ class ElementTransitioner extends Transitioner {
 	}
 }
 
-tinEls.forEach(tin => transitions.add(new ElementTransitioner(tin)));
+tinEls.forEach(tin => transitions.push(new ElementTransitioner(tin)));
 
 const initialTransitionDuration = 60; // factored in fps
 let tick = 0,
 	progress = 0,
 	target = 0,
-	resizing = false;
+	resizing = false,
+	mouse = {
+		down: false,
+		distancestart: 0,
+		distanceend: 0,
+		velocity: 0
+	},
+	i;
+
+playgroundEl.addEventListener('mousedown', (e) => {
+	mouse.down = true;
+	mouse.distancestart = e.pageY;
+},false);
+
+playgroundEl.addEventListener('mouseup', (e) => {
+	mouse.down = false;
+	mouse.distanceend = e.pageY - mouse.distancestart;
+},false);
+
+playgroundEl.addEventListener('mousemove', (e) => {
+	if (mouse.down) {
+		mouse.distanceend = e.pageY - mouse.distancestart;
+		mouse.velocity = e.movementY;
+		// console.log(mouse.distanceend, mouse.velocity);
+	}
+},false);
+
+playgroundEl.addEventListener('touchstart', (e) => {
+	mouse.down = true;
+	mouse.distancestart = e.touches[0].pageY;
+},false);
+
+playgroundEl.addEventListener('touchend', (e) => {
+	mouse.down = false;
+	// console.log(e.touches);
+	// mouse.distanceend = e.touches[0].pageY - mouse.distancestart;
+},false);
+
+playgroundEl.addEventListener('touchmove', (e) => {
+	e.preventDefault();
+	mouse.distanceend = e.touches[0].pageY - mouse.distancestart;
+	mouse.velocity = e.touches[0].movementY;
+	// console.log(mouse.distanceend, mouse.velocity);
+},false);
 
 const raf = () => {
 	requestAnimationFrame(raf);
@@ -69,14 +113,15 @@ const raf = () => {
 	progress = clamp(0, 1, lmap(tick, 0, initialTransitionDuration, 0, 1));
 	target = (innerHeight + scrollY) * progress;
 	// batched update & draw calls to reduce render invalidations
-	for (let tin of transitions) {
+
+	for (i = 0; i < transitions.length; i++) {
 		if (resizing) {
-			tin.setBoundaries();
+			transitions[i].setBoundaries();
 		}
-		tin.update(target);
+		transitions[i].update(target, mouse);
 	}
-	for (let tin of transitions) {
-		tin.draw();
+	for (i = 0; i < transitions.length; i++) {
+		transitions[i].draw(target, mouse);
 	}
 	if (resizing) {
 		resizing = false;
