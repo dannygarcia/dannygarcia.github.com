@@ -62,6 +62,7 @@ const initialTransitionDuration = 60; // factored in fps
 let tick = 0,
 	progress = 0,
 	target = 0,
+	lastScrollY = 0,
 	resizing = false,
 	mouse = {
 		down: false,
@@ -70,6 +71,39 @@ let tick = 0,
 		velocity: 0
 	},
 	i;
+
+const raf = () => {
+	requestAnimationFrame(raf);
+	tick++;
+	progress = clamp(0, 1, lmap(tick, 0, initialTransitionDuration, 0, 1));
+	target = (innerHeight + scrollY) * progress;
+	// batched update & draw calls to reduce render invalidations
+
+	for (i = 0; i < transitions.length; i++) {
+		if (resizing) {
+			transitions[i].setBoundaries();
+		}
+		transitions[i].update(target, mouse, scrollY - lastScrollY);
+	}
+	for (i = 0; i < transitions.length; i++) {
+		transitions[i].draw(target, mouse);
+	}
+	if (resizing) {
+		resizing = false;
+	}
+	lastScrollY = scrollY;
+};
+
+if (!matchMedia('(prefers-reduced-motion)').matches) {
+	raf();
+
+	addEventListener('resize', () => {
+		if (resizing) {
+			return;
+		}
+		resizing = true;
+	});
+}
 
 playgroundEl.addEventListener('mousedown', (e) => {
 	mouse.down = true;
@@ -101,40 +135,8 @@ playgroundEl.addEventListener('touchend', (e) => {
 },false);
 
 playgroundEl.addEventListener('touchmove', (e) => {
-	e.preventDefault();
+	// e.preventDefault();
 	mouse.distanceend = e.touches[0].pageY - mouse.distancestart;
 	mouse.velocity = e.touches[0].movementY;
 	// console.log(mouse.distanceend, mouse.velocity);
 },false);
-
-const raf = () => {
-	requestAnimationFrame(raf);
-	tick++;
-	progress = clamp(0, 1, lmap(tick, 0, initialTransitionDuration, 0, 1));
-	target = (innerHeight + scrollY) * progress;
-	// batched update & draw calls to reduce render invalidations
-
-	for (i = 0; i < transitions.length; i++) {
-		if (resizing) {
-			transitions[i].setBoundaries();
-		}
-		transitions[i].update(target, mouse);
-	}
-	for (i = 0; i < transitions.length; i++) {
-		transitions[i].draw(target, mouse);
-	}
-	if (resizing) {
-		resizing = false;
-	}
-};
-
-if (!matchMedia('(prefers-reduced-motion)').matches) {
-	raf();
-
-	addEventListener('resize', () => {
-		if (resizing) {
-			return;
-		}
-		resizing = true;
-	});
-}

@@ -105,10 +105,10 @@ main {
 	align-items: center;
 	margin-bottom: calc(var(--space) / 2);
 }
-
+/*
 .intro .bigcopy {
 	line-height: 1.2em;
-}
+}*/
 
 .section-header * {
 /* outline: 1px solid orange;  */

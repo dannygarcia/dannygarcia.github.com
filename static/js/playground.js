@@ -86,6 +86,43 @@ void main() {
 }
 `;
 
+class Letter {
+	constructor(rotation) {
+		this.rotation = rotation || 0;
+		this.previous = this.rotation;
+		this.accelration = 0;
+	}
+	accelerate(degrees) {
+		this.accelration += degrees;
+	}
+	simulate(delta) {
+		this.accelration *= delta;
+		const rotation = ((this.rotation - this.previous) * 0.9) + this.accelration;
+		this.previous = this.rotation;
+		this.rotation += rotation;
+		this.accelration = 0;
+	}
+}
+
+class RotationConstraint {
+	constructor(l1, l2, stiffness) {
+		[this.l1, this.l2] = [l1, l2];
+		this.target = l1.rotation - l2.rotation;
+		this.stiffness = stiffness;
+	}
+	solve() {
+		const [l1, l2] = [this.l1, this.l2];
+		const direction = l2.rotation - l1.rotation;
+		if (direction === 0) {
+			return;
+		}
+		const factor = (direction - this.target) / (direction * 1);
+		const correction = direction * factor * this.stiffness;
+		this.l1.rotation += correction;
+		this.l2.rotation += -correction;
+	}
+}
+
 class WebGLTransitioner extends Transitioner {
 	constructor(tin) {
 		super(tin);
@@ -93,6 +130,7 @@ class WebGLTransitioner extends Transitioner {
 		this.random = Math.random() * 100;
 		this.tick = 0;
 		this.rotationOffset = 0;
+		this.freescroll = 1000;
 
 		// Camera
 
@@ -174,13 +212,22 @@ class WebGLTransitioner extends Transitioner {
 				extrudedGeometry.translate(-logo.center.x,-logo.center.y,-amount/2);
 				let mesh = new THREE.Mesh(extrudedGeometry, material);
 				mesh.rotation.x = Math.PI;
+				mesh.letter = new Letter(0);
 				this.logoMesh.add(mesh);
 			}
 		}
 
-		// for (let i = 0; i < this.logoMesh.children.length; i++) {
-		// 	this.logoMesh.children[i].rotation.x += -i * 0.4;
-		// }
+
+
+		for (let i = 0; i < this.logoMesh.children.length; i++) {
+			if (this.logoMesh.children[i - 1]) {
+				this.logoMesh.children[i].constraint = new RotationConstraint(
+					this.logoMesh.children[i].letter,
+					this.logoMesh.children[i - 1].letter,
+					0.01
+				);
+			}
+		}
 
 		this.logoMesh.rotation.z = 0.2;
 		this.logoMesh.rotation.y += 0.5;
@@ -243,19 +290,34 @@ class WebGLTransitioner extends Transitioner {
 	ease(t) {
 		return t*t;
 	}
-	update(target, mouse) {
+	update(target, mouse, scrollDelta) {
 		super.update(target);
 		this.tick += 0.5;
+		this.freescroll *= 0.95;
 		// const rotationby = 0.01 * (1-this.progress);
 		// console.log(target);
 
-		this.rotationOffset += ((mouse.down ? 0 : 1) - this.rotationOffset) * 0.15;
+		// this.rotationOffset += ((mouse.down ? 0 : 1) - this.rotationOffset) * 0.15;
 
 		// this.rotationOffset = this.ease(this.rotationOffset);
 
 		for (let i = 0; i < this.logoMesh.children.length; i++) {
-			this.logoMesh.children[i].rotation.x = (i * (this.rotationOffset * -0.4)) + ((this.tick * 0.01) % Math.PI * 2 * this.rotationOffset) + Math.PI;
-			this.logoMesh.children[i].rotation.x += mouse.distanceend * 0.001;
+			if (i === 0) {
+				if (mouse.down) {
+					this.logoMesh.children[i].letter.accelerate(mouse.distanceend * 0.0001);
+					this.freescroll = 10000;
+				} else if (this.freescroll < 1) {
+					this.logoMesh.children[i].letter.accelerate(-Math.sin(Math.PI * 0.25 * this.tick * 0.01)*0.01);
+				}
+			}
+			this.logoMesh.children[i].letter.accelerate(-scrollDelta * 0.0005);
+			this.logoMesh.children[i].letter.simulate(1);
+			if (this.logoMesh.children[i].constraint) {
+				this.logoMesh.children[i].constraint.solve(1);
+			}
+			this.logoMesh.children[i].rotation.x = Math.PI + this.logoMesh.children[i].letter.rotation;
+			// this.logoMesh.children[i].rotation.x = (i * (this.rotationOffset * -0.4)) + ((this.tick * 0.01) % Math.PI * 2 * this.rotationOffset) + Math.PI;
+			// this.logoMesh.children[i].rotation.x += mouse.distanceend * 0.001;
 		}
 
 		// this.uniforms.time.value += 0.05;
