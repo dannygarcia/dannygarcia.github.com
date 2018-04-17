@@ -130,7 +130,7 @@ class WebGLTransitioner extends Transitioner {
 		this.random = Math.random() * 100;
 		this.tick = 0;
 		this.rotationOffset = 0;
-		this.freescroll = 1000;
+		this.freescroll = 500;
 
 		// Camera
 
@@ -142,7 +142,7 @@ class WebGLTransitioner extends Transitioner {
 			1, 1000);
 
 		this.camera.position.set(0, 400, 700);
-		this.camera.target = new THREE.Vector3(0, 150, 0);
+		this.camera.target = new THREE.Vector3(0, 0, 0);
 
 		// Scene
 
@@ -151,37 +151,44 @@ class WebGLTransitioner extends Transitioner {
 
 		// Lights
 
-		const directionalLight = new THREE.DirectionalLight(0xffffff, 0.125);
-		directionalLight.position.set(0, 0, 1).normalize();
+		this.directionalLight = new THREE.DirectionalLight(0xffffff, 0);
+		// this.directionalLight = new THREE.DirectionalLight(0xffffff, 0.125);
+		this.directionalLight.position.set(0, 0, 1).normalize();
 
-		this.scene.add(directionalLight);
+		this.scene.add(this.directionalLight);
 
 		// Materials
 
-		// this.uniforms = {
-		// 	color: { value: new THREE.Color() },
-		// 	time: { value: 1 },
-		// 	resolution: { value: new THREE.Vector2() },
-		// 	rtime: { value: 1 + this.random }
-		// };
+		this.uniforms = {
+			color: { value: new THREE.Color(0x000000) },
+			time: { value: 1 },
+			resolution: { value: new THREE.Vector2(this.width, this.height) },
+			rtime: { value: 1 + this.random }
+		};
 
-		// const fancyMaterial = new THREE.ShaderMaterial({
-		// 	side: THREE.DoubleSide,
-		// 	wireframe: false,
-		// 	uniforms: this.uniforms,
-		// 	vertexShader: `
-		// 		void main() {
-		// 			gl_Position = vec4(position, 1.0);
-		// 		}`,
-		// 	fragmentShader: `
-		// 		uniform float time;
-		// 		uniform vec2 resolution;
-		// 		uniform vec4 color;
-		// 		void main() {
-		// 			gl_FragColor = vec4(1.);
-		// 		}
-		// 	`
-		// });
+		const fancyMaterial = new THREE.ShaderMaterial({
+			side: THREE.DoubleSide,
+			wireframe: false,
+			uniforms: this.uniforms,
+			vertexShader: `
+				uniform float time;
+				void main() {
+					gl_Position = vec4(position.x, position.y, sin(time), 1.0);
+				}`,
+			fragmentShader: `
+				uniform float time;
+				uniform vec2 resolution;
+				uniform vec4 color;
+				void main() {
+					gl_FragColor = vec4(vec3(0.8), 1.0);
+				}
+			`
+		});
+		const fancyMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.1), fancyMaterial);
+		fancyMesh.frustumCulled = false;
+		window.fancyMesh = fancyMesh;
+
+		// this.scene.add(fancyMesh);
 
 		// Text Group
 
@@ -247,8 +254,10 @@ class WebGLTransitioner extends Transitioner {
 		copyShader.renderToScreen = true;
 		const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(this.width/4, this.height/4), 1.7, 0.7, 0.0);
 		this.composer = new THREE.EffectComposer(this.renderer);
+		const fxaaPass = new THREE.ShaderPass(threeShaderFXAA({resolution: new THREE.Vector2(this.width, this.height)}));
 		this.composer.addPass(renderScene);
 		this.composer.addPass(bloomPass);
+		this.composer.addPass(fxaaPass);
 		this.composer.addPass(copyShader);
 		this.renderer.gammaInput = true;
 		this.renderer.gammaOutput = true;
@@ -265,7 +274,7 @@ class WebGLTransitioner extends Transitioner {
 	updateRenderer() {
 		if (this.camera) {
 			// const cameraScale = THREE.Math.lerp(this.width/400, 0, 1);
-			const cameraScale = 1;
+			const cameraScale = 0.5;
 			// console.log(cameraScale);
 			this.camera.left = (this.width / -2) * cameraScale;
 			this.camera.right = (this.width / 2) * cameraScale;
@@ -274,7 +283,7 @@ class WebGLTransitioner extends Transitioner {
 			this.camera.updateProjectionMatrix();
 		}
 		if (this.textGroup) {
-			this.textGroup.position.y = 550;
+			this.textGroup.position.y = 500;
 		}
 		if (this.renderer) {
 			this.renderer.setSize(this.width, this.height);
@@ -297,15 +306,20 @@ class WebGLTransitioner extends Transitioner {
 		// const rotationby = 0.01 * (1-this.progress);
 		// console.log(target);
 
+		this.directionalLight.intensity = Math.map(Math.clamp(this.tick, 0, 50), 0, 50, 0, 0.130);
+		this.directionalLight.position.set(0, Math.map(Math.clamp(this.tick, 0, 40), 0, 40, -1, 0), 1).normalize();
+		// this.logoMesh.children[0].letter.accelerate(Math.map(Math.clamp(this.tick, 0, 50), 0, 50, 0.05, 0));
+
 		// this.rotationOffset += ((mouse.down ? 0 : 1) - this.rotationOffset) * 0.15;
 
 		// this.rotationOffset = this.ease(this.rotationOffset);
 
 		for (let i = 0; i < this.logoMesh.children.length; i++) {
+			// this.logoMesh.children[i].position.y = Math.map(Math.lerp(Math.clamp(this.tick, 0, 50), 0, 1), 0, 50, -50 * i, 0);
 			if (i === 0) {
 				if (mouse.down) {
 					this.logoMesh.children[i].letter.accelerate(mouse.distanceend * 0.0001);
-					this.freescroll = 10000;
+					this.freescroll = 8000;
 				} else if (this.freescroll < 1) {
 					this.logoMesh.children[i].letter.accelerate(-Math.sin(Math.PI * 0.25 * this.tick * 0.01)*0.01);
 				}
@@ -320,7 +334,9 @@ class WebGLTransitioner extends Transitioner {
 			// this.logoMesh.children[i].rotation.x += mouse.distanceend * 0.001;
 		}
 
-		// this.uniforms.time.value += 0.05;
+		this.uniforms.time.value += 0.05;
+		// console.log(Math.sin(this.uniforms.time.value));
+
 		// this.uniforms.rtime.value = this.uniforms.time.value + this.random;
 		// this.uniforms.color.value = [
 		// 	Math.cos(this.uniforms.time.value),
