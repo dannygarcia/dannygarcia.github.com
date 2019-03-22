@@ -80,11 +80,22 @@ main {
 /*     padding: var(--space); */
     padding-top: var(--space);
     padding-bottom: var(--space);
-    outline: 1px solid margin;
+    /* outline: 1px solid margin; */
+}
+
+.section-header:after {
+	content: "";
+	position: fixed;
+	top: calc(var(--space));
+	right: calc(var(--space));
+	bottom: calc(var(--space));
+	left: calc(var(--space));
+	border: 3px solid var(--swatch-copy);
+	pointer-events: none;
 }
 
 #playground, #playground canvas {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
     width: 100% !important; /* overwrites fixed dimensions set inline by three.js */
@@ -150,7 +161,7 @@ h1 + p {
 
 hr {
     border: none;
-    border-top: 2px solid var(--swatch-lowlight);
+	border-top: 3px solid var(--swatch-copy);
 }
 
 footer {

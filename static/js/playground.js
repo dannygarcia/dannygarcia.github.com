@@ -141,8 +141,9 @@ class WebGLTransitioner extends Transitioner {
 			this.height / -2,
 			1, 1000);
 
-		this.camera.position.set(0, 400, 700);
+		this.camera.position.set(0, 500, 700);
 		this.camera.target = new THREE.Vector3(0, 0, 0);
+		this.camera.zoom = 2;
 
 		// Scene
 
