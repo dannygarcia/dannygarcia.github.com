@@ -89,18 +89,20 @@ void main() {
 class Letter {
 	constructor(rotation) {
 		this.rotation = rotation || 0;
-		this.previous = this.rotation;
-		this.accelration = 0;
+		this.scale = 0;
+		this.previousRotation = this.rotation;
+		this.acceleration = 0;
 	}
 	accelerate(degrees) {
-		this.accelration += degrees;
+		this.acceleration += degrees;
 	}
 	simulate(delta) {
-		this.accelration *= delta;
-		const rotation = ((this.rotation - this.previous) * 0.9) + this.accelration;
-		this.previous = this.rotation;
+		this.scale += (1 - this.scale) * .02 * delta;
+		this.acceleration *= delta;
+		const rotation = ((this.rotation - this.previousRotation) * 0.9) + this.acceleration;
+		this.previousRotation = this.rotation;
 		this.rotation += rotation;
-		this.accelration = 0;
+		this.acceleration = 0;
 	}
 }
 
@@ -314,7 +316,7 @@ class WebGLTransitioner extends Transitioner {
 	update(target, mouse, scrollDelta) {
 		super.update(target);
 		this.tick += 0.5;
-		this.freescroll *= 0.95;
+		this.freescroll *= 0.90;
 		// const rotationby = 0.01 * (1-this.progress);
 		// console.log(target);
 
@@ -333,8 +335,8 @@ class WebGLTransitioner extends Transitioner {
 					this.logoMesh.children[i].letter.accelerate(mouse.distanceend * 0.0001);
 					this.freescroll = 8000;
 				} else if (this.freescroll < 1) {
-					this.logoMesh.children[i].letter.accelerate(-Math.sin(Math.PI * 0.25 * this.tick * 0.01)*0.01);
 				}
+				this.logoMesh.children[i].letter.accelerate((-Math.sin(Math.PI * 0.25 * this.tick * 0.01)*0.01) * this.logoMesh.children[i].letter.scale);
 			}
 			this.logoMesh.children[i].letter.accelerate(-scrollDelta * 0.0005);
 			this.logoMesh.children[i].letter.simulate(1);
@@ -342,6 +344,8 @@ class WebGLTransitioner extends Transitioner {
 				this.logoMesh.children[i].constraint.solve(1);
 			}
 			this.logoMesh.children[i].rotation.x = Math.PI + this.logoMesh.children[i].letter.rotation;
+			// let scale = (Math.sin(this.logoMesh.children[i].letter.rotation) + 1) / 2;
+			this.logoMesh.children[i].scale.set(this.logoMesh.children[i].letter.scale, this.logoMesh.children[i].letter.scale, this.logoMesh.children[i].letter.scale);
 			// this.logoMesh.children[i].rotation.x = (i * (this.rotationOffset * -0.4)) + ((this.tick * 0.01) % Math.PI * 2 * this.rotationOffset) + Math.PI;
 			// this.logoMesh.children[i].rotation.x += mouse.distanceend * 0.001;
 		}
