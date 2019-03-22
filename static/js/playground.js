@@ -7,7 +7,7 @@ const logo = {
 		"M394.725,96.248 l6.083-28.66 L382.997,5.752 h27.845 l7.839,35.935 h1.255 l23.016-35.935 h28.472 l-44.024,61.835 l-6.084,28.66 H394.725 Z"
 	],
 	amounts: [30,30,30,30,30],
-	colors: [0x333333,0x333333,0x333333,0x333333,0x333333],
+	colors: [0x111111,0x111111,0x111111,0x111111,0x111111],
 	center: {x: 240, y: 50}
 };
 
@@ -151,11 +151,13 @@ class WebGLTransitioner extends Transitioner {
 
 		// Lights
 
-		this.directionalLight = new THREE.DirectionalLight(0xffffff, 0);
+		this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 		// this.directionalLight = new THREE.DirectionalLight(0xffffff, 0.125);
-		this.directionalLight.position.set(0, 0, 1).normalize();
+		this.directionalLight.position.set(100, 20, 100);
 
 		this.scene.add(this.directionalLight);
+
+		this.scene.add( new THREE.AmbientLight( 0x000000 ) );
 
 		// Materials
 
@@ -200,9 +202,12 @@ class WebGLTransitioner extends Transitioner {
 			let path = THREE.transformSVGPath(logo.paths[i]);
 			let color = new THREE.Color(logo.colors[i]);
 			let material = new THREE.MeshStandardMaterial( {
-				color: color,
-				metalness: 1.18
+				color: 0x0,
+				metalness: 1.0,
+				roughness: .24
 			});
+			material.shading = THREE.SmoothShading;
+			// material = new THREE.MeshNormalMaterial();
 			// let material = new THREE.MeshLambertMaterial({
 			// 	color: color,
 			// 	emissive: color
@@ -213,10 +218,14 @@ class WebGLTransitioner extends Transitioner {
 			for (let j = 0; j < geometry.length; j++) {
 				let extrudedGeometry = new THREE.ExtrudeGeometry(geometry[j], {
 					amount: amount,
-					bevelEnabled: false
+					bevelEnabled: true,
+					bevelThickness: 1,
+					bevelSize: 1,
+					bevelSegments: 1
 				});
 
 				extrudedGeometry.translate(-logo.center.x,-logo.center.y,-amount/2);
+				// extrudedGeometry.computeVertexNormals(true);
 				let mesh = new THREE.Mesh(extrudedGeometry, material);
 				mesh.rotation.x = Math.PI;
 				mesh.letter = new Letter(0);
@@ -244,6 +253,8 @@ class WebGLTransitioner extends Transitioner {
 
 		this.scene.add(this.textGroup);
 
+		// this.directionalLight.target = this.logoMesh;
+
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.toneMapping = THREE.LinearToneMapping;
 		this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -252,7 +263,7 @@ class WebGLTransitioner extends Transitioner {
 		const renderScene = new THREE.RenderPass(this.scene, this.camera);
 		const copyShader = new THREE.ShaderPass(THREE.CopyShader);
 		copyShader.renderToScreen = true;
-		const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(this.width/4, this.height/4), 1.7, 0.7, 0.0);
+		const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(this.width/4, this.height/4), 1.25, 0.5, 0.0);
 		this.composer = new THREE.EffectComposer(this.renderer);
 		const fxaaPass = new THREE.ShaderPass(threeShaderFXAA({resolution: new THREE.Vector2(this.width, this.height)}));
 		this.composer.addPass(renderScene);
@@ -306,8 +317,8 @@ class WebGLTransitioner extends Transitioner {
 		// const rotationby = 0.01 * (1-this.progress);
 		// console.log(target);
 
-		this.directionalLight.intensity = Math.map(Math.clamp(this.tick, 0, 50), 0, 50, 0, 0.130);
-		this.directionalLight.position.set(0, Math.map(Math.clamp(this.tick, 0, 40), 0, 40, -1, 0), 1).normalize();
+		// this.directionalLight.intensity = Math.map(Math.clamp(50, 0, 50), 0, 50, 0, 0.130);
+		// this.directionalLight.position.set(0, Math.map(Math.clamp(50, 0, 40), 0, 40, -1, 0), 1).normalize();
 		// this.logoMesh.children[0].letter.accelerate(Math.map(Math.clamp(this.tick, 0, 50), 0, 50, 0.05, 0));
 
 		// this.rotationOffset += ((mouse.down ? 0 : 1) - this.rotationOffset) * 0.15;
