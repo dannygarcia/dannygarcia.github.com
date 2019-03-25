@@ -94,7 +94,7 @@ const raf = () => {
 	lastScrollY = scrollY;
 };
 
-if (!matchMedia('(prefers-reduced-motion)').matches) {
+if (!matchMedia('(prefers-reduced-motion)').matches && transitions.length > 0) {
 	raf();
 
 	addEventListener('resize', () => {

@@ -145,7 +145,7 @@ class WebGLTransitioner extends Transitioner {
 
 		this.camera.position.set(0, 500, 700);
 		this.camera.target = new THREE.Vector3(0, 0, 0);
-		this.camera.zoom = 2;
+		// this.camera.zoom = 2;
 
 		// Scene
 
@@ -288,8 +288,9 @@ class WebGLTransitioner extends Transitioner {
 	updateRenderer() {
 		if (this.camera) {
 			// const cameraScale = THREE.Math.lerp(this.width/400, 0, 1);
-			const cameraScale = 0.5;
-			// console.log(cameraScale);
+			// const cameraScale = Math.min(this.width, this.height)/400;
+			const cameraScale = .25;
+			// console.log(cameraScale, this.width, this.width / 400);
 			this.camera.left = (this.width / -2) * cameraScale;
 			this.camera.right = (this.width / 2) * cameraScale;
 			this.camera.top = (this.height / 2) * cameraScale;
