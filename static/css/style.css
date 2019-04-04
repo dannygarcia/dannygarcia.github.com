@@ -157,11 +157,30 @@ main {
 }
 
 p {
-    margin-bottom: var(--space);
     margin-top: var(--space);
+    margin-bottom: var(--space);
 }
 
-h1 + p {
+table {
+    table-layout: auto;
+    margin-top: calc(var(--space) / 2);
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+table .title {
+	opacity: .5;
+}
+
+td p {
+    margin-top: calc(var(--space) / 2);
+    margin-bottom: 0;
+}
+
+h1 + p,
+p + p,
+table + p {
     margin-top: calc(var(--space) / 2);
 }
 
@@ -173,6 +192,28 @@ hr {
 footer {
     color: var(--swatch-lowlight);
     margin-bottom: 2em;
+}
+
+.button {
+	text-align: center;
+	width: 100%;
+	display: inline-block;
+	margin: 0 auto;
+	/* background: var(--swatch-lowlight); */
+	border: 2px solid var(--swatch-copy);
+	background-color: rgba(0,0,0,0);
+	color: var(--swatch-copy);
+	padding: .25em 1em .3em;
+	border-radius: 100px;
+	transition-property: color, border-color, background-color;
+	transition-duration: 600ms;
+	transition-timing-function: var(--ease);
+}
+
+.button:hover {
+	text-decoration: none;
+	background-color: var(--swatch-copy);
+	color: var(--swatch-background);
 }
 
 .tin-swipe,

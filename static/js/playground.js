@@ -224,7 +224,7 @@ class WebGLTransitioner extends Transitioner {
 					bevelEnabled: true,
 					bevelThickness: 1,
 					bevelSize: 1,
-					bevelSegments: 1
+					bevelSegments: 12
 				});
 
 				extrudedGeometry.translate(-logo.center.x,-logo.center.y,-amount/2);
