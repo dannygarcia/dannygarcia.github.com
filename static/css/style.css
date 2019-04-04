@@ -171,6 +171,8 @@ table {
 
 table .title {
 	opacity: .5;
+	padding: 0 calc(var(--space) / 4);
+	font-size: .75em;
 }
 
 td p {
