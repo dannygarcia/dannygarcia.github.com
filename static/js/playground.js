@@ -175,23 +175,38 @@ class WebGLTransitioner extends Transitioner {
 			side: THREE.DoubleSide,
 			wireframe: false,
 			uniforms: this.uniforms,
-			vertexShader: `
-				uniform float time;
-				void main() {
-					gl_Position = vec4(position.x, position.y, sin(time), 1.0);
-				}`,
+			// vertexShader: `
+			// 	uniform float time;
+			// 	void main() {
+			// 		gl_Position = vec4(position.x, position.y, sin(time), 1.0);
+			// 	}`,
 			fragmentShader: `
 				uniform float time;
 				uniform vec2 resolution;
 				uniform vec4 color;
+
+				float plot(vec2 st, float pct){
+					return  smoothstep( pct-0.02, pct, st.y) -
+							smoothstep( pct, pct+0.02, st.y);
+				  }
+
 				void main() {
-					gl_FragColor = vec4(vec3(0.8), 1.0);
+					vec2 st = gl_FragCoord.xy/resolution;
+
+					float y = pow(st.x,5.0);
+
+					vec3 color = vec3(y);
+
+					float pct = plot(st,y);
+					color = (1.0-pct)*color+pct*vec3(0.0,1.0,0.0);
+
+					gl_FragColor = vec4(color, 1.0);
 				}
 			`
 		});
 		const fancyMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.1), fancyMaterial);
 		fancyMesh.frustumCulled = false;
-		window.fancyMesh = fancyMesh;
+		// window.fancyMesh = fancyMesh;
 
 		// this.scene.add(fancyMesh);
 
@@ -209,7 +224,8 @@ class WebGLTransitioner extends Transitioner {
 				metalness: 1.0,
 				roughness: .24
 			});
-			material.shading = THREE.SmoothShading;
+			// material = fancyMaterial;
+			// material.shading = THREE.SmoothShading;
 			// material = new THREE.MeshNormalMaterial();
 			// let material = new THREE.MeshLambertMaterial({
 			// 	color: color,
