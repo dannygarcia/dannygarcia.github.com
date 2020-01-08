@@ -163,23 +163,20 @@ var CustomMeshPhysicalShader = {
 	void main() {
 	
 		// vec3 c = (1.-(smoothstep(0.49,.50,sin(uTime * 20. + (vPosition.z * 3.)*3.)*.75) - vec3(0.)));
+
 		// c = mix(vec3(.1), diffuse, c);
 		// c = diffuse;
-		float timeOffset = uTime + uRandom * 10000.;
-		vec3 c = 0.5 + 0.5*cos(timeOffset+vPosition+vec3(0,2,4)); // from starting shadertoy
-		// float depthFactor = clamp(-vViewPosition.z + 51., 0., 1.);
+		float timeOffset = uTime + uRandom;
+		vec3 c = 0.5 + 0.5*cos(timeOffset+vPosition.xyz+vec3(0.,2.,4.)); // from starting shadertoy
+		//gl_FragColor = vec4(vec3(cos(timeOffset+vPosition)), 1.); return;
 		float cameraDistance = 30.;
 		float depthFactor = smoothstep(0., 1., -vViewPosition.z + cameraDistance + 2.);
-		//depthFactor = map(depthFactor, 0.,1.,0.1,1.);
-		// orthographic depth
-		// float depthFactor = smoothstep(-2., 1., vViewPosition.z);
-		//depthFactor = map(depthFactor, 0.,1.,0.1,1.);
 		c = mix(vec3(0.058, 0.058, 0.062),c, depthFactor); // apply depth factor
 		c = mix(vec3(0.),c, smoothstep(0., 0.5, uScale)); // darker when small
 
-		vec4 diffuseColor = vec4( c, opacity );
+		vec4 diffuseColor = vec4( clamp(c, 0., 1.), opacity );
 		ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
-		vec3 totalEmissiveRadiance = emissive + (c * .5);
+		vec3 totalEmissiveRadiance = emissive + (c * .65);
 	
 		// <map_fragment>
 		#include <map_fragment>
@@ -188,7 +185,7 @@ var CustomMeshPhysicalShader = {
 		//<alphatest_fragment>
 		#include <roughnessmap_fragment>
 		diffuseColor += roughnessFactor * .1;
-		roughnessFactor = map(roughnessFactor, 0., 1., 0., 0.8);
+		roughnessFactor = clamp(map(roughnessFactor, 0., 1., 0., 0.8), 0.3, 1.);
 		#include <metalnessmap_fragment>
 		#include <normal_fragment_begin>
 		#include <normal_fragment_maps>

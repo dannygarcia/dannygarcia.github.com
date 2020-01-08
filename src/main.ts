@@ -15,6 +15,7 @@ import { ACESFilmicToneMapping } from 'three/src/constants.js';
 // import { FresnelShader } from 'three/examples/jsm/shaders/FresnelShader.js';
 
 // const sphereVert = require('./shaders/sphere.vert').default;
+const RAD2DEG = 180 / Math.PI;
 const shaders = {
     physical: require('./shaders/custom_meshphysical.glsl.js').CustomMeshPhysicalShader
     // glowy: require('./shaders/sphere-glowy.frag').default,
@@ -399,8 +400,12 @@ topLight.shadow.camera.far = 8;
 let timeSinceLast = 0;
 let maxTime = 10;
 var doc = document.documentElement;
+var cachedClientHeight = doc.clientHeight;
+var cachedScrollHeight = doc.scrollHeight;
 
-var scrollPercent = doc.scrollTop / (doc.scrollHeight - doc.clientHeight);
+var scrollPercent = 0;
+var targetScollPercent = doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
+
 var animate = function () {
     timeSinceLast++;
     requestAnimationFrame( animate );
@@ -414,8 +419,10 @@ var animate = function () {
         s.update();
     });
     
-    scrollPercent = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight));
-    spheresCenter.rotation.x = scrollPercent;
+    targetScollPercent = (doc.scrollTop / (cachedScrollHeight - cachedClientHeight));
+    scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
+    spheresCenter.rotation.x = scrollPercent * 2;
+
     
     renderer.render( scene, camera );
 };
@@ -425,10 +432,9 @@ updateWorker();
 
 window.onresize = function() {
     var windowAspect = window.innerWidth / window.innerHeight;
-    // camera.left = - frustumSize * windowAspect / 2;
-    // camera.right = frustumSize * windowAspect / 2;
-    // camera.top = frustumSize / 2;
-    // camera.bottom = - frustumSize / 2;
+    cachedClientHeight = doc.clientHeight;
+    cachedScrollHeight = doc.scrollHeight;
+    // camera.fov = (Math.atan(window.innerHeight / 2 / camera.position.z) * 2 * RAD2DEG) * .1;
     camera.aspect = windowAspect;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
