@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "es6",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "rootDir": "./src",
+        "outDir": "./build"
+    },
+    "compileOnSave": true,
+    "buildOnSave": false,
+    "exclude": [
+        "node_modules"
+    ]
+}

@@ -1,0 +1,217 @@
+/* CSS Mini Reset */
+html, body, div, form, fieldset, legend, label { margin: 0; padding: 0;  }
+table { border-collapse: collapse; border-spacing: 0; }
+th, td { text-align: left; vertical-align: top; }
+h1, h2, h3, h4, h5, h6, th, td, caption { font-weight:normal; }
+img { border: 0; }
+
+/* Site Styles */
+
+:root {
+    --c-primary: #D2D2D2;
+    --c-secondary: rgba(200,200,200,.85);
+    --c-tertiary: hsla(88, 12%, 40%, 1);
+
+    --v-space: 6rem;
+    --canvas-height: 80vh;
+    --f-weight: 600;
+}
+
+html {
+    font-size: 16px;
+    line-height: 1.5;
+    background: rgb(15, 15, 16);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    color: var(--c-secondary);
+    box-sizing: border-box;
+}
+
+.canvas-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+a {
+    color: var(--c-primary);
+    text-decoration: none;
+    font-weight: var(--f-weight);
+}
+
+main {
+    /* visibility: hidden; */
+    display: grid;
+    grid-template-columns: 1fr 6fr 4fr 1fr;
+    grid-template-rows: 1fr 3fr auto;
+    grid-template-areas:
+        ". header header ."
+        ". intro . ."
+        "timeline timeline timeline timeline"
+        "footer footer footer footer";
+}
+
+.logo {
+    margin: var(--v-space) 0 0 0;
+    opacity: 0;
+    will-change: opacity;
+
+    grid-area: header;
+    align-self: end;
+}
+.no-js .logo { opacity: 1; }
+
+.loaded .logo {
+    animation-name: fadeIn;
+    animation-duration: 2s;
+    animation-delay: .25s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+}
+
+.logo a {
+    font-size: 6.5rem;
+    font-weight: 700;
+    line-height: 0.65;
+}
+
+.type-primary {
+    font-weight: var(--f-weight);
+    font-size: 3rem;
+    line-height: 1.4;
+}
+
+.intro {
+    z-index: 2;
+    opacity: 0;
+    will-change: opacity;
+    margin: var(--v-space) 0;
+
+    grid-area: intro;
+    align-self: end;
+}
+.no-js .intro { opacity: 1; }
+
+.loaded .intro {
+    animation-name: fadeIn;
+    animation-duration: 2.2s;
+    animation-delay: .5s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+}
+
+.timeline {
+    z-index: 2;
+    background: hsla(150, 17%, 11%, .5);
+    backdrop-filter: saturate(180%) blur(40px);
+    -webkit-backdrop-filter: saturate(180%) blur(40px);
+
+    grid-area: timeline;
+}
+
+.timeline-entry {
+    z-index: 1;
+    position: relative;
+    padding: var(--v-space) 0;
+
+    display: grid;
+    grid-template-columns: 1fr 5fr 5fr 1fr;
+    grid-template-rows: 1fr auto;
+    grid-template-areas:
+        ". hr hr ."
+        ". co description .";
+}
+
+.timeline-entry + .timeline-entry {
+    padding-top: 0;
+}
+
+.timeline-entry hr {
+    grid-area: hr;
+    margin: 0;
+    width: 100%;
+    border: none;
+    border-top: 4px solid var(--c-secondary);
+}
+
+.timeline-co {
+    margin: calc(var(--v-space) * .5) 0 0;
+    grid-area: co;
+}
+
+.timeline-co a {
+    color: var(--c-primary);
+}
+
+.timeline-time {
+    display: block;
+}
+
+.timeline-description {
+    margin: calc(var(--v-space) * .5) 0 0;
+    font-weight: var(--f-weight);
+    font-size: 1.5rem;
+    line-height: 1.4;
+
+    grid-area: description;
+}
+
+footer {
+    grid-area: footer;
+
+    display: grid;
+    grid-template-columns: 1fr 5fr 5fr 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas:
+        ". p p ."
+}
+
+footer p {
+    z-index: 1;
+    padding: var(--v-space) 0;
+    font-weight: var(--f-weight);
+    font-size: 1.5rem;
+    line-height: 1.4;
+
+    grid-area: p;
+}
+
+@media only screen and (max-width: 834px) {
+    :root {
+        --v-space: 4rem;
+    }
+    html {
+        font-size: 14px;
+    }
+    main {
+        grid-template-columns: 1fr 8fr 2fr 1fr;
+    }
+}
+
+@media only screen and (max-width: 736px) {
+    :root {
+        --v-space: 3rem;
+    }
+    html {
+        font-size: 12px;
+    }
+    main {
+        grid-template-columns: 1fr 10fr 0fr 1fr;
+    }
+    .timeline-entry {
+        grid-template-columns: 1fr 5fr 5fr 1fr;
+        grid-template-rows: 1fr auto;
+        grid-template-areas:
+            ". hr hr ."
+            ". co co ."
+            ". description description .";
+    }
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
