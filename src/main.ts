@@ -29,6 +29,11 @@ const residueTextureNormal = textureLoader.load( "/src/images/scratches_n.jpg" )
 // residueTexture.repeat.set(0.5, 0.5);
 // residueTextureNormal.repeat.set(0.5, 0.5);
 
+const container = document.querySelector('.canvas-container') as HTMLElement;
+function getHeight() {
+    return container.offsetHeight;
+}
+
 interface Position {
     x: number,
     y: number,
@@ -285,7 +290,7 @@ function randomFrom(list: any[]): any {
 
 var scene = new Scene();
 // scene.overrideMaterial = new MeshDepthMaterial();
-var camera = new PerspectiveCamera( 10, window.innerWidth / window.innerHeight, 20, 40 );
+var camera = new PerspectiveCamera( 10, window.innerWidth / getHeight(), 20, 40 );
 camera.position.z = 30;
 
 var renderer = new WebGLRenderer({
@@ -295,7 +300,7 @@ var renderer = new WebGLRenderer({
     depth: false,
     antialias: false
 });
-renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setSize( window.innerWidth, getHeight() );
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = BasicShadowMap;
 renderer.toneMapping = ACESFilmicToneMapping;
@@ -305,8 +310,8 @@ renderer.physicallyCorrectLights = true;
 // renderer.context.disable(renderer.context.DEPTH_TEST);
 
 
-var container = document.querySelector('.canvas-container');
 container.appendChild( renderer.domElement );
+
 
 const physicsWorker = new Worker("/src/worker-physics.js");
 const dt = 1/60, N = 10;
@@ -431,13 +436,13 @@ animate();
 updateWorker();
 
 window.onresize = function() {
-    var windowAspect = window.innerWidth / window.innerHeight;
+    var windowAspect = window.innerWidth / getHeight();
     cachedClientHeight = doc.clientHeight;
     cachedScrollHeight = doc.scrollHeight;
-    // camera.fov = (Math.atan(window.innerHeight / 2 / camera.position.z) * 2 * RAD2DEG) * .1;
+    // camera.fov = (Math.atan(getHeight() / 2 / camera.position.z) * 2 * RAD2DEG) * .1;
     camera.aspect = windowAspect;
     camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize( window.innerWidth, getHeight() );
 };
 
 document.addEventListener('DOMContentLoaded', function() {
