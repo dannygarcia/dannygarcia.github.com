@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "test": "nil",
-    "build": "webpack --mode=production",
+    "build": "webpack --mode=development",
     "start": "webpack-dev-server --inline --open"
   },
   "author": "",
