@@ -80,7 +80,7 @@ self.onmessage = function(e) {
         let scale = scales[3*i+0];
         let age = scales[3*i+1];
         let life = scales[3*i+2];
-        scale = customCurve(age/life) * (life / 800);
+        scale = customCurve(age/life) * (1.-(life / 800));
         // increase age
         age++;
         // reset after death
