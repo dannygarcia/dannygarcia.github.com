@@ -164,12 +164,12 @@ footer {
 
     display: grid;
     grid-template-columns: 1fr 5fr 5fr 1fr;
-    grid-template-rows: 1fr;
+    grid-template-rows: auto;
     grid-template-areas:
         ". p p ."
 }
 
-footer p {
+footer .footer-content {
     z-index: 1;
     padding: var(--v-space) 0;
     font-weight: var(--f-weight);
