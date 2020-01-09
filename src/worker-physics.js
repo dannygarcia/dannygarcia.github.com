@@ -10,9 +10,15 @@ function random(min, max) {
     }
     return (Math.random() * (max - min) + min);
 }
-function pcurve(x, a, b) {
-    const k = Math.pow(a+b,a+b) / (Math.pow(a,a)*Math.pow(b,b));
-    return k * Math.pow( x, a ) * Math.pow( 1.0-x, b );
+
+function smoothstep(min, max, value) {
+    var x = Math.max(0, Math.min(1, (value-min)/(max-min)));
+    return x*x*(3 - 2*x);
+};
+
+function customCurve(x) {
+    const y = smoothstep(0., .15, x);
+    return y * (1. - Math.pow(Math.max(0., Math.abs(x) * 2. - 1.), 10.));
 }
 
 // setup world
@@ -74,7 +80,7 @@ self.onmessage = function(e) {
         let scale = scales[3*i+0];
         let age = scales[3*i+1];
         let life = scales[3*i+2];
-        scale = pcurve(age/life, .464, .176);
+        scale = customCurve(age/life) * (life / 800);
         // increase age
         age++;
         // reset after death
