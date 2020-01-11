@@ -86,7 +86,7 @@ main {
 }
 
 .intro {
-    z-index: 2;
+    /* z-index: 2; */
     opacity: 0;
     will-change: opacity;
     margin: var(--v-space) 0;
