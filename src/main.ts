@@ -1,21 +1,27 @@
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
-import { Object3D } from 'three/src/core/Object3D';
+import { Object3D } from 'three/src/core/Object3D.js';
 import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { UniformsUtils } from 'three/src/renderers/shaders/UniformsUtils.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
+import { Vector2 } from 'three/src/math/Vector2.js';
+import { Plane } from 'three/src/math/Plane';
 import { Mesh } from 'three/src/objects/Mesh.js';
 import { Scene } from 'three/src/scenes/Scene.js';
+import { Raycaster } from 'three/src/core/Raycaster.js';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
+import { CubeCamera } from 'three/src/cameras/CubeCamera.js';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight.js';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial.js';
+// import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial.js';
 import { IcosahedronBufferGeometry } from 'three/src/geometries/IcosahedronGeometry';
 import { BasicShadowMap } from 'three/src/constants.js';
 import { ACESFilmicToneMapping } from 'three/src/constants.js';
-// import { FresnelShader } from 'three/examples/jsm/shaders/FresnelShader.js';
+// import { Material } from 'cannon';
+import { FresnelShader } from 'three/examples/jsm/shaders/FresnelShader.js';
 
 // const sphereVert = require('./shaders/sphere.vert').default;
-const RAD2DEG = 180 / Math.PI;
+// const RAD2DEG = 180 / Math.PI;
 const shaders = {
     physical: require('./shaders/custom_meshphysical.glsl.js').CustomMeshPhysicalShader
     // glowy: require('./shaders/sphere-glowy.frag').default,
@@ -59,16 +65,17 @@ interface Skin {
 //     fragment: string = FresnelShader.fragmentShader;
 //     vertex: string = FresnelShader.vertexShader;
 //     camera = new CubeCamera( .1, 10, 256 * 4 );
-//     material: Material;
+//     material: ShaderMaterial;
 
 //     constructor(renderer: WebGLRenderer, scene: Scene) {
 //         this.renderer = renderer;
 //         this.scene = scene;
+//         // uniforms = UniformsUtils.clone( FresnelShader.uniforms );
 //         this.uniforms["tCube"].value = this.camera.renderTarget.texture;
 //         this.material = new ShaderMaterial({
 //             uniforms: 		this.uniforms,
-//             vertexShader:   this.vertex,
-//             fragmentShader: this.fragment
+//             vertexShader:   FresnelShader.vertexShader,
+//             fragmentShader: FresnelShader.fragmentShader
 //         });
 //         scene.add(this.camera);
 //     }
@@ -358,7 +365,8 @@ function updateWorker() {
         dt: dt,
         positions: positions,
         quaternions: quaternions,
-        scales: scales
+        scales: scales,
+        mouse: move.position
     },[positions.buffer, quaternions.buffer, scales.buffer]);
     create = false;
 }
@@ -408,6 +416,55 @@ var doc = document.documentElement;
 var cachedClientHeight = doc.clientHeight;
 var cachedScrollHeight = doc.scrollHeight;
 
+// mouse intersect plane data
+const planeNormal = new Vector3(0, 0, 1);
+const plane = new Plane(planeNormal, 0);
+
+const raycaster = new Raycaster();
+let mouse = new Vector2();
+let cubeCamera = new CubeCamera( 0.4, 10, 256 );
+// let moveMaterial = new MeshPhysicalMaterial({
+//     metalness: 1,
+//     envMap: cubeCamera.renderTarget.texture
+// });
+var fresnelFragment = [
+
+    "uniform samplerCube tCube;",
+
+    "varying vec3 vReflect;",
+    "varying vec3 vRefract[3];",
+    "varying float vReflectionFactor;",
+
+    "void main() {",
+
+    "	vec4 reflectedColor = textureCube( tCube, vec3( vReflect.x, vReflect.yz ) );",
+    "	vec4 refractedColor = vec4( 1.0 );",
+
+    "	refractedColor.r = textureCube( tCube, vec3( -vRefract[0].x, vRefract[0].yz ) ).r;",
+    "	refractedColor.g = textureCube( tCube, vec3( -vRefract[1].x, vRefract[1].yz ) ).g;",
+    "	refractedColor.b = textureCube( tCube, vec3( -vRefract[2].x, vRefract[2].yz ) ).b;",
+
+    "	gl_FragColor = mix( refractedColor, reflectedColor, clamp( vReflectionFactor, 0.0, 1.0 ) );",
+    "   gl_FragColor.a = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.;",
+
+    "}"
+
+].join( "\n" );
+
+var fresnelUniforms = UniformsUtils.clone( FresnelShader.uniforms );
+fresnelUniforms["tCube"].value = cubeCamera.renderTarget.texture;
+let moveMaterial = new ShaderMaterial({
+    uniforms: 		fresnelUniforms,
+    vertexShader:   FresnelShader.vertexShader,
+    fragmentShader: fresnelFragment
+});
+
+let move = new Mesh(new IcosahedronBufferGeometry(1, 4), moveMaterial);
+// move.castShadow = true;
+// move.receiveShadow = true;
+// scene.add(move);
+
+// scrolling data
 var scrollPercent = 0;
 var targetScollPercent = doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
 
@@ -428,7 +485,11 @@ var animate = function () {
     scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
     spheresCenter.rotation.x = scrollPercent * 2;
 
-    
+    // cubeCamera.position.copy(move.position);
+    // cubeCamera.update(renderer, scene);
+    // moveMaterial.envMap = cubeCamera.renderTarget.texture;
+    // fresnelUniforms["tCube"].value = cubeCamera.renderTarget.texture;
+
     renderer.render( scene, camera );
 };
 
@@ -444,6 +505,13 @@ window.onresize = function() {
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, getHeight() );
 };
+
+window.onmousemove = function(e) {
+    mouse.setX((e.pageX / window.innerWidth) * 2 - 1);
+    mouse.setY((-(e.pageY / (window.innerHeight + window.scrollY)) * 2 + 1));
+    raycaster.setFromCamera(mouse, camera);
+    raycaster.ray.intersectPlane(plane, move.position);
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     document.documentElement.classList.add('loaded');

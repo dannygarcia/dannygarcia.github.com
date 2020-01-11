@@ -36,6 +36,15 @@ sphereMaterial.friction = 0;
 
 let spheres = [];
 
+// move config
+let moveBody = new CANNON.Body({
+    mass: sphereMass,
+    shape: new CANNON.Sphere(1),
+    position: new CANNON.Vec3(0,0,0),
+    fixedRotation: true
+});
+world.addBody(moveBody);
+
 function resetBody(body) {
     // random starting position
     body.position = new CANNON.Vec3(random(-.1,.1), random(-.1,.1), random(-.1,.1));
@@ -52,6 +61,19 @@ self.onmessage = function(e) {
     let positions = e.data.positions;
     let quaternions = e.data.quaternions;
     let scales = e.data.scales;
+
+    // this.console.log(e);
+
+    moveBody.position.x = e.data.mouse.x;
+    moveBody.position.y = e.data.mouse.y;
+    moveBody.position.z = e.data.mouse.z;
+
+    // moveBody.applyForce(
+    //     new CANNON.Vec3(
+    //         e.data.mouse.x * 7000,
+    //         e.data.mouse.y * 7000,
+    //         e.data.mouse.z * 7000),
+    //         worldPoint);
 
     if (e.data.create) {
         let i = spheres.length;
@@ -95,9 +117,9 @@ self.onmessage = function(e) {
         // move spheres to center
         body.applyForce(
             new CANNON.Vec3(
-                -body.position.x * 700,
-                -body.position.y * 700,
-                -body.position.z * 700),
+                (e.data.mouse.x - body.position.x) * 700,
+                (e.data.mouse.y - body.position.y) * 700,
+                (e.data.mouse.z - body.position.z) * 700),
                 worldPoint);
         // save data
         let p = body.position,
