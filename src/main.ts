@@ -321,7 +321,7 @@ container.appendChild( renderer.domElement );
 
 
 const physicsWorker = new Worker("/src/worker-physics.js");
-const dt = 1/60, N = 100;
+const dt = 1/60, N = 10;
 let positions = new Float32Array(N*3);
 let quaternions = new Float32Array(N*4);
 let scales = new Float32Array(N*3);
