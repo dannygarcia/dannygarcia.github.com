@@ -507,8 +507,6 @@ window.onresize = function() {
 };
 
 window.onpointermove = function(e) {
-    // console.log(e);
-    
     mouse.setX((e.pageX / window.innerWidth) * 2 - 1);
     mouse.setY((-(e.pageY / (window.innerHeight + window.scrollY)) * 2 + 1));
     raycaster.setFromCamera(mouse, camera);
