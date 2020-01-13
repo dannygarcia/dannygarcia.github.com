@@ -181,7 +181,8 @@ var CustomMeshPhysicalShader = {
 		//#include <roughnessmap_fragment>
 		// diffuseColor += roughnessFactor * .1;
 		//roughnessFactor = clamp(pow(roughnessFactor, 4.), 0.25, 1.);
-		float roughnessFactor = .3;
+		// float roughnessFactor = fbm3(vPosition.xyz);
+		float roughnessFactor = 0.30;
 		#include <metalnessmap_fragment>
 		#include <normal_fragment_begin>
 		#include <normal_fragment_maps>
