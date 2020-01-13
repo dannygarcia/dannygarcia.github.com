@@ -1,6 +1,6 @@
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
 import { Object3D } from 'three/src/core/Object3D.js';
-import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
+// import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { UniformsUtils } from 'three/src/renderers/shaders/UniformsUtils.js';
 import { Vector3 } from 'three/src/math/Vector3.js';
 import { Vector2 } from 'three/src/math/Vector2.js';
@@ -29,11 +29,11 @@ const shaders = {
     // normal: require('./shaders/sphere-normal.frag').default,
     // stripe: require('./shaders/sphere-stripe.frag').default
 };
-const textureLoader = new TextureLoader();
-const residueTexture = textureLoader.load( "/src/images/scratches-1.jpg" );
-const residueTextureNormal = textureLoader.load( "/src/images/scratches_n.jpg" );
-// residueTexture.repeat.set(0.5, 0.5);
-// residueTextureNormal.repeat.set(0.5, 0.5);
+// const textureLoader = new TextureLoader();
+// const residueTexture = textureLoader.load( "/src/images/scratches-2.jpg" );
+// const residueTextureNormal = textureLoader.load( "/src/images/scratches_n.jpg" );
+// residueTexture.repeat.set(0.01, 0.01);
+// residueTextureNormal.repeat.set(0.01, 0.01);
 
 const container = document.querySelector('.canvas-container') as HTMLElement;
 function getHeight() {
@@ -159,8 +159,8 @@ class PBRSkin implements Skin {
         this.scene = scene;
         this.uniforms[ 'diffuse' ].value = new Vector3( 0.98, 0.01, 0.05 );
         this.uniforms[ 'metalness' ].value = 0;
-        this.uniforms.roughnessMap.value = residueTexture;
-        this.uniforms.normalMap.value = residueTextureNormal;
+        // this.uniforms.roughnessMap.value = residueTexture;
+        // this.uniforms.normalMap.value = residueTextureNormal;
         this.uniforms.uTime = { value: 1.0 };
         this.uniforms.uRandom = { value: Math.random() };
         this.uniforms.uScale = { value: 0.001 };
@@ -297,7 +297,7 @@ function randomFrom(list: any[]): any {
 
 var scene = new Scene();
 // scene.overrideMaterial = new MeshDepthMaterial();
-var camera = new PerspectiveCamera( 10, window.innerWidth / getHeight(), 20, 40 );
+var camera = new PerspectiveCamera( 10, window.innerWidth / getHeight(), 10, 50 );
 camera.position.z = 30;
 
 var renderer = new WebGLRenderer({

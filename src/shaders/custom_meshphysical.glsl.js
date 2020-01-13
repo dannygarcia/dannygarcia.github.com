@@ -162,30 +162,26 @@ var CustomMeshPhysicalShader = {
 
 	void main() {
 	
-		// vec3 c = (1.-(smoothstep(0.49,.50,sin(uTime * 20. + (vPosition.z * 3.)*3.)*.75) - vec3(0.)));
-
-		// c = mix(vec3(.1), diffuse, c);
-		// c = diffuse;
 		float timeOffset = uTime + uRandom;
-		vec3 c = 0.5 + 0.5*cos(timeOffset+vPosition.xyz+vec3(0.,2.,4.)); // from starting shadertoy
-		//gl_FragColor = vec4(vec3(cos(timeOffset+vPosition)), 1.); return;
-		float depthFactor = smoothstep(0.0, 1., -vViewPosition.z + cameraPosition.z); // camera-based depth
+		vec3 c = 0.5 + 0.5 * cos(timeOffset + vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
+		//gl_FragColor = vec4(vec3(cos(timeOffset+vPosition)), 1.); return; // test offset position
+		float depthFactor = smoothstep(-1., 1., cameraPosition.z-vViewPosition.z); // camera-based depth
 		c = mix(c * .2,c, depthFactor); // apply depth factor to color
-		c = mix(vec3(0.),c, smoothstep(0., 0.5, uScale)); // darker when small
-		float alpha = smoothstep(0., .25, depthFactor);
-		vec4 diffuseColor = vec4( clamp(c, 0., 1.), opacity * alpha );
+		// c = mix(vec3(0.),c, smoothstep(0., 0.5, uScale)); // darker when small
+		float alpha = clamp(mix(0.,6., depthFactor), 0.25, 1.);
+		vec4 diffuseColor = vec4( clamp(c, 0., 1.), alpha );
 
 		ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
 		vec3 totalEmissiveRadiance = emissive + (c * .65);
 	
-		// <map_fragment>
-		#include <map_fragment>
-		#include <color_fragment>
+		//<map_fragment>
+		//<color_fragment>
 		//<alphamap_fragment>
 		//<alphatest_fragment>
-		#include <roughnessmap_fragment>
-		diffuseColor += roughnessFactor * .1;
-		roughnessFactor = clamp(map(roughnessFactor, 0., 1., 0., 0.8), 0.3, 1.);
+		//#include <roughnessmap_fragment>
+		// diffuseColor += roughnessFactor * .1;
+		//roughnessFactor = clamp(pow(roughnessFactor, 4.), 0.25, 1.);
+		float roughnessFactor = .3;
 		#include <metalnessmap_fragment>
 		#include <normal_fragment_begin>
 		#include <normal_fragment_maps>
