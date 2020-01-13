@@ -39,7 +39,7 @@ let spheres = [];
 // move config
 let moveBody = new CANNON.Body({
     mass: sphereMass,
-    shape: new CANNON.Sphere(1),
+    shape: new CANNON.Sphere(0.5),
     position: new CANNON.Vec3(0,0,0),
     fixedRotation: true
 });
