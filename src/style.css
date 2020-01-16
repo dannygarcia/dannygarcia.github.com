@@ -41,8 +41,12 @@ html {
 
 a {
     color: var(--c-primary);
-    text-decoration: none;
+    /* text-decoration: none; */
     font-weight: var(--f-weight);
+}
+
+a:hover {
+    text-decoration: none;
 }
 
 main {
