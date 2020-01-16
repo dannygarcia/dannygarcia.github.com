@@ -6,7 +6,7 @@
   "scripts": {
     "test": "nil",
     "build": "webpack --mode=production",
-    "start": "webpack-dev-server --inline --host 0.0.0.0 "
+    "start": "webpack-dev-server --inline --host 0.0.0.0"
   },
   "author": "",
   "license": "ISC",

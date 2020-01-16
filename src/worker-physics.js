@@ -39,7 +39,7 @@ let spheres = [];
 // move config
 let moveBody = new CANNON.Body({
     mass: sphereMass,
-    shape: new CANNON.Sphere(0.5),
+    shape: new CANNON.Sphere(1),
     position: new CANNON.Vec3(0,0,0),
     fixedRotation: true
 });
@@ -47,7 +47,7 @@ world.addBody(moveBody);
 
 function resetBody(body) {
     // random starting position
-    body.position = new CANNON.Vec3(random(-.1,.1), random(-.1,.1), random(-.1,.1));
+    body.position = new CANNON.Vec3(random(-2,2), random(-2,2), random(-2,2));
     // random starting angle
     body.quaternion.setFromAxisAngle(new CANNON.Vec3(random(1),random(1),random(1)), random(-180,180));
     // random impulse

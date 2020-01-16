@@ -1,39 +1,36 @@
-import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer.js';
-import { Object3D } from 'three/src/core/Object3D.js';
-// import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
-import { UniformsUtils } from 'three/src/renderers/shaders/UniformsUtils.js';
-import { Vector3 } from 'three/src/math/Vector3.js';
-import { Vector2 } from 'three/src/math/Vector2.js';
+import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
+import { Object3D } from 'three/src/core/Object3D';
+import { InstancedBufferGeometry } from 'three/src/core/InstancedBufferGeometry';
+import { InstancedBufferAttribute } from 'three/src/core/InstancedBufferAttribute';
+// import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
+// import { TextureLoader } from 'three/src/loaders/TextureLoader';
+import { UniformsUtils } from 'three/src/renderers/shaders/UniformsUtils';
+import { Vector3 } from 'three/src/math/Vector3';
+import { Vector2 } from 'three/src/math/Vector2';
+import { Quaternion } from 'three/src/math/Quaternion';
+import { Matrix4 } from 'three/src/math/Matrix4';
 import { Plane } from 'three/src/math/Plane';
-import { Mesh } from 'three/src/objects/Mesh.js';
-import { Scene } from 'three/src/scenes/Scene.js';
-import { Raycaster } from 'three/src/core/Raycaster.js';
-import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera.js';
-import { CubeCamera } from 'three/src/cameras/CubeCamera.js';
-import { DirectionalLight } from 'three/src/lights/DirectionalLight.js';
+import { InstancedMesh } from 'three/src/objects/InstancedMesh';
+import { Scene } from 'three/src/scenes/Scene';
+import { Raycaster } from 'three/src/core/Raycaster';
+import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
+// import { CubeCamera } from 'three/src/cameras/CubeCamera';
+import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 
-import { ShaderMaterial } from 'three/src/materials/ShaderMaterial.js';
-// import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial.js';
+import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import { IcosahedronBufferGeometry } from 'three/src/geometries/IcosahedronGeometry';
-import { BasicShadowMap } from 'three/src/constants.js';
-import { ACESFilmicToneMapping } from 'three/src/constants.js';
-// import { Material } from 'cannon';
-import { FresnelShader } from 'three/examples/jsm/shaders/FresnelShader.js';
+import { BasicShadowMap } from 'three/src/constants';
+import { ACESFilmicToneMapping } from 'three/src/constants';
+// import { DynamicDrawUsage } from 'three/src/constants';
+// import { FresnelShader } from 'three/examples/jsm/shaders/FresnelShader';
 
-// const sphereVert = require('./shaders/sphere.vert').default;
-// const RAD2DEG = 180 / Math.PI;
 const shaders = {
-    physical: require('./shaders/custom_meshphysical.glsl.js').CustomMeshPhysicalShader
+    physical: require('./shaders/custom_meshphysical.glsl').CustomMeshPhysicalShader,
     // glowy: require('./shaders/sphere-glowy.frag').default,
     // green: require('./shaders/sphere-green.frag').default,
     // normal: require('./shaders/sphere-normal.frag').default,
     // stripe: require('./shaders/sphere-stripe.frag').default
 };
-// const textureLoader = new TextureLoader();
-// const residueTexture = textureLoader.load( "/src/images/scratches-2.jpg" );
-// const residueTextureNormal = textureLoader.load( "/src/images/scratches_n.jpg" );
-// residueTexture.repeat.set(0.01, 0.01);
-// residueTextureNormal.repeat.set(0.01, 0.01);
 
 const container = document.querySelector('.canvas-container') as HTMLElement;
 function getHeight() {
@@ -57,95 +54,6 @@ interface Skin {
     update(target?: any): void
 }
 
-// class GlassSkin implements Skin {
-
-//     renderer: WebGLRenderer;
-//     scene: Scene;
-//     uniforms = UniformsUtils.clone( FresnelShader.uniforms );
-//     fragment: string = FresnelShader.fragmentShader;
-//     vertex: string = FresnelShader.vertexShader;
-//     camera = new CubeCamera( .1, 10, 256 * 4 );
-//     material: ShaderMaterial;
-
-//     constructor(renderer: WebGLRenderer, scene: Scene) {
-//         this.renderer = renderer;
-//         this.scene = scene;
-//         // uniforms = UniformsUtils.clone( FresnelShader.uniforms );
-//         this.uniforms["tCube"].value = this.camera.renderTarget.texture;
-//         this.material = new ShaderMaterial({
-//             uniforms: 		this.uniforms,
-//             vertexShader:   FresnelShader.vertexShader,
-//             fragmentShader: FresnelShader.fragmentShader
-//         });
-//         scene.add(this.camera);
-//     }
-
-//     update(target) {
-//         this.camera.position.x = target.position.x;
-//         this.camera.position.y = target.position.y;
-//         this.camera.position.z = target.position.z;
-//         this.camera.update(this.renderer, this.scene);
-//     }
-// }
-
-// class MirrorSkin implements Skin {
-
-//     renderer: WebGLRenderer;
-//     scene: Scene;
-//     camera = new CubeCamera( .1, 10, 256 );
-//     material: MeshBasicMaterial;
-
-//     constructor(renderer: WebGLRenderer, scene: Scene) {
-//         this.renderer = renderer;
-//         this.scene = scene;
-//         this.material = new MeshBasicMaterial( {
-//             envMap: this.camera.renderTarget.texture
-//         } );
-//         scene.add(this.camera);
-//     }
-
-//     update(target) {
-//         this.camera.position.x = target.position.x;
-//         this.camera.position.y = target.position.y;
-//         this.camera.position.z = target.position.z;
-//         // this.camera.quaternion.x = target.quaternion.x;
-//         // this.camera.quaternion.y = target.quaternion.y;
-//         // this.camera.quaternion.z = target.quaternion.z;
-//         // this.camera.quaternion.w = target.quaternion.w;    
-//         this.camera.update(this.renderer, this.scene);
-//         this.material.envMap = this.camera.renderTarget.texture;
-//     }
-// }
-
-// class StripeSkin implements Skin {
-
-//     renderer: WebGLRenderer;
-//     scene: Scene;
-//     material: Material;
-//     uniforms = {
-//         uTime: { value: 1.0 },
-//         resolution: { value: new Vector2() }
-//     };
-//     vertex = sphereVert;
-//     fragment = shaders.stripe;
-
-//     constructor(renderer: WebGLRenderer, scene: Scene) {
-//         this.renderer = renderer;
-//         this.scene = scene;
-//         this.material = new ShaderMaterial( {
-//             uniforms: this.uniforms,
-//             vertexShader: this.vertex,
-//             fragmentShader: this.fragment
-//         } );
-//     }
-
-//     update(target) {
-//         this.uniforms.uTime.value += .01;
-//     }
-
-// }
-
-
 class PBRSkin implements Skin {
     renderer: WebGLRenderer;
     scene: Scene;
@@ -157,7 +65,7 @@ class PBRSkin implements Skin {
     constructor(renderer: WebGLRenderer, scene: Scene) {
         this.renderer = renderer;
         this.scene = scene;
-        this.uniforms[ 'diffuse' ].value = new Vector3( 0.98, 0.01, 0.05 );
+        // this.uniforms[ 'diffuse' ].value = new Vector3( 0.98, 0.01, 0.05 );
         this.uniforms[ 'metalness' ].value = 0;
         // this.uniforms.roughnessMap.value = residueTexture;
         // this.uniforms.normalMap.value = residueTextureNormal;
@@ -184,105 +92,6 @@ class PBRSkin implements Skin {
     }
 }
 
-// class GlowySkin implements Skin {
-
-//     renderer: WebGLRenderer;
-//     scene: Scene;
-//     material: Material;
-//     uniforms = {
-//         uTime: { value: 1.0 },
-//         resolution: { value: new Vector2() }
-//     };
-//     vertex = sphereVert;
-//     fragment = shaders.glowy;
-
-//     constructor(renderer: WebGLRenderer, scene: Scene) {
-//         this.renderer = renderer;
-//         this.scene = scene;
-//         this.material = new ShaderMaterial( {
-//             uniforms: this.uniforms,
-//             vertexShader: this.vertex,
-//             fragmentShader: this.fragment
-//         } );
-//     }
-
-//     update(target) {
-//         this.uniforms.uTime.value += .01;
-//     }
-
-// }
-
-// class NormalSkin implements Skin {
-    
-//     renderer: WebGLRenderer;
-//     scene: Scene;
-//     material: Material;
-
-//     constructor(renderer: WebGLRenderer, scene: Scene) {
-//         this.renderer = renderer;
-//         this.scene = scene;
-//         this.material = normalMaterial;
-//     }
-
-//     update(target) {}
-
-// }
-
-class Sphere {
-    
-    position: Position;
-    radius: number;
-    skin: Skin;
-    mesh: Mesh;
-    // camera: CubeCamera;
-    scale: number;
-    
-    constructor(position: Position, radius: number, skin: Skin) {
-        this.position = position;
-        this.radius = radius;
-        this.skin = skin;
-        this.scale = 0.001;
-        this.mesh = this.buildMesh(this.radius, this.skin);
-        this.mesh.scale.setScalar(this.scale);
-    }
-    
-    buildMesh(radius: number, skin: Skin): Mesh {
-        let geometry = new IcosahedronBufferGeometry( radius, 4 );
-        let mesh = new Mesh( geometry, skin.material );
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        return mesh;
-    }
-    
-    // http://www.iquilezles.org/www/articles/functions/functions.htm
-    parabola(x: number, k: number) {
-        return Math.pow(4.0 * x * (1.0 - x), k);
-    }
-    
-    //  http://www.iquilezles.org/www/articles/functions/functions.htm
-    pcurve(x: number, a: number, b: number) {
-        const k = Math.pow(a+b,a+b) / (Math.pow(a,a)*Math.pow(b,b));
-        return k * Math.pow( x, a ) * Math.pow( 1.0-x, b );
-    }
-
-    updateFromPhysics(positions, quaternions, scale) {
-        this.mesh.position.x = positions[0];
-        this.mesh.position.y = positions[1];
-        this.mesh.position.z = positions[2];
-        this.mesh.quaternion.x = quaternions[0];
-        this.mesh.quaternion.y = quaternions[1];
-        this.mesh.quaternion.z = quaternions[2];
-        this.mesh.quaternion.w = quaternions[3];
-        this.mesh.scale.setScalar(Math.max(scale, 0.001));
-    }
-    
-    update() {
-        this.skin.update(this.mesh);
-    }
-    
-    
-}
-
 function random(min: number = 1, max?: number): number {
     if (!max) {
         max = min;
@@ -302,10 +111,11 @@ camera.position.z = 30;
 
 var renderer = new WebGLRenderer({
     alpha: true,
-    powerPreference: 'high-performance',
-    precision: 'mediump',
-    depth: false,
-    antialias: false
+    premultipliedAlpha: false,
+    powerPreference: 'low-power',
+    precision: 'lowp',
+    depth: true,
+    antialias: true
 });
 renderer.setSize( window.innerWidth, getHeight() );
 renderer.shadowMap.enabled = true;
@@ -313,8 +123,6 @@ renderer.shadowMap.type = BasicShadowMap;
 renderer.toneMapping = ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
 renderer.physicallyCorrectLights = true;
-// renderer.outputEncoding = sRGBEncoding;
-// renderer.context.disable(renderer.context.DEPTH_TEST);
 
 
 container.appendChild( renderer.domElement );
@@ -322,32 +130,36 @@ container.appendChild( renderer.domElement );
 
 const physicsWorker = new Worker("/src/worker-physics.js");
 const dt = 1/60, N = 10;
-let positions = new Float32Array(N*3);
-let quaternions = new Float32Array(N*4);
-let scales = new Float32Array(N*3);
+let physicsData = {
+    positions: new Float32Array(N*3),
+    quaternions: new Float32Array(N*4),
+    scales: new Float32Array(N*3)
+};
+let geometryData = {
+    positions: new Float32Array(N*3),
+    quaternions: new Float32Array(N*4),
+    scales: new Float32Array(N*3)
+};
 
 let sendTime;
 let create = false;
 let needsupdate = true;
 physicsWorker.onmessage = function(e) {
-    positions = e.data.positions;
-    quaternions = e.data.quaternions;
-    scales = e.data.scales;
+    physicsData.positions = e.data.positions;
+    physicsData.quaternions = e.data.quaternions;
+    physicsData.scales = e.data.scales;
 
     spheres.forEach((s, i) => {
-        s.updateFromPhysics(
-            [
-                positions[3*i+0],
-                positions[3*i+1],
-                positions[3*i+2]
-            ], [
-                quaternions[4*i+0],
-                quaternions[4*i+1],
-                quaternions[4*i+2],
-                quaternions[4*i+3]
-            ], scales[3*i]);
+        geometryData.positions[3*i+0] = physicsData.positions[3*i+0];
+        geometryData.positions[3*i+1] = physicsData.positions[3*i+1];
+        geometryData.positions[3*i+2] = physicsData.positions[3*i+2];
+        geometryData.quaternions[4*i+0] = physicsData.quaternions[4*i+0];
+        geometryData.quaternions[4*i+1] = physicsData.quaternions[4*i+1];
+        geometryData.quaternions[4*i+2] = physicsData.quaternions[4*i+2];
+        geometryData.quaternions[4*i+3] = physicsData.quaternions[4*i+3];
+        geometryData.scales[3*i] = physicsData.scales[3*i];
     });
-
+    
     needsupdate = true;
     setTimeout(updateWorker, Math.max(dt * 1000 - (Date.now() - sendTime), 0));
 };
@@ -363,33 +175,37 @@ function updateWorker() {
         create: create,
         N: spheres.length,
         dt: dt,
-        positions: positions,
-        quaternions: quaternions,
-        scales: scales,
-        mouse: move.position
-    },[positions.buffer, quaternions.buffer, scales.buffer]);
+        positions: physicsData.positions,
+        quaternions: physicsData.quaternions,
+        scales: physicsData.scales,
+        mouse: move
+    },[
+        physicsData.positions.buffer,
+        physicsData.quaternions.buffer,
+        physicsData.scales.buffer
+    ]);
     create = false;
 }
 
 const spheresCenter = new Object3D();
 scene.add(spheresCenter);
-var spheres = [];
-// var skins = [GlowySkin, StripeSkin, MirrorSkin, GlassSkin];//, NormalSkin];
-// skins = [PBRSkin];//, NormalSkin];
+let spheres = [];
+var geometry = new InstancedBufferGeometry();
+geometry.copy( new IcosahedronBufferGeometry(1, 4) );
+var randomData = new Float32Array(N).map(_ => Math.random());
+let instanceRandomAttribute = new InstancedBufferAttribute( randomData, 1 );
+geometry.setAttribute('instanceRandom', instanceRandomAttribute);
+let material = new PBRSkin(renderer, scene).material;
+let mesh = new InstancedMesh(geometry, material, N);
+spheresCenter.add(mesh);
+mesh.castShadow = true;
+mesh.receiveShadow = true;
+// mesh.customDepthMaterial = customDepthMaterial;
+
 function makeSphere() {
     create = true;
-    var Skin = PBRSkin;
-    var sphere = new Sphere(
-        {x: 0, y: 0, z: 0}, // position
-        1, // radius
-        new Skin(renderer, scene)
-        );
-    spheres.push(sphere);
-    spheresCenter.add(sphere.mesh);
+    spheres.push(1);
 }
-// for (var i = 0; i < N; i++) {
-//     makeSphere();
-// }
 
 
 var topLight = new DirectionalLight( 0xffffff, 2 );
@@ -422,51 +238,17 @@ const plane = new Plane(planeNormal, 0);
 
 const raycaster = new Raycaster();
 let mouse = new Vector2();
-let cubeCamera = new CubeCamera( 0.4, 10, 256 );
-// let moveMaterial = new MeshPhysicalMaterial({
-//     metalness: 1,
-//     envMap: cubeCamera.renderTarget.texture
-// });
-var fresnelFragment = [
 
-    "uniform samplerCube tCube;",
-
-    "varying vec3 vReflect;",
-    "varying vec3 vRefract[3];",
-    "varying float vReflectionFactor;",
-
-    "void main() {",
-
-    "	vec4 reflectedColor = textureCube( tCube, vec3( vReflect.x, vReflect.yz ) );",
-    "	vec4 refractedColor = vec4( 1.0 );",
-
-    "	refractedColor.r = textureCube( tCube, vec3( -vRefract[0].x, vRefract[0].yz ) ).r;",
-    "	refractedColor.g = textureCube( tCube, vec3( -vRefract[1].x, vRefract[1].yz ) ).g;",
-    "	refractedColor.b = textureCube( tCube, vec3( -vRefract[2].x, vRefract[2].yz ) ).b;",
-
-    "	gl_FragColor = mix( refractedColor, reflectedColor, clamp( vReflectionFactor, 0.0, 1.0 ) );",
-    "   gl_FragColor.a = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.;",
-
-    "}"
-
-].join( "\n" );
-
-var fresnelUniforms = UniformsUtils.clone( FresnelShader.uniforms );
-fresnelUniforms["tCube"].value = cubeCamera.renderTarget.texture;
-let moveMaterial = new ShaderMaterial({
-    uniforms: 		fresnelUniforms,
-    vertexShader:   FresnelShader.vertexShader,
-    fragmentShader: fresnelFragment
-});
-
-let move = new Mesh(new IcosahedronBufferGeometry(1, 4), moveMaterial);
-// move.castShadow = true;
-// move.receiveShadow = true;
-// scene.add(move);
+let move = new Vector3();
 
 // scrolling data
 var scrollPercent = 0;
 var targetScollPercent = doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
+
+var tmpM = new Matrix4();
+let offset = new Vector3();
+let orientation = new Quaternion();
+let scale = new Vector3();
 
 var animate = function () {
     timeSinceLast++;
@@ -477,24 +259,39 @@ var animate = function () {
         timeSinceLast = 0;
         maxTime = random(20,50);
     }
-    spheres.forEach(s => {
-        s.update();
-    });
     
+    spheres.forEach((s, i) => {
+        offset.set(
+            geometryData.positions[3*i+0],
+            geometryData.positions[3*i+1],
+            geometryData.positions[3*i+2]
+        );
+        orientation.set(
+            geometryData.quaternions[4*i+0],
+            geometryData.quaternions[4*i+1],
+            geometryData.quaternions[4*i+2],
+            geometryData.quaternions[4*i+3]
+        );
+        scale.setScalar(geometryData.scales[3*i]);
+        tmpM.compose( offset, orientation, scale );
+        mesh.setMatrixAt( i, tmpM );
+
+
+        // if (geometryData.scales[3*i] <= 0.001) {
+        //     this.uniforms.uRandom.value = Math.random();
+        // }
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+
     targetScollPercent = (doc.scrollTop / (cachedScrollHeight - cachedClientHeight));
     scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
     spheresCenter.rotation.x = scrollPercent * 2;
 
-    // cubeCamera.position.copy(move.position);
-    // cubeCamera.update(renderer, scene);
-    // moveMaterial.envMap = cubeCamera.renderTarget.texture;
-    // fresnelUniforms["tCube"].value = cubeCamera.renderTarget.texture;
-
     renderer.render( scene, camera );
 };
 
-animate();
 updateWorker();
+animate();
 
 window.onresize = function() {
     var windowAspect = window.innerWidth / getHeight();
@@ -510,7 +307,7 @@ window.onpointermove = function(e) {
     mouse.setX((e.pageX / window.innerWidth) * 2 - 1);
     mouse.setY((-(e.pageY / (window.innerHeight + window.scrollY)) * 2 + 1));
     raycaster.setFromCamera(mouse, camera);
-    raycaster.ray.intersectPlane(plane, move.position);
+    raycaster.ray.intersectPlane(plane, move);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

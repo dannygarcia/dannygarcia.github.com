@@ -29,10 +29,16 @@ var CustomMeshPhysicalShader = {
 
 	vertexShader: glsl`
 	#define PHYSICAL
+
+	attribute float instanceRandom;
+	// attribute vec3 physicsPosition;
+	// attribute vec4 physicsQuaternion;
+	// attribute vec3 physicsScale;
 	
+	varying float vRandom;
 	varying vec3 vViewPosition;
 	varying vec3 vPosition;
-	varying vec2 vUv;
+	// varying vec2 vUv;
 	
 	#ifndef FLAT_SHADED
 	
@@ -54,7 +60,13 @@ var CustomMeshPhysicalShader = {
 	//<fog_pars_vertex>
 	#include <shadowmap_pars_vertex>
 	
+	vec3 applyQuaternionToVector( vec4 q, vec3 v ){
+		return v + 2.0 * cross( q.xyz, cross( q.xyz, v ) + q.w * v );
+	}
+
 	void main() {
+
+		vRandom = instanceRandom;
 	
 		#include <uv_vertex>
 		#include <uv2_vertex>
@@ -63,25 +75,31 @@ var CustomMeshPhysicalShader = {
 		#include <beginnormal_vertex>
 		#include <defaultnormal_vertex>
 	
-	#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED
-	
-		vNormal = normalize( transformedNormal );
-	
-		#ifdef USE_TANGENT
-	
-			vTangent = normalize( transformedTangent );
-			vBitangent = normalize( cross( vNormal, vTangent ) * tangent.w );
-	
+		#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED
+		
+			vNormal = normalize( transformedNormal );
+		
+			#ifdef USE_TANGENT
+		
+				vTangent = normalize( transformedTangent );
+				vBitangent = normalize( cross( vNormal, vTangent ) * tangent.w );
+		
+			#endif
+		
 		#endif
 	
-	#endif
-	
 		#include <begin_vertex>
+
+		// position instanced
+		// transformed *= physicsScale.x;
+		// transformed = applyQuaternionToVector(physicsQuaternion, transformed);
+		// transformed += physicsPosition;
+
 		#include <project_vertex>
-	
-		vViewPosition = - mvPosition.xyz;
+
+		vViewPosition = -mvPosition.xyz;
 		vPosition = position;
-		vUv = uv;
+		// vUv = uv;
 
 		#include <worldpos_vertex>
 		#include <shadowmap_vertex>
@@ -97,6 +115,8 @@ var CustomMeshPhysicalShader = {
 	#define USE_NORMALMAP
 	#define TONE_MAPPING
 	#define PHYSICAL
+
+	varying float vRandom;
 	
 	uniform vec3 diffuse;
 	uniform vec3 emissive;
@@ -106,6 +126,7 @@ var CustomMeshPhysicalShader = {
 	uniform float uTime;
 	uniform float uRandom;
 	uniform float uScale;
+	uniform vec3 scale;
 	
 	// #ifdef PHYSICAL
 	// 	uniform float clearcoat;
@@ -161,13 +182,14 @@ var CustomMeshPhysicalShader = {
 	}
 
 	void main() {
+		// gl_FragColor = vec4(vec3(vRandom),1.); return; // test visibility
 	
-		float timeOffset = uTime + uRandom;
+		float timeOffset = uTime + (vRandom * 10.);
 		vec3 c = 0.5 + 0.5 * cos(timeOffset + vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
 		//gl_FragColor = vec4(vec3(cos(timeOffset+vPosition)), 1.); return; // test offset position
 		float depthFactor = smoothstep(-1., 1., cameraPosition.z-vViewPosition.z); // camera-based depth
 		c = mix(c * .2,c, depthFactor); // apply depth factor to color
-		// c = mix(vec3(0.),c, smoothstep(0., 0.5, uScale)); // darker when small
+		// c = mix(vec3(0.),c, smoothstep(0., 0.5, scale)); // darker when small
 		float alpha = clamp(mix(0.,6., depthFactor), 0.25, 1.);
 		vec4 diffuseColor = vec4( clamp(c, 0., 1.), alpha );
 
