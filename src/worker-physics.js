@@ -56,6 +56,13 @@ function resetBody(body) {
     return body;
 }
 
+let body;
+let scale;
+let age;
+let life;
+let p;
+let q;
+
 self.onmessage = function(e) {
 
     let positions = e.data.positions;
@@ -77,7 +84,7 @@ self.onmessage = function(e) {
 
     if (e.data.create) {
         let i = spheres.length;
-        let body = new CANNON.Body({
+        body = new CANNON.Body({
             mass: sphereMass,
             shape: new CANNON.Sphere(1),
             angularDamping: 0.2,
@@ -99,10 +106,10 @@ self.onmessage = function(e) {
     world.step(e.data.dt);
 
     for (var i = 0; i < spheres.length; i++) {
-        let body = spheres[i];
-        let scale = scales[4*i+0];
-        let age = scales[4*i+1];
-        let life = scales[4*i+2];
+        body = spheres[i];
+        scale = scales[4*i+0];
+        age = scales[4*i+1];
+        life = scales[4*i+2];
         scale = customCurve(age/life) * this.Math.max(1.-(life / 800), .5);
         // increase age
         age++;
@@ -123,8 +130,8 @@ self.onmessage = function(e) {
                 (e.data.mouse.z - body.position.z) * 700),
                 worldPoint);
         // save data
-        let p = body.position,
-            q = body.quaternion;
+        p = body.position;
+        q = body.quaternion;
         positions[3*i + 0] = p.x;
         positions[3*i + 1] = p.y;
         positions[3*i + 2] = p.z;

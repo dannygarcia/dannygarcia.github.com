@@ -137,10 +137,13 @@ renderer.physicallyCorrectLights = true;
 
 container.appendChild( renderer.domElement );
 
-
+function map(value: number, min1: number, max1: number, min2: number, max2: number): number {
+    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
+  
 const physicsWorker = new Worker("/src/worker-physics.js");
 
-const dt = 1/60, N = 10;
+const dt = 1/60, N = Math.round(map(window.innerWidth, 300, 2000, 5, 20));
 let physicsData = {
     positions: new Float32Array(N*3),
     quaternions: new Float32Array(N*4),

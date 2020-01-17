@@ -196,7 +196,7 @@ var CustomMeshPhysicalShader = {
 		float alpha = clamp(mix(0.,6., depthFactor), 0.25, 1.);
 		vec4 diffuseColor = vec4( clamp(c, 0., 1.), alpha );
 		ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
-		vec3 totalEmissiveRadiance = emissive + (c * vScale);
+		vec3 totalEmissiveRadiance = emissive + c * clamp(vScale, .4, 1.);
 	
 		//<map_fragment>
 		//<color_fragment>
