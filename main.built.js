@@ -156,8 +156,11 @@
 	void main() {
 		// gl_FragColor = vec4(vec3(vRandom),1.); return; // test visibility
 	
-		float timeOffset = uTime + (vRandom * 10.);
-		vec3 c = 0.5 + 0.5 * cos(timeOffset + vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
+		// float timeOffset = uTime + (vRandom * 10.);
+		float smoothScale = smoothstep(0., 1., vScale);
+		vec3 c1 = 0.5 + 0.5 * cos(vRandom*smoothScale * vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
+		vec3 c2 = 0.5 + 0.5 * cos(20. + vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
+		vec3 c = mix(c2, c1, smoothScale); // from starting shadertoy
 		// c = mix(vec3(0.),c, smoothstep(0., 0.5, vScale)); // darker when small
 		//gl_FragColor = vec4(vec3(cos(timeOffset+vPosition)), 1.); return; // test offset position
 		float depthFactor = smoothstep(-1., 1., cameraPosition.z-vViewPosition.z); // camera-based depth
@@ -165,7 +168,7 @@
 		float alpha = clamp(mix(0.,6., depthFactor), 0.25, 1.);
 		vec4 diffuseColor = vec4( clamp(c, 0., 1.), alpha );
 		ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
-		vec3 totalEmissiveRadiance = emissive + c * clamp(vScale, .45, 1.);
+		vec3 totalEmissiveRadiance = emissive + c * clamp(vScale, .35, 1.);
 	
 		//<map_fragment>
 		//<color_fragment>

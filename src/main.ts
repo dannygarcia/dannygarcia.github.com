@@ -11,18 +11,24 @@ import { Vector2 } from 'three/src/math/Vector2';
 import { Quaternion } from 'three/src/math/Quaternion';
 import { Matrix4 } from 'three/src/math/Matrix4';
 import { Plane } from 'three/src/math/Plane';
+import { Mesh } from 'three/src/objects/Mesh';
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 import { Scene } from 'three/src/scenes/Scene';
 import { Raycaster } from 'three/src/core/Raycaster';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 // import { CubeCamera } from 'three/src/cameras/CubeCamera';
+
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib';
+import { RectAreaLight } from 'three/src/lights/RectAreaLight';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { IcosahedronBufferGeometry } from 'three/src/geometries/IcosahedronGeometry';
+import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry';
 import { BasicShadowMap } from 'three/src/constants';
 import { ACESFilmicToneMapping } from 'three/src/constants';
+import { BackSide } from 'three/src/constants';
 import { LinearMipmapLinearFilter } from 'three/src/constants';
 import { LinearFilter } from 'three/src/constants';
 import { DynamicDrawUsage } from 'three/src/constants';
@@ -30,6 +36,7 @@ import { RGBFormat } from 'three/src/constants';
 import { CubeReflectionMapping } from 'three/src/constants';
 import { sRGBEncoding } from 'three/src/constants';
 import { NormalMapShader } from 'three/examples/jsm/shaders/NormalMapShader';
+import { MeshStandardMaterial } from 'three';
 
 const shaders = {
     physical: require('./shaders/custom_meshphysical.glsl').CustomMeshPhysicalShader,
@@ -87,6 +94,8 @@ class PBRSkin implements Skin {
             fragmentShader: this.fragment,
             lights: true,
         } );
+
+        // this.material = new MeshStandardMaterial( { color: 0x808080, roughness: 0.5, metalness: 0 } );
     }
 
     update(target) {
@@ -216,7 +225,6 @@ function makeSphere() {
     create = true;
     spheres.push(1);
 }
-
 
 var topLight = new DirectionalLight( 0xffffff, 2 );
 topLight.color.setHSL( 0.1, 1, 0.95 );

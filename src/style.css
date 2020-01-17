@@ -9,14 +9,14 @@ img { border: 0; }
 
 :root {
     /* --c-primary: #D2D2D2; */
-    --c-primary: rgb(210, 205, 195);
+    --c-primary: rgb(209, 197, 173);
     --c-secondary: rgba(200,200,200,.85);
-    --c-tertiary: hsla(88, 12%, 40%, 1);
+    --c-tertiary: rgb(91, 106, 74);
 
     --v-space: 6rem;
     --canvas-height: 80vh;
     --f-weight: 600;
-    --border-radius: 10vw;
+    --border-radius: min(10vw, var(--v-space));
 }
 
 html {

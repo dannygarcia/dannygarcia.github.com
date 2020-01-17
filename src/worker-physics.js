@@ -142,7 +142,7 @@ self.onmessage = function(e) {
         scales[4*i + 0] = scale;
         scales[4*i + 1] = age;
         scales[4*i + 2] = life;
-        scales[4*i + 3] = body.velocity.clone().normalize();
+        scales[4*i + 3] = body.velocity.clone().length();
 
     }
     // Send data back to the main thread
