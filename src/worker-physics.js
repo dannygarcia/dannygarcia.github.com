@@ -89,9 +89,10 @@ self.onmessage = function(e) {
 
         // add to lists
         spheres.push(body);
-        scales[3*i+0] = 0.001; // scale
-        scales[3*i+1] = 0; // age
-        scales[3*i+2] = random(200,800); // life
+        scales[4*i + 0] = 0.001; // scale
+        scales[4*i + 1] = 0; // age
+        scales[4*i + 2] = random(200,800); // life
+        scales[4*i + 3] = 0; // velocity
         world.addBody(body);
     }
     // Step the world
@@ -99,9 +100,9 @@ self.onmessage = function(e) {
 
     for (var i = 0; i < spheres.length; i++) {
         let body = spheres[i];
-        let scale = scales[3*i+0];
-        let age = scales[3*i+1];
-        let life = scales[3*i+2];
+        let scale = scales[4*i+0];
+        let age = scales[4*i+1];
+        let life = scales[4*i+2];
         scale = customCurve(age/life) * this.Math.max(1.-(life / 800), .5);
         // increase age
         age++;
@@ -132,9 +133,11 @@ self.onmessage = function(e) {
         quaternions[4*i + 2] = q.z;
         quaternions[4*i + 3] = q.w;
         // ensure scale data is saved
-        scales[3*i + 0] = scale;
-        scales[3*i + 1] = age;
-        scales[3*i + 2] = life;
+        scales[4*i + 0] = scale;
+        scales[4*i + 1] = age;
+        scales[4*i + 2] = life;
+        scales[4*i + 3] = body.velocity.clone().normalize();
+
     }
     // Send data back to the main thread
     self.postMessage({

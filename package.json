@@ -25,9 +25,6 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
-    "@types/cannon": "^0.1.4",
-    "@types/three": "^0.103.2",
-    "cannon": "github:schteppe/cannon.js",
-    "three": "^0.111.0"
+    "three": "^0.112.0"
   }
 }

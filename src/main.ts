@@ -1,9 +1,10 @@
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
+import { WebGLRenderTargetCube } from 'three/src/renderers/WebGLRenderTargetCube';
 import { Object3D } from 'three/src/core/Object3D';
 import { InstancedBufferGeometry } from 'three/src/core/InstancedBufferGeometry';
 import { InstancedBufferAttribute } from 'three/src/core/InstancedBufferAttribute';
 // import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
-// import { TextureLoader } from 'three/src/loaders/TextureLoader';
+import { CubeTextureLoader } from 'three/src/loaders/CubeTextureLoader';
 import { UniformsUtils } from 'three/src/renderers/shaders/UniformsUtils';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Vector2 } from 'three/src/math/Vector2';
@@ -18,11 +19,17 @@ import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
+import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { IcosahedronBufferGeometry } from 'three/src/geometries/IcosahedronGeometry';
 import { BasicShadowMap } from 'three/src/constants';
 import { ACESFilmicToneMapping } from 'three/src/constants';
-// import { DynamicDrawUsage } from 'three/src/constants';
-// import { FresnelShader } from 'three/examples/jsm/shaders/FresnelShader';
+import { LinearMipmapLinearFilter } from 'three/src/constants';
+import { LinearFilter } from 'three/src/constants';
+import { DynamicDrawUsage } from 'three/src/constants';
+import { RGBFormat } from 'three/src/constants';
+import { CubeReflectionMapping } from 'three/src/constants';
+import { sRGBEncoding } from 'three/src/constants';
+import { NormalMapShader } from 'three/examples/jsm/shaders/NormalMapShader';
 
 const shaders = {
     physical: require('./shaders/custom_meshphysical.glsl').CustomMeshPhysicalShader,
@@ -66,6 +73,7 @@ class PBRSkin implements Skin {
         this.renderer = renderer;
         this.scene = scene;
         // this.uniforms[ 'diffuse' ].value = new Vector3( 0.98, 0.01, 0.05 );
+        this.uniforms[ 'roughness' ].value = 0.5;
         this.uniforms[ 'metalness' ].value = 0;
         // this.uniforms.roughnessMap.value = residueTexture;
         // this.uniforms.normalMap.value = residueTextureNormal;
@@ -77,7 +85,7 @@ class PBRSkin implements Skin {
             uniforms: this.uniforms,
             vertexShader: this.vertex,
             fragmentShader: this.fragment,
-            lights: true
+            lights: true,
         } );
     }
 
@@ -124,21 +132,24 @@ renderer.toneMapping = ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
 renderer.physicallyCorrectLights = true;
 
+((renderer.domElement.getContext('webgl') ||
+    renderer.domElement.getContext('experimental-webgl')) as WebGLRenderingContext).getExtension('OES_standard_derivatives');
 
 container.appendChild( renderer.domElement );
 
 
 const physicsWorker = new Worker("/src/worker-physics.js");
+
 const dt = 1/60, N = 10;
 let physicsData = {
     positions: new Float32Array(N*3),
     quaternions: new Float32Array(N*4),
-    scales: new Float32Array(N*3)
+    scales: new Float32Array(N*4)
 };
 let geometryData = {
     positions: new Float32Array(N*3),
     quaternions: new Float32Array(N*4),
-    scales: new Float32Array(N*3)
+    scales: new Float32Array(N*4)
 };
 
 let sendTime;
@@ -148,18 +159,11 @@ physicsWorker.onmessage = function(e) {
     physicsData.positions = e.data.positions;
     physicsData.quaternions = e.data.quaternions;
     physicsData.scales = e.data.scales;
-
-    spheres.forEach((s, i) => {
-        geometryData.positions[3*i+0] = physicsData.positions[3*i+0];
-        geometryData.positions[3*i+1] = physicsData.positions[3*i+1];
-        geometryData.positions[3*i+2] = physicsData.positions[3*i+2];
-        geometryData.quaternions[4*i+0] = physicsData.quaternions[4*i+0];
-        geometryData.quaternions[4*i+1] = physicsData.quaternions[4*i+1];
-        geometryData.quaternions[4*i+2] = physicsData.quaternions[4*i+2];
-        geometryData.quaternions[4*i+3] = physicsData.quaternions[4*i+3];
-        geometryData.scales[3*i] = physicsData.scales[3*i];
-    });
     
+    geometryData.positions.set(physicsData.positions);
+    geometryData.quaternions.set(physicsData.quaternions);
+    geometryData.scales.set(physicsData.scales);
+
     needsupdate = true;
     setTimeout(updateWorker, Math.max(dt * 1000 - (Date.now() - sendTime), 0));
 };
@@ -195,6 +199,9 @@ geometry.copy( new IcosahedronBufferGeometry(1, 4) );
 var randomData = new Float32Array(N).map(_ => Math.random());
 let instanceRandomAttribute = new InstancedBufferAttribute( randomData, 1 );
 geometry.setAttribute('instanceRandom', instanceRandomAttribute);
+var scaleData = new Float32Array(N).map((s, i) => geometryData.scales[i*4 + 4]);
+let instanceScaleAttribute = new InstancedBufferAttribute( scaleData, 1 ).setUsage(DynamicDrawUsage);
+geometry.setAttribute('instanceScale', instanceScaleAttribute);
 let material = new PBRSkin(renderer, scene).material;
 let mesh = new InstancedMesh(geometry, material, N);
 spheresCenter.add(mesh);
@@ -272,15 +279,19 @@ var animate = function () {
             geometryData.quaternions[4*i+2],
             geometryData.quaternions[4*i+3]
         );
-        scale.setScalar(geometryData.scales[3*i]);
+        scale.setScalar(geometryData.scales[4 * i + 0]);
         tmpM.compose( offset, orientation, scale );
         mesh.setMatrixAt( i, tmpM );
 
-
+        instanceScaleAttribute.setX(i, geometryData.scales[4*i + 3] / 4);
+        
+        // TODO: change color when scale is 0
         // if (geometryData.scales[3*i] <= 0.001) {
-        //     this.uniforms.uRandom.value = Math.random();
-        // }
+            //     this.uniforms.uRandom.value = Math.random();
+            // }
     });
+    instanceScaleAttribute.needsUpdate = true;
+    geometry.setAttribute('instanceScale', instanceScaleAttribute);
     mesh.instanceMatrix.needsUpdate = true;
 
     targetScollPercent = (doc.scrollTop / (cachedScrollHeight - cachedClientHeight));

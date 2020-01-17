@@ -14,7 +14,7 @@ var CustomMeshPhysicalShader = {
 		// UniformsLib.bumpmap,
 		UniformsLib.normalmap,
 		UniformsLib.roughnessmap,
-		// UniformsLib.metalnessmap,
+		UniformsLib.metalnessmap,
 		// UniformsLib.fog,
 		UniformsLib.lights,
 		{
@@ -31,14 +31,13 @@ var CustomMeshPhysicalShader = {
 	#define PHYSICAL
 
 	attribute float instanceRandom;
-	// attribute vec3 physicsPosition;
-	// attribute vec4 physicsQuaternion;
-	// attribute vec3 physicsScale;
+	attribute float instanceScale;
 	
 	varying float vRandom;
+	varying float vScale;
 	varying vec3 vViewPosition;
 	varying vec3 vPosition;
-	// varying vec2 vUv;
+	varying vec2 vUv;
 	
 	#ifndef FLAT_SHADED
 	
@@ -67,6 +66,7 @@ var CustomMeshPhysicalShader = {
 	void main() {
 
 		vRandom = instanceRandom;
+		vScale = instanceScale;
 	
 		#include <uv_vertex>
 		#include <uv2_vertex>
@@ -109,14 +109,17 @@ var CustomMeshPhysicalShader = {
 	`,
 
 	fragmentShader: glsl`
+	#extension GL_EXT_shader_texture_lod : enable
+	#extension GL_OES_standard_derivatives : enable
 	#define USE_UV
 	// #define USE_MAP
-	#define USE_ROUGHNESSMAP
+	// #define USE_ROUGHNESSMAP
 	#define USE_NORMALMAP
 	#define TONE_MAPPING
 	#define PHYSICAL
 
 	varying float vRandom;
+	varying float vScale;
 	
 	uniform vec3 diffuse;
 	uniform vec3 emissive;
@@ -127,7 +130,7 @@ var CustomMeshPhysicalShader = {
 	uniform float uRandom;
 	uniform float uScale;
 	uniform vec3 scale;
-	
+
 	// #ifdef PHYSICAL
 	// 	uniform float clearcoat;
 	// 	uniform float clearcoatRoughness;
@@ -165,13 +168,13 @@ var CustomMeshPhysicalShader = {
 	//<emissivemap_pars_fragment>
 	#include <bsdfs>
 	#include <cube_uv_reflection_fragment>
-	#include <envmap_pars_fragment>
+	#include <envmap_common_pars_fragment>
 	#include <envmap_physical_pars_fragment>
 	//<fog_pars_fragment>
 	#include <lights_pars_begin>
 	#include <lights_physical_pars_fragment>
 	#include <shadowmap_pars_fragment>
-	//#include <bumpmap_pars_fragment>
+	//<bumpmap_pars_fragment>
 	#include <normalmap_pars_fragment>
 	//<clearcoat_normalmap_pars_fragment>
 	#include <roughnessmap_pars_fragment>
@@ -186,25 +189,21 @@ var CustomMeshPhysicalShader = {
 	
 		float timeOffset = uTime + (vRandom * 10.);
 		vec3 c = 0.5 + 0.5 * cos(timeOffset + vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
+		// c = mix(vec3(0.),c, smoothstep(0., 0.5, vScale)); // darker when small
 		//gl_FragColor = vec4(vec3(cos(timeOffset+vPosition)), 1.); return; // test offset position
 		float depthFactor = smoothstep(-1., 1., cameraPosition.z-vViewPosition.z); // camera-based depth
 		c = mix(c * .2,c, depthFactor); // apply depth factor to color
-		// c = mix(vec3(0.),c, smoothstep(0., 0.5, scale)); // darker when small
 		float alpha = clamp(mix(0.,6., depthFactor), 0.25, 1.);
 		vec4 diffuseColor = vec4( clamp(c, 0., 1.), alpha );
-
 		ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
-		vec3 totalEmissiveRadiance = emissive + (c * .65);
+		vec3 totalEmissiveRadiance = emissive + (c * vScale);
 	
 		//<map_fragment>
 		//<color_fragment>
 		//<alphamap_fragment>
 		//<alphatest_fragment>
-		//#include <roughnessmap_fragment>
-		// diffuseColor += roughnessFactor * .1;
-		//roughnessFactor = clamp(pow(roughnessFactor, 4.), 0.25, 1.);
-		// float roughnessFactor = fbm3(vPosition.xyz);
-		float roughnessFactor = 0.30;
+		#include <roughnessmap_fragment>
+		// float roughnessFactor = 0.4;
 		#include <metalnessmap_fragment>
 		#include <normal_fragment_begin>
 		#include <normal_fragment_maps>
