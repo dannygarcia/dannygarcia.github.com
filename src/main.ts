@@ -120,12 +120,14 @@ camera.position.z = 30;
 var renderer = new WebGLRenderer({
     alpha: true,
     premultipliedAlpha: false,
-    powerPreference: 'low-power',
+    powerPreference: 'high-performance',
     precision: 'lowp',
-    depth: true,
-    antialias: true
+    depth: false,
+    antialias: false
 });
 renderer.setSize( window.innerWidth, getHeight() );
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+console.log(renderer.getPixelRatio());
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = BasicShadowMap;
 renderer.toneMapping = ACESFilmicToneMapping;

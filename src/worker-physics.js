@@ -17,8 +17,7 @@ function smoothstep(min, max, value) {
 };
 
 function customCurve(x) {
-    const y = smoothstep(0., .15, x);
-    return y * (1. - Math.pow(Math.max(0., Math.abs(x) * 2. - 1.), 10.));
+    return smoothstep(0., .15, x) * (1. - Math.pow(Math.max(0., Math.abs(x) * 2. - 1.), 10.));
 }
 
 // setup world
