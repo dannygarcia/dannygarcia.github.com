@@ -123,11 +123,9 @@ var renderer = new WebGLRenderer({
     powerPreference: 'high-performance',
     precision: 'lowp',
     depth: false,
-    antialias: false
+    antialias: true
 });
 renderer.setSize( window.innerWidth, getHeight() );
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-console.log(renderer.getPixelRatio());
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = BasicShadowMap;
 renderer.toneMapping = ACESFilmicToneMapping;
