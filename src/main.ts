@@ -130,9 +130,9 @@ camera.position.z = 30;
 
 var renderer = new WebGLRenderer({
     alpha: true,
-    premultipliedAlpha: true,
+    premultipliedAlpha: false,
     powerPreference: 'high-performance',
-    precision: 'mediump',
+    precision: 'lowp',
     depth: false,
     antialias: true
 });
@@ -140,7 +140,7 @@ renderer.setSize( window.innerWidth, getHeight() );
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = BasicShadowMap;
 renderer.toneMapping = ReinhardToneMapping;
-renderer.toneMappingExposure = 2;
+renderer.toneMappingExposure = 3;
 renderer.physicallyCorrectLights = true;
 
 ((renderer.domElement.getContext('webgl') ||
