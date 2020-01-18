@@ -260,7 +260,7 @@ const planeNormal = new Vector3(0, 0, 1);
 const plane = new Plane(planeNormal, 0);
 
 const raycaster = new Raycaster();
-let mouse = new Vector2(0.,0.5);
+let mouse = new Vector2(0.,2.);
 let mouseTarget = new Vector2(0.,0.5);
 let move = new Vector3();
 
