@@ -23,7 +23,7 @@ import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
-// import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
+import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { IcosahedronBufferGeometry } from 'three/src/geometries/IcosahedronGeometry';
 // import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry';
 import { BasicShadowMap } from 'three/src/constants';
@@ -38,7 +38,7 @@ import { DynamicDrawUsage } from 'three/src/constants';
 // import { CubeReflectionMapping } from 'three/src/constants';
 // import { sRGBEncoding } from 'three/src/constants';
 // import { NormalMapShader } from 'three/examples/jsm/shaders/NormalMapShader';
-import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial';
+// import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial';
 
 const shaders = {
     physical: require('./shaders/custom_meshphysical.glsl').CustomMeshPhysicalShader,
@@ -60,8 +60,6 @@ interface Position {
 }
 
 interface Skin {
-    renderer: WebGLRenderer,
-    scene: Scene,
     material: any,
     uniforms?: any,
     fragment?: string,
@@ -71,19 +69,16 @@ interface Skin {
 }
 
 class PBRSkin implements Skin {
-    renderer: WebGLRenderer;
-    scene: Scene;
     material: any;
     uniforms = UniformsUtils.clone(shaders.physical.uniforms);
     vertex = shaders.physical.vertexShader;
     fragment = shaders.physical.fragmentShader;
 
-    constructor(renderer: WebGLRenderer, scene: Scene) {
-        this.renderer = renderer;
-        this.scene = scene;
+    constructor(mouse: number) {
         // this.uniforms[ 'diffuse' ].value = new Vector3( 0.98, 0.01, 0.05 );
         this.uniforms[ 'roughness' ].value = 0.5;
         this.uniforms[ 'metalness' ].value = 0;
+        this.uniforms[ 'mouse' ].value = mouse;
         // this.uniforms.roughnessMap.value = residueTexture;
         // this.uniforms.normalMap.value = residueTextureNormal;
         this.uniforms.uTime = { value: 1.0 };
@@ -217,20 +212,15 @@ geometry.setAttribute('instanceRandom', instanceRandomAttribute);
 var scaleData = new Float32Array(N).map((s, i) => geometryData.scales[i*4 + 4]);
 let instanceScaleAttribute = new InstancedBufferAttribute( scaleData, 1 ).setUsage(DynamicDrawUsage);
 geometry.setAttribute('instanceScale', instanceScaleAttribute);
-let material = new PBRSkin(renderer, scene).material;
+let material = new PBRSkin(1).material;
 let mesh = new InstancedMesh(geometry, material, N);
 spheresCenter.add(mesh);
 mesh.castShadow = true;
 mesh.receiveShadow = true;
 // mesh.customDepthMaterial = customDepthMaterial;
 
-let mouseBall = new Mesh(ballGeometry, new MeshPhysicalMaterial({
-    color: 0x5b6a4a, //0xd1c5ad
-    roughness: .4,
-    // emissiveIntensity: .9,
-    // transparent: true,
-    // opacity: .8,
-}));
+let mouseMaterial = new PBRSkin(0).material;
+let mouseBall = new Mesh(ballGeometry, mouseMaterial);
 mouseBall.scale.setScalar(.25);
 mouseBall.castShadow = true;
 mouseBall.receiveShadow = true;
@@ -282,8 +272,9 @@ var tmpM = new Matrix4();
 let offset = new Vector3();
 let orientation = new Quaternion();
 let scale = new Vector3();
-
+let time = 0;
 var animate = function () {
+    time++;
     timeSinceLast++;
     requestAnimationFrame( animate );
     

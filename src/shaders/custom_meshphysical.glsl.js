@@ -22,7 +22,8 @@ var CustomMeshPhysicalShader = {
 			emissive: { value: new Color( 0x000000 ) },
 			roughness: { value: 0.5 },
 			metalness: { value: 0.5 },
-			envMapIntensity: { value: 1 } // temporary
+			envMapIntensity: { value: 1 }, // temporary
+			mouse: { value: 1 } // temporary
 		}
 
 	] ),
@@ -130,6 +131,7 @@ var CustomMeshPhysicalShader = {
 	uniform float uRandom;
 	uniform float uScale;
 	uniform vec3 scale;
+	uniform float mouse;
 
 	// #ifdef PHYSICAL
 	// 	uniform float clearcoat;
@@ -192,6 +194,7 @@ var CustomMeshPhysicalShader = {
 		vec3 c1 = 0.5 + 0.5 * cos(vRandom*smoothScale * vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
 		vec3 c2 = 0.5 + 0.5 * cos(20. + vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
 		vec3 c = mix(c2, c1, smoothScale); // from starting shadertoy
+		c *= mouse;
 		// c = mix(vec3(0.),c, smoothstep(0., 0.5, vScale)); // darker when small
 		//gl_FragColor = vec4(vec3(cos(timeOffset+vPosition)), 1.); return; // test offset position
 		float depthFactor = smoothstep(-1., 1., cameraPosition.z-vViewPosition.z); // camera-based depth
