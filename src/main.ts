@@ -318,6 +318,7 @@ var animate = function () {
     raycaster.setFromCamera(mouse, camera);
     raycaster.ray.intersectPlane(plane, move);
     mouseBall.position.copy(move);
+    mouseBall.scale.setScalar(.25 + mouse.distanceToSquared(mouseTarget) * .5);
 
     renderer.render( scene, camera );
 };
