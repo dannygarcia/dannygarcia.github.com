@@ -1,10 +1,10 @@
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-import { WebGLRenderTargetCube } from 'three/src/renderers/WebGLRenderTargetCube';
+// import { WebGLRenderTargetCube } from 'three/src/renderers/WebGLRenderTargetCube';
 import { Object3D } from 'three/src/core/Object3D';
 import { InstancedBufferGeometry } from 'three/src/core/InstancedBufferGeometry';
 import { InstancedBufferAttribute } from 'three/src/core/InstancedBufferAttribute';
 // import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
-import { CubeTextureLoader } from 'three/src/loaders/CubeTextureLoader';
+// import { CubeTextureLoader } from 'three/src/loaders/CubeTextureLoader';
 import { UniformsUtils } from 'three/src/renderers/shaders/UniformsUtils';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Vector2 } from 'three/src/math/Vector2';
@@ -18,25 +18,27 @@ import { Raycaster } from 'three/src/core/Raycaster';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 // import { CubeCamera } from 'three/src/cameras/CubeCamera';
 
-import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib';
-import { RectAreaLight } from 'three/src/lights/RectAreaLight';
+// import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib';
+// import { RectAreaLight } from 'three/src/lights/RectAreaLight';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
-import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
+// import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { IcosahedronBufferGeometry } from 'three/src/geometries/IcosahedronGeometry';
-import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry';
+// import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry';
 import { BasicShadowMap } from 'three/src/constants';
-import { ACESFilmicToneMapping } from 'three/src/constants';
-import { BackSide } from 'three/src/constants';
-import { LinearMipmapLinearFilter } from 'three/src/constants';
-import { LinearFilter } from 'three/src/constants';
+// import { ACESFilmicToneMapping } from 'three/src/constants';
+import { ReinhardToneMapping } from 'three/src/constants';
+// import { BackSide } from 'three/src/constants';
+// import { LinearMipmapLinearFilter } from 'three/src/constants';
+// import { LinearFilter } from 'three/src/constants';
 import { DynamicDrawUsage } from 'three/src/constants';
-import { RGBFormat } from 'three/src/constants';
-import { CubeReflectionMapping } from 'three/src/constants';
-import { sRGBEncoding } from 'three/src/constants';
-import { NormalMapShader } from 'three/examples/jsm/shaders/NormalMapShader';
-import { MeshStandardMaterial } from 'three';
+// import { AdditiveBlending } from 'three/src/constants';
+// import { RGBFormat } from 'three/src/constants';
+// import { CubeReflectionMapping } from 'three/src/constants';
+// import { sRGBEncoding } from 'three/src/constants';
+// import { NormalMapShader } from 'three/examples/jsm/shaders/NormalMapShader';
+import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial';
 
 const shaders = {
     physical: require('./shaders/custom_meshphysical.glsl').CustomMeshPhysicalShader,
@@ -137,8 +139,8 @@ var renderer = new WebGLRenderer({
 renderer.setSize( window.innerWidth, getHeight() );
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = BasicShadowMap;
-renderer.toneMapping = ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1;
+renderer.toneMapping = ReinhardToneMapping;
+renderer.toneMappingExposure = 2;
 renderer.physicallyCorrectLights = true;
 
 ((renderer.domElement.getContext('webgl') ||
@@ -207,7 +209,8 @@ const spheresCenter = new Object3D();
 scene.add(spheresCenter);
 let spheres = [];
 var geometry = new InstancedBufferGeometry();
-geometry.copy( new IcosahedronBufferGeometry(1, 4) );
+var ballGeometry = new IcosahedronBufferGeometry(1, 3);
+geometry.copy( ballGeometry );
 var randomData = new Float32Array(N).map(_ => Math.random());
 let instanceRandomAttribute = new InstancedBufferAttribute( randomData, 1 );
 geometry.setAttribute('instanceRandom', instanceRandomAttribute);
@@ -256,8 +259,22 @@ const plane = new Plane(planeNormal, 0);
 
 const raycaster = new Raycaster();
 let mouse = new Vector2();
-
+let mouseTarget = new Vector2();
 let move = new Vector3();
+
+let mouseBall = new Mesh(ballGeometry, new MeshPhysicalMaterial({
+    color: 0x000000, //0xd1c5ad
+    metalness: 0,
+    roughness: .4,
+    emissive: 0x000000,
+    emissiveIntensity: .33,
+    // transparent: true,
+    // opacity: .8,
+}));
+mouseBall.scale.setScalar(.25);
+mouseBall.castShadow = true;
+mouseBall.receiveShadow = true;
+scene.add(mouseBall);
 
 // scrolling data
 var scrollPercent = 0;
@@ -307,7 +324,11 @@ var animate = function () {
 
     targetScollPercent = (doc.scrollTop / (cachedScrollHeight - cachedClientHeight));
     scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
-    spheresCenter.rotation.x = scrollPercent * 2;
+    // spheresCenter.rotation.x = scrollPercent * 2;
+    mouse.lerp(mouseTarget, .1);
+    raycaster.setFromCamera(mouse, camera);
+    raycaster.ray.intersectPlane(plane, move);
+    mouseBall.position.copy(move);
 
     renderer.render( scene, camera );
 };
@@ -326,10 +347,11 @@ window.onresize = function() {
 };
 
 window.onpointermove = function(e) {
-    mouse.setX((e.pageX / window.innerWidth) * 2 - 1);
-    mouse.setY((-(e.pageY / (window.innerHeight + window.scrollY)) * 2 + 1));
-    raycaster.setFromCamera(mouse, camera);
-    raycaster.ray.intersectPlane(plane, move);
+    mouseTarget = new Vector2(
+        (e.clientX / window.innerWidth) * 2 - 1,
+        (-(e.clientY / (getHeight())) * 2 + 1)
+    );
+    
 }
 
 document.addEventListener('DOMContentLoaded', function() {
