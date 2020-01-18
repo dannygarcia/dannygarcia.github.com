@@ -130,7 +130,7 @@ camera.position.z = 30;
 
 var renderer = new WebGLRenderer({
     alpha: true,
-    premultipliedAlpha: false,
+    premultipliedAlpha: true,
     powerPreference: 'high-performance',
     precision: 'lowp',
     depth: false,
@@ -224,6 +224,18 @@ mesh.castShadow = true;
 mesh.receiveShadow = true;
 // mesh.customDepthMaterial = customDepthMaterial;
 
+let mouseBall = new Mesh(ballGeometry, new MeshPhysicalMaterial({
+    color: 0x5b6a4a, //0xd1c5ad
+    roughness: .4,
+    // emissiveIntensity: .9,
+    // transparent: true,
+    // opacity: .8,
+}));
+mouseBall.scale.setScalar(.25);
+mouseBall.castShadow = true;
+mouseBall.receiveShadow = true;
+scene.add(mouseBall);
+
 function makeSphere() {
     create = true;
     spheres.push(1);
@@ -261,20 +273,6 @@ const raycaster = new Raycaster();
 let mouse = new Vector2();
 let mouseTarget = new Vector2();
 let move = new Vector3();
-
-let mouseBall = new Mesh(ballGeometry, new MeshPhysicalMaterial({
-    color: 0x5b6a4a, //0xd1c5ad
-    metalness: 0,
-    roughness: .4,
-    emissive: 0x5b6a4a,
-    emissiveIntensity: .1,
-    // transparent: true,
-    // opacity: .8,
-}));
-mouseBall.scale.setScalar(.25);
-mouseBall.castShadow = true;
-mouseBall.receiveShadow = true;
-scene.add(mouseBall);
 
 // scrolling data
 var scrollPercent = 0;
