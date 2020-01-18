@@ -23,7 +23,7 @@ import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
-import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
+// import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { IcosahedronBufferGeometry } from 'three/src/geometries/IcosahedronGeometry';
 // import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry';
 import { BasicShadowMap } from 'three/src/constants';
@@ -260,8 +260,8 @@ const planeNormal = new Vector3(0, 0, 1);
 const plane = new Plane(planeNormal, 0);
 
 const raycaster = new Raycaster();
-let mouse = new Vector2();
-let mouseTarget = new Vector2();
+let mouse = new Vector2(0.,0.5);
+let mouseTarget = new Vector2(0.,0.5);
 let move = new Vector3();
 
 // scrolling data
