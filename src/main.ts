@@ -263,11 +263,11 @@ let mouseTarget = new Vector2();
 let move = new Vector3();
 
 let mouseBall = new Mesh(ballGeometry, new MeshPhysicalMaterial({
-    color: 0x000000, //0xd1c5ad
+    color: 0x5b6a4a, //0xd1c5ad
     metalness: 0,
     roughness: .4,
-    emissive: 0x000000,
-    emissiveIntensity: .33,
+    emissive: 0x5b6a4a,
+    emissiveIntensity: .1,
     // transparent: true,
     // opacity: .8,
 }));
