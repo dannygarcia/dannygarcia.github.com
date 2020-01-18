@@ -132,7 +132,7 @@ var renderer = new WebGLRenderer({
     alpha: true,
     premultipliedAlpha: true,
     powerPreference: 'high-performance',
-    precision: 'lowp',
+    precision: 'mediump',
     depth: false,
     antialias: true
 });
