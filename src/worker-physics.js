@@ -46,7 +46,11 @@ world.addBody(moveBody);
 
 function resetBody(body) {
     // random starting position
-    body.position = new CANNON.Vec3(random(-2,2), random(-2,2), random(-2,2));
+    body.position.set(
+        moveBody.position.x + random(-1,1),
+        moveBody.position.y + random(-1,1),
+        moveBody.position.z + random(-1,1)
+    );
     // random starting angle
     body.quaternion.setFromAxisAngle(new CANNON.Vec3(random(1),random(1),random(1)), random(-180,180));
     // random impulse
@@ -62,6 +66,8 @@ let life;
 let p;
 let q;
 
+let attractForce = new CANNON.Vec3();
+
 self.onmessage = function(e) {
 
     let positions = e.data.positions;
@@ -70,16 +76,7 @@ self.onmessage = function(e) {
 
     // this.console.log(e);
 
-    moveBody.position.x = e.data.mouse.x;
-    moveBody.position.y = e.data.mouse.y;
-    moveBody.position.z = e.data.mouse.z;
-
-    // moveBody.applyForce(
-    //     new CANNON.Vec3(
-    //         e.data.mouse.x * 7000,
-    //         e.data.mouse.y * 7000,
-    //         e.data.mouse.z * 7000),
-    //         worldPoint);
+    moveBody.position.set(e.data.mouse.x, e.data.mouse.y, e.data.mouse.z);
 
     if (e.data.create) {
         let i = spheres.length;
@@ -97,7 +94,7 @@ self.onmessage = function(e) {
         spheres.push(body);
         scales[4*i + 0] = 0.001; // scale
         scales[4*i + 1] = 0; // age
-        scales[4*i + 2] = random(200,800); // life
+        scales[4*i + 2] = random(100,600); // life
         scales[4*i + 3] = 0; // velocity
         world.addBody(body);
     }
@@ -109,25 +106,25 @@ self.onmessage = function(e) {
         scale = scales[4*i+0];
         age = scales[4*i+1];
         life = scales[4*i+2];
-        scale = customCurve(age/life) * this.Math.max(1.-(life / 800), .5);
+        scale = customCurve(age/life) * this.Math.max(1.-(life / 600), .5);
         // increase age
         age++;
         // reset after death
         if (age>life) {
             scale = 0.001;
             age = 0;
-            life = random(200,800);
+            life = random(100,600);
             body = this.resetBody(body);
         }
         // set scale
         body.shapes[0].radius = scale;
         // move spheres to center
-        body.applyForce(
-            new CANNON.Vec3(
-                (e.data.mouse.x - body.position.x) * 700,
-                (e.data.mouse.y - body.position.y) * 700,
-                (e.data.mouse.z - body.position.z) * 700),
-                worldPoint);
+        attractForce.set(
+            (e.data.mouse.x - body.position.x) * 700,
+            (e.data.mouse.y - body.position.y) * 700,
+            (e.data.mouse.z - body.position.z) * 700
+        );
+        body.applyForce(attractForce, worldPoint);
         // save data
         p = body.position;
         q = body.quaternion;

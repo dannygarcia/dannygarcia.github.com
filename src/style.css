@@ -11,7 +11,7 @@ img { border: 0; }
     /* --c-primary: #D2D2D2; */
     --c-primary: rgb(209, 197, 173);
     --c-secondary: rgba(200,200,200,.85);
-    --c-tertiary: rgb(91, 106, 74);
+    --c-tertiary: hsl(88, 25%, 33%);
 
     --v-space: 6rem;
     --canvas-height: 80vh;

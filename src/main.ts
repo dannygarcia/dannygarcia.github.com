@@ -16,14 +16,17 @@ import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 import { Scene } from 'three/src/scenes/Scene';
 import { Raycaster } from 'three/src/core/Raycaster';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
-// import { CubeCamera } from 'three/src/cameras/CubeCamera';
+import { CubeCamera } from 'three/src/cameras/CubeCamera';
 
 // import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib';
 // import { RectAreaLight } from 'three/src/lights/RectAreaLight';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
 
+import { LineBasicMaterial } from 'three/src/materials/LineBasicMaterial';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
 // import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
+import { LineLoop } from 'three/src/objects/LineLoop';
+import { CircleGeometry } from 'three/src/geometries/CircleGeometry';
 import { IcosahedronBufferGeometry } from 'three/src/geometries/IcosahedronGeometry';
 // import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry';
 import { BasicShadowMap } from 'three/src/constants';
@@ -31,14 +34,16 @@ import { BasicShadowMap } from 'three/src/constants';
 import { ReinhardToneMapping } from 'three/src/constants';
 // import { BackSide } from 'three/src/constants';
 // import { LinearMipmapLinearFilter } from 'three/src/constants';
-// import { LinearFilter } from 'three/src/constants';
+import { LinearFilter } from 'three/src/constants';
 import { DynamicDrawUsage } from 'three/src/constants';
 // import { AdditiveBlending } from 'three/src/constants';
-// import { RGBFormat } from 'three/src/constants';
+import { RGBAFormat } from 'three/src/constants';
 // import { CubeReflectionMapping } from 'three/src/constants';
-// import { sRGBEncoding } from 'three/src/constants';
+import { sRGBEncoding } from 'three/src/constants';
 // import { NormalMapShader } from 'three/examples/jsm/shaders/NormalMapShader';
 // import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial';
+
+const isNarrowScreen = !!navigator.platform.match(/iPhone|iPod/) || !!window.matchMedia('(max-width: 736px)').matches;
 
 const shaders = {
     physical: require('./shaders/custom_meshphysical.glsl').CustomMeshPhysicalShader,
@@ -149,7 +154,7 @@ function map(value: number, min1: number, max1: number, min2: number, max2: numb
   
 const physicsWorker = new Worker("/src/worker-physics.js");
 
-const dt = 1/60, N = Math.round(map(window.innerWidth, 300, 2000, 5, 20));
+const dt = 1/60, N = Math.round(map(window.innerWidth, 300, 2000, 5, 30));
 let physicsData = {
     positions: new Float32Array(N*3),
     quaternions: new Float32Array(N*4),
@@ -219,19 +224,19 @@ mesh.castShadow = true;
 mesh.receiveShadow = true;
 // mesh.customDepthMaterial = customDepthMaterial;
 
-let mouseMaterial = new PBRSkin(0).material;
-let mouseBall = new Mesh(ballGeometry, mouseMaterial);
-mouseBall.scale.setScalar(.25);
-mouseBall.castShadow = true;
-mouseBall.receiveShadow = true;
-scene.add(mouseBall);
+let mouseGeometry = new CircleGeometry( 1, 10);
+mouseGeometry.vertices.shift(); // removes center vertex
+let mouseBall = new LineLoop( mouseGeometry, new LineBasicMaterial( { color: getComputedStyle(document.documentElement).getPropertyValue('--c-primary') } ) );
+if (!isNarrowScreen) {
+    scene.add(mouseBall);
+}
 
 function makeSphere() {
     create = true;
     spheres.push(1);
 }
 
-var topLight = new DirectionalLight( 0xffffff, 2 );
+var topLight = new DirectionalLight( 0xffffff, 3 );
 topLight.color.setHSL( 0.1, 1, 0.95 );
 topLight.position.set( - 1, 1.75, 1 );
 topLight.position.multiplyScalar( 2 );
@@ -250,7 +255,7 @@ topLight.shadow.camera.far = 8;
 // scene.add( topLightHeper );
 
 let timeSinceLast = 0;
-let maxTime = 10;
+let maxTime = 5;
 var doc = document.documentElement;
 var cachedClientHeight = doc.clientHeight;
 var cachedScrollHeight = doc.scrollHeight;
@@ -260,8 +265,10 @@ const planeNormal = new Vector3(0, 0, 1);
 const plane = new Plane(planeNormal, 0);
 
 const raycaster = new Raycaster();
-let mouse = new Vector2(0.,2.);
-let mouseTarget = new Vector2(0.,0.5);
+let mouse = new Vector2(0.,-2.);
+let mouseTarget = new Vector2(0.,0);
+let mouseScaleTarget = new Vector3();
+let mosueOverLink = false;
 let move = new Vector3();
 
 // scrolling data
@@ -274,14 +281,14 @@ let orientation = new Quaternion();
 let scale = new Vector3();
 let time = 0;
 var animate = function () {
-    time++;
+    time += 0.01;
     timeSinceLast++;
     requestAnimationFrame( animate );
     
     if (spheres.length < N && timeSinceLast > maxTime) {
         makeSphere();
         timeSinceLast = 0;
-        maxTime = random(20,50);
+        // maxTime = random(20,50);
     }
     
     spheres.forEach((s, i) => {
@@ -314,11 +321,20 @@ var animate = function () {
     targetScollPercent = (doc.scrollTop / (cachedScrollHeight - cachedClientHeight));
     scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
     // spheresCenter.rotation.x = scrollPercent * 2;
-    mouse.lerp(mouseTarget, .1);
+
+    if (isNarrowScreen) {
+        mouseTarget.set(Math.cos(time * Math.PI) * .25, Math.cos(time) * .5);
+    }
+
+    mouse.lerp(mouseTarget, .15);
     raycaster.setFromCamera(mouse, camera);
     raycaster.ray.intersectPlane(plane, move);
     mouseBall.position.copy(move);
-    mouseBall.scale.setScalar(.25 + mouse.distanceToSquared(mouseTarget) * .5);
+
+    mouseScaleTarget.setScalar(mosueOverLink ? .25 + mouse.distanceToSquared(mouseTarget) * .5 : .1);
+    mouseBall.rotateZ(-.2 * mouseBall.scale.x);
+
+    mouseBall.scale.lerp(mouseScaleTarget, .06);
 
     renderer.render( scene, camera );
 };
@@ -337,11 +353,16 @@ window.onresize = function() {
 };
 
 window.onpointermove = function(e) {
-    mouseTarget = new Vector2(
-        (e.clientX / window.innerWidth) * 2 - 1,
-        (-(e.clientY / (getHeight())) * 2 + 1)
-    );
-    
+    if (isNarrowScreen) {
+        mouseTarget.set(0,0);
+        return e;
+    } else {
+        mosueOverLink = !!(e.target.nodeName.toLowerCase() == 'a');
+        mouseTarget.set(
+            (e.clientX / window.innerWidth) * 2 - 1,
+            (-(e.clientY / (getHeight())) * 2 + 1)
+        );
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
