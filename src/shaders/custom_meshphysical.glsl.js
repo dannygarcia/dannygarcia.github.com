@@ -38,7 +38,7 @@ var CustomMeshPhysicalShader = {
 	varying float vScale;
 	varying vec3 vViewPosition;
 	varying vec3 vPosition;
-	varying vec2 vUv;
+	// varying vec2 vUv;
 	
 	#ifndef FLAT_SHADED
 	

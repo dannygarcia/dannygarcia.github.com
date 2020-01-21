@@ -226,7 +226,7 @@ mesh.receiveShadow = true;
 
 let mouseGeometry = new CircleGeometry( 1, 10);
 mouseGeometry.vertices.shift(); // removes center vertex
-let mouseBall = new LineLoop( mouseGeometry, new LineBasicMaterial( { color: getComputedStyle(document.documentElement).getPropertyValue('--c-primary') } ) );
+let mouseBall = new LineLoop( mouseGeometry, new LineBasicMaterial( { color: getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() } ) );
 if (!isNarrowScreen) {
     scene.add(mouseBall);
 }
