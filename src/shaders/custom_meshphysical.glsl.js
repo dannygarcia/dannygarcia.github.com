@@ -190,12 +190,10 @@ var CustomMeshPhysicalShader = {
 		// gl_FragColor = vec4(vec3(vRandom),1.); return; // test visibility
 	
 		// float timeOffset = uTime + (vRandom * 10.);
-		float smoothScale = smoothstep(0., 1., vScale); // velocity, not actually scale
-		vec3 c1 = 0.5 + 0.5 * cos((vRandom*1.5)+smoothScale * vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
-		vec3 c2 = 0.5 + 0.5 * cos(20. + vPosition.xyz + vec3(0., 2., 4.)); // from starting shadertoy
-		vec3 c = mix(c2, c1, smoothScale); // from starting shadertoy
-		c = mix(c, vec3(0.01, 0.01, 0.01), 1.-mouse);
-		// c = mix(vec3(0.),c, smoothstep(0., 0.5, vScale)); // darker when small
+		float smoothScale = pow(vScale, .5);
+		smoothScale = clamp(1.-smoothScale,0.,1.);
+		vec3 c = 0.5 + 0.5 * cos(smoothScale * 5. + vPosition.xyz * 0.65 + vec3(0., 2., 4.)); // from starting shadertoy
+		c = mix(c, vec3(0.), smoothScale);
 		//gl_FragColor = vec4(vec3(cos(timeOffset+vPosition)), 1.); return; // test offset position
 		float depthFactor = smoothstep(-1., 1., cameraPosition.z-vViewPosition.z); // camera-based depth
 		c = mix(c * .2,c, depthFactor); // apply depth factor to color
