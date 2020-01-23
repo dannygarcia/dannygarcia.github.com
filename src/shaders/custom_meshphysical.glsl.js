@@ -34,7 +34,7 @@ var CustomMeshPhysicalShader = {
 	attribute float instanceRandom;
 	attribute float instanceScale;
 	
-	varying float vRandom;
+	// varying float vRandom;
 	varying float vScale;
 	varying vec3 vViewPosition;
 	varying vec3 vPosition;
@@ -66,7 +66,7 @@ var CustomMeshPhysicalShader = {
 
 	void main() {
 
-		vRandom = instanceRandom;
+		// vRandom = instanceRandom;
 		vScale = instanceScale;
 	
 		#include <uv_vertex>
@@ -119,7 +119,7 @@ var CustomMeshPhysicalShader = {
 	#define TONE_MAPPING
 	#define PHYSICAL
 
-	varying float vRandom;
+	// varying float vRandom;
 	varying float vScale;
 	
 	uniform vec3 diffuse;
