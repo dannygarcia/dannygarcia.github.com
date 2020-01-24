@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.documentElement.classList.add('loaded');
 }, false);
 
-console.log(`Welcome fellow traveler! Thanks for visiting. 🙇🏻‍♂️
+console.info(`Welcome fellow internet explorer! Thanks for visiting. 🙇🏻‍♂️
 
 Let me tell you a bit about this site. The interactive component was written in TypeScript using Three.js but the physics portion is vanilla JavaScript running in a Web Worker. The worker transfers and computes a few buffers for the position, quaternion, scale and velocity data of each sphere. The fragment shader is a hand-modified version of the standard Mesh Physical Shader. It works pretty well but has performance issues on some mobile devices. The structure and layout is plain HTML and CSS. Hooray for CSS Variables and Grid Layout!
 

@@ -11,7 +11,7 @@ img { border: 0; }
     /* --c-primary: #D2D2D2; */
     --c-primary: rgb(209, 197, 173);
     --c-secondary: rgba(200,200,200,.85);
-    --c-tertiary: hsl(88, 25%, 33%);
+    --c-tertiary: hsl(88, 25%, 11%, .5);
 
     --v-space: 6rem;
     --canvas-height: 80vh;
@@ -117,7 +117,7 @@ main {
 
 .timeline-entry {
     z-index: 2;
-    background: hsla(150, 17%, 11%, .5);
+    background: var(--c-tertiary);
     backdrop-filter: saturate(180%) blur(40px);
     -webkit-backdrop-filter: saturate(180%) blur(40px);
 
