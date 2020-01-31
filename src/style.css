@@ -50,7 +50,7 @@ a:hover {
 }
 
 main {
-    /* visibility: hidden; */
+    visibility: hidden;
     display: grid;
     grid-template-columns: 1fr 6fr 4fr 1fr;
     grid-template-rows: 1fr 3fr auto;
