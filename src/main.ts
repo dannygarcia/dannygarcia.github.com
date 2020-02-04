@@ -42,6 +42,7 @@ import { RGBAFormat } from 'three/src/constants';
 import { sRGBEncoding } from 'three/src/constants';
 // import { NormalMapShader } from 'three/examples/jsm/shaders/NormalMapShader';
 // import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial';
+// import * as Nodes from 'three/examples/jsm/nodes/Nodes';
 
 const isNarrowScreen = !!navigator.platform.match(/iPhone|iPod/) || !!window.matchMedia('(max-width: 736px)').matches;
 
@@ -80,12 +81,9 @@ class PBRSkin implements Skin {
     fragment = shaders.physical.fragmentShader;
 
     constructor(mouse: number) {
-        // this.uniforms[ 'diffuse' ].value = new Vector3( 0.98, 0.01, 0.05 );
-        this.uniforms[ 'roughness' ].value = 0.5;
-        this.uniforms[ 'metalness' ].value = 0;
-        this.uniforms[ 'mouse' ].value = mouse;
-        // this.uniforms.roughnessMap.value = residueTexture;
-        // this.uniforms.normalMap.value = residueTextureNormal;
+        // this.uniforms[ 'roughness' ].value = 0.5;
+        // this.uniforms[ 'metalness' ].value = 0;
+        // this.uniforms[ 'mouse' ].value = mouse;
         this.uniforms.uTime = { value: 1.0 };
         this.uniforms.uRandom = { value: Math.random() };
         this.uniforms.uScale = { value: 0.001 };
@@ -96,10 +94,13 @@ class PBRSkin implements Skin {
             fragmentShader: this.fragment,
             lights: true,
         } );
-
-        // this.material = new MeshStandardMaterial( { color: 0x808080, roughness: 0.5, metalness: 0 } );
+        // this.material = new Nodes.MeshStandardNodeMaterial();
+        // const col1 = new Nodes.ColorNode(0x000000);
+        // const col2 = new Nodes.ColorNode(0xffffff);
+        // const smoothScale = new Nodes.MathNode(new Nodes.FloatNode(this.uniforms.uScale.value), new Nodes.FloatNode(0.5), Nodes.MathNode.POW);
+        // this.material.color = new Nodes.MathNode(col1, col2, smoothScale, Nodes.MathNode.MIX);
     }
-
+    
     update(target) {
         this.uniforms.uTime.value += .01;
         this.uniforms.uScale.value = target.scale.x * Math.max(1.-scrollPercent, .25);

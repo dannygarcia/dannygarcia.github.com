@@ -94,7 +94,7 @@ self.onmessage = function(e) {
         spheres.push(body);
         scales[4*i + 0] = 0.001; // scale
         scales[4*i + 1] = 0; // age
-        scales[4*i + 2] = random(100,600); // life
+        scales[4*i + 2] = random(50,500); // life
         scales[4*i + 3] = 0; // velocity
         world.addBody(body);
     }
@@ -106,14 +106,14 @@ self.onmessage = function(e) {
         scale = scales[4*i+0];
         age = scales[4*i+1];
         life = scales[4*i+2];
-        scale = customCurve(age/life) * this.Math.max(1.-(life / 600), .5);
+        scale = customCurve(age/life) * this.Math.max(1.-(life / 500), .5);
         // increase age
         age++;
         // reset after death
         if (age>life) {
             scale = 0.001;
             age = 0;
-            life = random(100,600);
+            life = random(50,500);
             body = this.resetBody(body);
         }
         // set scale
