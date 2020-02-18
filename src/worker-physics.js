@@ -22,9 +22,9 @@ function customCurve(x) {
 
 // setup world
 let world = new CANNON.World();
-world.broadphase = new CANNON.NaiveBroadphase();
+world.broadphase = new CANNON.SAPBroadphase(world);
 world.gravity.set(0,0,0);
-world.solver.tolerance = 0.001;
+// world.solver.tolerance = 0.1;
 const worldPoint = new CANNON.Vec3(0,0,0);
 
 // sphere config
