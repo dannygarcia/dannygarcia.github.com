@@ -380,6 +380,6 @@ console.info(`Welcome fellow internet explorer! Thanks for visiting. 🙇🏻‍
 
 Let me tell you a bit about this site. The interactive component was written in TypeScript using Three.js but the physics portion is vanilla JavaScript running in a Web Worker. The worker transfers and computes a few buffers for the position, quaternion, scale and velocity data of each sphere. The fragment shader is a hand-modified version of the standard Mesh Physical Shader. It works pretty well but has performance issues on some mobile devices. The structure and layout is plain HTML and CSS. Hooray for CSS Variables and Grid Layout!
 
-Anyway, have a look around. 👀 I hope to publish the source on GitHub after it has been cleaned up.
+Anyway, have a look around. 👀 https://github.com/dannygarcia/dannygarcia.github.com
 
 If you have any questions or issues let me know: @dannygarcia. 😎 My condolences for your GPU. 🙏🏻`);
