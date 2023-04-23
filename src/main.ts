@@ -1,58 +1,28 @@
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer';
-// import { WebGLRenderTargetCube } from 'three/src/renderers/WebGLRenderTargetCube';
 import { Object3D } from 'three/src/core/Object3D';
 import { InstancedBufferGeometry } from 'three/src/core/InstancedBufferGeometry';
 import { InstancedBufferAttribute } from 'three/src/core/InstancedBufferAttribute';
-// import { Float32BufferAttribute } from 'three/src/core/BufferAttribute';
-// import { CubeTextureLoader } from 'three/src/loaders/CubeTextureLoader';
 import { UniformsUtils } from 'three/src/renderers/shaders/UniformsUtils';
 import { Vector3 } from 'three/src/math/Vector3';
 import { Vector2 } from 'three/src/math/Vector2';
 import { Quaternion } from 'three/src/math/Quaternion';
 import { Matrix4 } from 'three/src/math/Matrix4';
 import { Plane } from 'three/src/math/Plane';
-import { Mesh } from 'three/src/objects/Mesh';
 import { InstancedMesh } from 'three/src/objects/InstancedMesh';
 import { Scene } from 'three/src/scenes/Scene';
 import { Raycaster } from 'three/src/core/Raycaster';
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera';
-import { CubeCamera } from 'three/src/cameras/CubeCamera';
-
-// import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib';
-// import { RectAreaLight } from 'three/src/lights/RectAreaLight';
 import { DirectionalLight } from 'three/src/lights/DirectionalLight';
-
 import { LineBasicMaterial } from 'three/src/materials/LineBasicMaterial';
 import { ShaderMaterial } from 'three/src/materials/ShaderMaterial';
-// import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial';
 import { LineLoop } from 'three/src/objects/LineLoop';
 import { CircleGeometry } from 'three/src/geometries/CircleGeometry';
 import { IcosahedronBufferGeometry } from 'three/src/geometries/IcosahedronGeometry';
-// import { PlaneBufferGeometry } from 'three/src/geometries/PlaneGeometry';
 import { BasicShadowMap } from 'three/src/constants';
-// import { ACESFilmicToneMapping } from 'three/src/constants';
 import { ReinhardToneMapping } from 'three/src/constants';
-// import { BackSide } from 'three/src/constants';
-// import { LinearMipmapLinearFilter } from 'three/src/constants';
-import { LinearFilter } from 'three/src/constants';
 import { DynamicDrawUsage } from 'three/src/constants';
-// import { AdditiveBlending } from 'three/src/constants';
-import { RGBAFormat } from 'three/src/constants';
-// import { CubeReflectionMapping } from 'three/src/constants';
-import { sRGBEncoding } from 'three/src/constants';
-// import { NormalMapShader } from 'three/examples/jsm/shaders/NormalMapShader';
-// import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial';
-// import * as Nodes from 'three/examples/jsm/nodes/Nodes';
 
 const isNarrowScreen = !!navigator.platform.match(/iPhone|iPod/) || !!window.matchMedia('(max-width: 736px)').matches;
-
-const shaders = {
-    physical: require('./shaders/custom_meshphysical.glsl').CustomMeshPhysicalShader,
-    // glowy: require('./shaders/sphere-glowy.frag').default,
-    // green: require('./shaders/sphere-green.frag').default,
-    // normal: require('./shaders/sphere-normal.frag').default,
-    // stripe: require('./shaders/sphere-stripe.frag').default
-};
 
 const container = document.querySelector('.canvas-container') as HTMLElement;
 function getHeight() {
@@ -75,10 +45,19 @@ interface Skin {
 }
 
 class PBRSkin implements Skin {
+
+    shaders = {
+        physical: require('./shaders/custom_meshphysical.glsl').CustomMeshPhysicalShader,
+        // glowy: require('./shaders/sphere-glowy.frag').default,
+        // green: require('./shaders/sphere-green.frag').default,
+        // normal: require('./shaders/sphere-normal.frag').default,
+        // stripe: require('./shaders/sphere-stripe.frag').default
+    };
+
     material: any;
-    uniforms = UniformsUtils.clone(shaders.physical.uniforms);
-    vertex = shaders.physical.vertexShader;
-    fragment = shaders.physical.fragmentShader;
+    uniforms = UniformsUtils.clone(this.shaders.physical.uniforms);
+    vertex = this.shaders.physical.vertexShader;
+    fragment = this.shaders.physical.fragmentShader;
 
     constructor(mouse: number) {
         // this.uniforms[ 'roughness' ].value = 0.5;
@@ -112,20 +91,7 @@ class PBRSkin implements Skin {
     }
 }
 
-function random(min: number = 1, max?: number): number {
-    if (!max) {
-        max = min;
-        min = 0;
-    }
-    return (Math.random() * (max - min) + min);
-}
-
-function randomFrom(list: any[]): any {
-    return list[Math.floor(Math.random() * list.length)];
-}
-
 var scene = new Scene();
-// scene.overrideMaterial = new MeshDepthMaterial();
 var camera = new PerspectiveCamera( 10, window.innerWidth / getHeight(), 10, 50 );
 camera.position.z = 30;
 
@@ -223,7 +189,6 @@ let mesh = new InstancedMesh(geometry, material, N);
 spheresCenter.add(mesh);
 mesh.castShadow = true;
 mesh.receiveShadow = true;
-// mesh.customDepthMaterial = customDepthMaterial;
 
 let mouseGeometry = new CircleGeometry( 1, 10);
 mouseGeometry.vertices.shift(); // removes center vertex
@@ -250,10 +215,6 @@ topLight.shadow.camera.right = d;
 topLight.shadow.camera.top = d;
 topLight.shadow.camera.bottom = - d;
 topLight.shadow.camera.far = 8;
-// var topLightShadowHelper = new CameraHelper(topLight.shadow.camera);
-// scene.add(topLightShadowHelper);
-// var topLightHeper = new DirectionalLightHelper( topLight, 10 );
-// scene.add( topLightHeper );
 
 let timeSinceLast = 0;
 let maxTime = 5;
@@ -309,12 +270,8 @@ var animate = function () {
         mesh.setMatrixAt( i, tmpM );
 
         instanceScaleAttribute.setX(i, geometryData.scales[4*i + 3] / 4);
-        
-        // TODO: change color when scale is 0
-        // if (geometryData.scales[3*i] <= 0.001) {
-            //     this.uniforms.uRandom.value = Math.random();
-            // }
     });
+
     instanceScaleAttribute.needsUpdate = true;
     geometry.setAttribute('instanceScale', instanceScaleAttribute);
     mesh.instanceMatrix.needsUpdate = true;
@@ -347,7 +304,6 @@ window.onresize = function() {
     var windowAspect = window.innerWidth / getHeight();
     cachedClientHeight = doc.clientHeight;
     cachedScrollHeight = doc.scrollHeight;
-    // camera.fov = (Math.atan(getHeight() / 2 / camera.position.z) * 2 * RAD2DEG) * .1;
     camera.aspect = windowAspect;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, getHeight() );
@@ -375,11 +331,3 @@ function onmove(e) {
 document.addEventListener('DOMContentLoaded', function() {
     document.documentElement.classList.add('loaded');
 }, false);
-
-console.info(`Welcome fellow internet explorer! Thanks for visiting. 🙇🏻‍♂️
-
-Let me tell you a bit about this site. The interactive component was written in TypeScript using Three.js but the physics portion is vanilla JavaScript running in a Web Worker. The worker transfers and computes a few buffers for the position, quaternion, scale and velocity data of each sphere. The fragment shader is a hand-modified version of the standard Mesh Physical Shader. It works pretty well but has performance issues on some mobile devices. The structure and layout is plain HTML and CSS. Hooray for CSS Variables and Grid Layout!
-
-Anyway, have a look around. 👀 https://github.com/dannygarcia/dannygarcia.github.com
-
-If you have any questions or issues let me know: @dannygarcia. 😎 My condolences for your GPU. 🙏🏻`);
