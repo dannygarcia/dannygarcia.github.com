@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import { container } from './main';
 
-const setScene = () => {
+export const SetScene = () => {
     // Create Scene
     let scene = new THREE.Scene();
     let camera = new THREE.PerspectiveCamera(10, window.innerWidth / container.offsetHeight, 10, 50);
@@ -47,4 +47,4 @@ const setScene = () => {
     return { scene, camera, renderer, topLight, container };
 }
 
-export default setScene
+export default SetScene

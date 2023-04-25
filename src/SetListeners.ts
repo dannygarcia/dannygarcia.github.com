@@ -1,6 +1,6 @@
-import { isOnTouchScreen, container, camera, renderer, mouseTarget, doc } from './main';
+import { isOnTouchScreen, container, camera, renderer, mouseTarget } from './main';
 
-function setupListeners() {
+const SetListeners = () => {
     window.onresize = function() {
         var windowAspect = window.innerWidth / container.offsetHeight;
         camera.aspect = windowAspect;
@@ -19,7 +19,10 @@ function setupListeners() {
             mouseTarget.set(0, 0);
             return e;
         } else {
+
+            // Handles mouseball getting larger when hovering over name header at top of page
             const mouseOverLink = !!(e.target && (e.target as HTMLElement).nodeName.toLowerCase() === 'a');
+            
             mouseTarget.set(
                 (e.clientX / window.innerWidth) * 2 - 1,
                 (-(e.clientY / container.offsetHeight) * 2 + 1)
@@ -32,4 +35,4 @@ function setupListeners() {
     }, false);
 }
 
-export default setupListeners;
+export default SetListeners;

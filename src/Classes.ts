@@ -10,7 +10,7 @@ interface Skin {
 }
 
 // Class that represents a physically based rendering skin.
-class PBRSkin implements Skin {
+export class PBRSkin implements Skin {
   // Shaders used to render the skin.
   shaders = {
     physical: require('./shaders/custom_meshphysical.glsl').CustomMeshPhysicalShader,
@@ -59,4 +59,20 @@ class PBRSkin implements Skin {
   }
 }
 
-export default PBRSkin;
+export class DataHandler {
+  positions: Float32Array;
+  quaternions: Float32Array;
+  scales: Float32Array;
+
+  constructor(numElements: number) {
+    this.positions = new Float32Array(numElements * 3);
+    this.quaternions = new Float32Array(numElements * 4);
+    this.scales = new Float32Array(numElements * 4);
+  }
+
+  setData(data: { positions: Float32Array; quaternions: Float32Array; scales: Float32Array }): void {
+    this.positions.set(data.positions);
+    this.quaternions.set(data.quaternions);
+    this.scales.set(data.scales);
+  }
+}
