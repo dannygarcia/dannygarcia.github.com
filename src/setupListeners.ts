@@ -3,8 +3,6 @@ import { isOnTouchScreen, container, camera, renderer, mouseTarget, doc } from '
 function setupListeners() {
     window.onresize = function() {
         var windowAspect = window.innerWidth / container.offsetHeight;
-        doc.clientHeight = doc.clientHeight;
-        doc.scrollHeight = doc.scrollHeight;
         camera.aspect = windowAspect;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, container.offsetHeight);
@@ -21,7 +19,7 @@ function setupListeners() {
             mouseTarget.set(0, 0);
             return e;
         } else {
-            const mouseOverLink = !!(e.target as HTMLElement).nodeName.toLowerCase() === 'a';
+            const mouseOverLink = !!(e.target && (e.target as HTMLElement).nodeName.toLowerCase() === 'a');
             mouseTarget.set(
                 (e.clientX / window.innerWidth) * 2 - 1,
                 (-(e.clientY / container.offsetHeight) * 2 + 1)

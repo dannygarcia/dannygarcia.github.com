@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import PBRSkin from './PBRSkin';
 import setScene from './SetScene';
 // import createSpheres from './CreateSpheres';
+import setupListeners from './setupListeners';
 
 // Check if device is touchscreen:
 export const isOnTouchScreen = 'ontouchstart' in window;
@@ -189,34 +190,4 @@ const animate = () => {
 updateWorker();
 animate();
 
-window.onresize = function() {
-    var windowAspect = window.innerWidth / container.offsetHeight;
-    cachedClientHeight = doc.clientHeight;
-    cachedScrollHeight = doc.scrollHeight;
-    camera.aspect = windowAspect;
-    camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, container.offsetHeight );
-};
-
-if (window.PointerEvent) {
-    document.addEventListener('pointermove', onmove, false)
-} else {
-    document.addEventListener('mousemove', onmove, false)
-}
-
-function onmove(e) {
-    if (isOnTouchScreen) {
-        mouseTarget.set(0,0);
-        return e;
-    } else {
-        mosueOverLink = !!(e.target.nodeName.toLowerCase() == 'a');
-        mouseTarget.set(
-            (e.clientX / window.innerWidth) * 2 - 1,
-            (-(e.clientY / (container.offsetHeight)) * 2 + 1)
-        );
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.documentElement.classList.add('loaded');
-}, false);
+setupListeners()
