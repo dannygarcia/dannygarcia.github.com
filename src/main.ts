@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 
-import PBRSkin from './PBRSkin';
+import { PBRSkin } from './Classes';
 import setScene from './SetScene';
 // import createSpheres from './CreateSpheres';
-import setupListeners from './setupListeners';
+import SetListeners from './SetListeners';
 
 // Check if device is touchscreen:
 export const isOnTouchScreen = 'ontouchstart' in window;
@@ -190,4 +190,4 @@ const animate = () => {
 updateWorker();
 animate();
 
-setupListeners()
+SetListeners()
