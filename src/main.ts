@@ -1,193 +1,208 @@
-import * as THREE from 'three';
+// Import required modules
+import * as THREE from "three";
+import SetScene from "./SetScene";
+import SetListeners from "./SetListeners";
 
-import { PBRSkin } from './Classes';
-import setScene from './SetScene';
-// import createSpheres from './CreateSpheres';
-import SetListeners from './SetListeners';
+// Utility function to map a value from one range to another
+const map = (
+  value: number,
+  min1: number,
+  max1: number,
+  min2: number,
+  max2: number
+): number => {
+  return min2 + ((value - min1) * (max2 - min2)) / (max1 - min1);
+};
 
-// Check if device is touchscreen:
-export const isOnTouchScreen = 'ontouchstart' in window;
+const dt = 1 / 60;
+export const numberOfSpheres = Math.round(
+  map(window.innerWidth, 300, 2000, 5, 30)
+);
 
-// Get canvas container:
-export var container = document.querySelector('.canvas-container') as HTMLElement;
+let timeSinceLast = 0;
+let maxTime = 5; // Seconds in between sphere creation
 
-// Set up the Scene:
-export const { scene, camera, renderer, topLight, container: updatedContainer } = setScene();
-container = updatedContainer;
+let spheres = []; // Array to hold the sphere objects
 
-function map(value: number, min1: number, max1: number, min2: number, max2: number): number {
-    return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
-}
+// Check if device is touchscreen
+export const isOnTouchScreen = "ontouchstart" in window;
 
-// N is the number of spheres:
-const dt = 1/60, numberOfSpheres = Math.round(map(window.innerWidth, 300, 2000, 5, 30));
+// Get canvas container
+export const container = document.querySelector(
+  ".canvas-container"
+) as HTMLElement;
+
+// Data containers for physics and geometry information
 let physicsData = {
-    positions: new Float32Array(numberOfSpheres*3),
-    quaternions: new Float32Array(numberOfSpheres*4),
-    scales: new Float32Array(numberOfSpheres*4)
+  positions: new Float32Array(numberOfSpheres * 3),
+  quaternions: new Float32Array(numberOfSpheres * 4),
+  scales: new Float32Array(numberOfSpheres * 4),
 };
-let geometryData = {
-    positions: new Float32Array(numberOfSpheres*3),
-    quaternions: new Float32Array(numberOfSpheres*4),
-    scales: new Float32Array(numberOfSpheres*4)
+export const geometryData = {
+  positions: new Float32Array(numberOfSpheres * 3),
+  quaternions: new Float32Array(numberOfSpheres * 4),
+  scales: new Float32Array(numberOfSpheres * 4),
 };
 
-// Start physics engine/worker:
+// Set up the Scene using the setScene function
+export var {
+  scene,
+  camera,
+  renderer,
+  topLight,
+  plane,
+  spheresCenter,
+  mouseBall,
+  mouse,
+  mouseTarget,
+  mouseScaleTarget,
+  mosueOverLink,
+  move,
+  tmpM,
+  offset,
+  orientation,
+  scale,
+  time,
+  raycaster,
+  mesh,
+  instanceScaleAttribute,
+  geometry,
+} = SetScene();
+
+// Start physics engine/worker
 const physicsWorker = new Worker("/src/worker-physics.js");
 
 let sendTime;
 let create = false;
 let needsupdate = true;
-physicsWorker.onmessage = function(e) {
-    physicsData.positions = e.data.positions;
-    physicsData.quaternions = e.data.quaternions;
-    physicsData.scales = e.data.scales;
-    
-    geometryData.positions.set(physicsData.positions);
-    geometryData.quaternions.set(physicsData.quaternions);
-    geometryData.scales.set(physicsData.scales);
 
-    needsupdate = true;
-    setTimeout(updateWorker, Math.max(dt * 1000 - (Date.now() - sendTime), 0));
+// Event handler for receiving messages from the physics worker
+physicsWorker.onmessage = function (e) {
+  // Update physics data with the received positions, quaternions, and scales
+  physicsData.positions = e.data.positions;
+  physicsData.quaternions = e.data.quaternions;
+  physicsData.scales = e.data.scales;
+
+  // Update geometry data with the physics data
+  geometryData.positions.set(physicsData.positions);
+  geometryData.quaternions.set(physicsData.quaternions);
+  geometryData.scales.set(physicsData.scales);
+
+  needsupdate = true;
+  // Schedule the next update based on the time difference
+  setTimeout(
+    UpdatePhysicsWorker,
+    Math.max(dt * 1000 - (Date.now() - sendTime), 0)
+  );
 };
 
-function updateWorker() {
-    if (!needsupdate) {
-        return;
-    }
-    needsupdate = false;
-    
-    sendTime = Date.now();
-    physicsWorker.postMessage({
-        create: create,
-        numberOfSpheres: spheres.length,
-        dt: dt,
-        positions: physicsData.positions,
-        quaternions: physicsData.quaternions,
-        scales: physicsData.scales,
-        mouse: move
-    },[
-        physicsData.positions.buffer,
-        physicsData.quaternions.buffer,
-        physicsData.scales.buffer
-    ]);
-    create = false;
-}
+// Function to send update to the physics worker
+const UpdatePhysicsWorker = () => {
+  if (!needsupdate) {
+    return;
+  }
+  needsupdate = false;
 
-const spheresCenter = new THREE.Object3D();
-scene.add(spheresCenter);
-let spheres = [];
-var geometry = new THREE.InstancedBufferGeometry();
-var ballGeometry = new THREE.IcosahedronBufferGeometry(1, 3);
-geometry.copy( ballGeometry );
-var randomData = new Float32Array(numberOfSpheres).map(_ => Math.random());
-let instanceRandomAttribute = new THREE.InstancedBufferAttribute( randomData, 1 );
-geometry.setAttribute('instanceRandom', instanceRandomAttribute);
-var scaleData = new Float32Array(numberOfSpheres).map((s, i) => geometryData.scales[i*4 + 4]);
-let instanceScaleAttribute = new THREE.InstancedBufferAttribute( scaleData, 1 ).setUsage(THREE.DynamicDrawUsage);
-geometry.setAttribute('instanceScale', instanceScaleAttribute);
-let material = new PBRSkin(scrollPercent).material;
-let mesh = new THREE.InstancedMesh(geometry, material, numberOfSpheres);
-spheresCenter.add(mesh);
-mesh.castShadow = true;
-mesh.receiveShadow = true;
+  // Record the current time and send the updated data to the physics worker
+  sendTime = Date.now();
+  physicsWorker.postMessage(
+    {
+      create: create,
+      numberOfSpheres: spheres.length,
+      dt: dt,
+      positions: physicsData.positions,
+      quaternions: physicsData.quaternions,
+      scales: physicsData.scales,
+      mouse: move,
+    },
+    [
+      physicsData.positions.buffer,
+      physicsData.quaternions.buffer,
+      physicsData.scales.buffer,
+    ]
+  );
+  create = false;
+};
 
-// Setup MouseBall
-let mouseGeometry = new THREE.CircleGeometry( 1, 10);
-mouseGeometry.vertices.shift(); // removes center vertex
-let mouseBall = new THREE.LineLoop( mouseGeometry, new THREE.LineBasicMaterial( { color: getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() } ) );
-if (!isOnTouchScreen) {
-    scene.add(mouseBall);
-}
 
-function makeSphere() {
+// Animation loop
+export var scrollPercent = 0;
+const animate = () => {
+  time += 0.01;
+  timeSinceLast++;
+  requestAnimationFrame(animate);
+
+  // scrolling data
+  var doc = document.documentElement;
+  var cachedClientHeight = doc.clientHeight;
+  var cachedScrollHeight = doc.scrollHeight;
+
+  var targetScollPercent =
+    doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
+
+  // Create new spheres at regular intervals
+  if (spheres.length < numberOfSpheres && timeSinceLast > maxTime) {
     create = true;
     spheres.push(1);
-}
+    timeSinceLast = 0;
+  }
 
-let timeSinceLast = 0;
-let maxTime = 5; // Seconds in between sphere creation
-export var doc = document.documentElement;
-var cachedClientHeight = doc.clientHeight;
-var cachedScrollHeight = doc.scrollHeight;
+  // Update positions, orientations, and scales of spheres
+  spheres.forEach((s, i) => {
+    offset.set(
+      geometryData.positions[3 * i + 0],
+      geometryData.positions[3 * i + 1],
+      geometryData.positions[3 * i + 2]
+    );
+    orientation.set(
+      geometryData.quaternions[4 * i + 0],
+      geometryData.quaternions[4 * i + 1],
+      geometryData.quaternions[4 * i + 2],
+      geometryData.quaternions[4 * i + 3]
+    );
+    scale.setScalar(geometryData.scales[4 * i + 0]);
+    tmpM.compose(offset, orientation, scale);
+    mesh.setMatrixAt(i, tmpM);
 
-// mouse intersect plane data
-const planeNormal = new THREE.Vector3(0, 0, 1);
-const plane = new THREE.Plane(planeNormal, 0);
+    instanceScaleAttribute.setX(i, geometryData.scales[4 * i + 3] / 4);
+  });
 
-const raycaster = new THREE.Raycaster();
-let mouse = new THREE.Vector2(0.,-2.);
-export let mouseTarget = new THREE.Vector2(0.,0);
-let mouseScaleTarget = new THREE.Vector3();
-let mosueOverLink = false;
-let move = new THREE.Vector3();
+  instanceScaleAttribute.needsUpdate = true;
+  geometry.setAttribute("instanceScale", instanceScaleAttribute);
+  mesh.instanceMatrix.needsUpdate = true;
 
-// scrolling data
-var scrollPercent = 0;
-var targetScollPercent = doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
+  // Update scroll percentage based on scrolling position
+  targetScollPercent =
+    doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
+  scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
 
-var tmpM = new THREE.Matrix4();
-let offset = new THREE.Vector3();
-let orientation = new THREE.Quaternion();
-let scale = new THREE.Vector3();
-let time = 0;
-const animate = () => {
-    time += 0.01;
-    timeSinceLast++;
-    requestAnimationFrame( animate );
-    
-    if (spheres.length < numberOfSpheres && timeSinceLast > maxTime) {
-        makeSphere();
-        timeSinceLast = 0;
-    }
-    
-    // Handles positions of spheres:
-    spheres.forEach((s, i) => {
-        offset.set(
-            geometryData.positions[3*i+0],
-            geometryData.positions[3*i+1],
-            geometryData.positions[3*i+2]
-        );
-        orientation.set(
-            geometryData.quaternions[4*i+0],
-            geometryData.quaternions[4*i+1],
-            geometryData.quaternions[4*i+2],
-            geometryData.quaternions[4*i+3]
-        );
-        scale.setScalar(geometryData.scales[4 * i + 0]);
-        tmpM.compose( offset, orientation, scale );
-        mesh.setMatrixAt( i, tmpM );
+  if (isOnTouchScreen) {
+    mouseTarget.set(Math.cos(time * Math.PI) * 0.25, Math.cos(time) * 0.5);
+  }
 
-        instanceScaleAttribute.setX(i, geometryData.scales[4*i + 3] / 4);
-    });
+  mouse.lerp(mouseTarget, 0.15); // Lagging of spheres before they follow mouse
 
-    instanceScaleAttribute.needsUpdate = true;
-    geometry.setAttribute('instanceScale', instanceScaleAttribute);
-    mesh.instanceMatrix.needsUpdate = true;
+  // Cast a ray from the mouse position and intersect with the plane
+  raycaster.setFromCamera(mouse, camera);
+  raycaster.ray.intersectPlane(plane, move);
+  mouseBall.position.copy(move);
 
-    targetScollPercent = (doc.scrollTop / (cachedScrollHeight - cachedClientHeight));
-    scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
-    // spheresCenter.rotation.x = scrollPercent * 2;
+  // Scale and rotate the mouseBall based on mouse interactions
+  mouseScaleTarget.setScalar(
+    mosueOverLink ? 0.25 + mouse.distanceToSquared(mouseTarget) * 0.5 : 0.1
+  );
+  mouseBall.rotateZ(-0.2 * mouseBall.scale.x);
+  mouseBall.scale.lerp(mouseScaleTarget, 0.06);
 
-    if (isOnTouchScreen) {
-        mouseTarget.set(Math.cos(time * Math.PI) * .25, Math.cos(time) * .5);
-    }
-
-    mouse.lerp(mouseTarget, .15); // Lagging of spheres before they follow mouse
-    
-    raycaster.setFromCamera(mouse, camera);
-    raycaster.ray.intersectPlane(plane, move);
-    mouseBall.position.copy(move);
-
-    mouseScaleTarget.setScalar(mosueOverLink ? .25 + mouse.distanceToSquared(mouseTarget) * .5 : .1);
-    mouseBall.rotateZ(-.2 * mouseBall.scale.x);
-
-    mouseBall.scale.lerp(mouseScaleTarget, .06);
-
-    renderer.render( scene, camera );
+  // Render the scene
+  renderer.render(scene, camera);
 };
 
-updateWorker();
+// Start the update process for the physics worker
+UpdatePhysicsWorker();
+
+// Start the animation loop
 animate();
 
-SetListeners()
+// Set up event listeners
+SetListeners();
