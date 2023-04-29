@@ -4,10 +4,10 @@ import { PBRSkin } from "./Classes";
 import {
   container,
   isOnTouchScreen,
-  numberOfSpheres,
-  geometryData,
   scrollPercent,
 } from "./main";
+
+import { geometryData, numberOfSpheres } from "./PhysicsUtils";
 
 export const SetScene = () => {
   // Create Scene
@@ -89,7 +89,6 @@ export const SetScene = () => {
 
   let mouseTarget = new THREE.Vector2(0, 0);
   let mouseScaleTarget = new THREE.Vector3();
-  let mosueOverLink = false;
   let move = new THREE.Vector3();
 
   var tmpM = new THREE.Matrix4();
@@ -144,7 +143,6 @@ export const SetScene = () => {
     mouse,
     mouseTarget,
     mouseScaleTarget,
-    mosueOverLink,
     move,
     tmpM,
     offset,
