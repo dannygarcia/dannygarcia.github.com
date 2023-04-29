@@ -18,7 +18,7 @@ export const SetScene = () => {
     10,
     50
   );
-  camera.position.z = 30;
+  camera.position.z = 18;
 
   // Create Renderer
   let renderer = new THREE.WebGLRenderer({
