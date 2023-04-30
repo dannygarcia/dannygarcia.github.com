@@ -1,12 +1,11 @@
 import {
   isOnTouchScreen,
   camera,
-  renderer,
   mouseTarget,
   mouseState,
 } from "./main";
 
-const SetListeners = () => {
+const SetListeners = (renderer) => {
   window.onresize = function () {
     var windowAspect = window.innerWidth / window.innerHeight;
     camera.aspect = windowAspect;

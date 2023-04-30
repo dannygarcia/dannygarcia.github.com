@@ -8,7 +8,7 @@ import {
 
 import { geometryData, numberOfSpheres } from "./PhysicsUtils";
 
-export const SetScene = (container) => {
+export const SetScene = () => {
   // Create Scene
   let scene = new THREE.Scene();
   let camera = new THREE.PerspectiveCamera(
@@ -18,31 +18,6 @@ export const SetScene = (container) => {
     50
   );
   camera.position.z = 30;
-
-  // Create Renderer
-  let renderer = new THREE.WebGLRenderer({
-    alpha: true,
-    premultipliedAlpha: false,
-    powerPreference: "high-performance",
-    precision: "lowp",
-    depth: false,
-    antialias: true,
-  });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.BasicShadowMap;
-  renderer.toneMapping = THREE.ReinhardToneMapping;
-  renderer.toneMappingExposure = 3;
-  renderer.physicallyCorrectLights = true;
-
-  (
-    (renderer.domElement.getContext("webgl") ||
-      renderer.domElement.getContext(
-        "experimental-webgl"
-      )) as WebGLRenderingContext
-  ).getExtension("OES_standard_derivatives");
-
-  container.appendChild(renderer.domElement);
 
   // Create a center object to hold the spheres and add it to the scene
   const spheresCenter = new THREE.Object3D();
@@ -134,7 +109,6 @@ export const SetScene = (container) => {
   return {
     scene,
     camera,
-    renderer,
     topLight,
     plane,
     spheresCenter,
@@ -152,7 +126,6 @@ export const SetScene = (container) => {
     mesh,
     instanceScaleAttribute,
     geometry,
-    container,
   };
 };
 

@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import SetScene from "./SetScene";
 import SetListeners from "./SetListeners";
 
@@ -26,7 +27,6 @@ export const container = document.querySelector(
 export var {
   scene,
   camera,
-  renderer,
   topLight,
   plane,
   spheresCenter,
@@ -44,8 +44,7 @@ export var {
   mesh,
   instanceScaleAttribute,
   geometry,
-  container: newContainer,
-} = SetScene(container);
+} = SetScene();
 
 export var scrollPercent = 0;
 export const mouseState = {
@@ -59,7 +58,7 @@ const CreateSpheres = () => {
     spheres.push(1);
     timeSinceLast = 0;
   }
-}
+};
 
 const HandleMouse = () => {
   // Mouse Logic:
@@ -81,7 +80,7 @@ const HandleMouse = () => {
   mouseBall.rotateZ(-0.2 * mouseBall.scale.x);
 
   mouseBall.scale.lerp(mouseScaleTarget, 0.06);
-}
+};
 
 const HandleScrolling = () => {
   // scrolling data
@@ -96,7 +95,33 @@ const HandleScrolling = () => {
   targetScollPercent =
     doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
   scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
-}
+};
+
+// Create Renderer
+const renderer = new THREE.WebGLRenderer({
+  alpha: true,
+  premultipliedAlpha: false,
+  powerPreference: "high-performance",
+  precision: "lowp",
+  depth: false,
+  antialias: true,
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.BasicShadowMap;
+renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = 3;
+renderer.physicallyCorrectLights = true;
+container.appendChild(renderer.domElement);
+
+(
+  (renderer.domElement.getContext("webgl") ||
+    renderer.domElement.getContext(
+      "experimental-webgl"
+    )) as WebGLRenderingContext
+).getExtension("OES_standard_derivatives");
+
 
 // Animation loop
 const animate = () => {
@@ -140,11 +165,15 @@ const animate = () => {
   renderer.render(scene, camera);
 };
 
-// Start the update process for the physics worker
-sendPhysicsUpdate(physicsWorker);
+export const main = () => {
+  // Start the update process for the physics worker
+  sendPhysicsUpdate(physicsWorker);
 
-// Start the animation loop
-animate();
+  // Start the animation loop
+  animate();
 
-// Set up event listeners
-SetListeners();
+  // Set up event listeners
+  SetListeners(renderer);
+}
+
+export default main();
