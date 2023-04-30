@@ -43,7 +43,7 @@ export const geometryData = {
 
 export const PhysicsEngine = (onMessage) => {
   // Start physics engine/worker
-  const physicsWorker = new Worker("/src/worker-physics.js");
+  const physicsWorker = new Worker("/src/physics.worker.js");
 
   // Event handler for receiving messages from the physics worker
   physicsWorker.onmessage = onMessage;
