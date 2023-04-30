@@ -6,15 +6,6 @@ const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
     inject: 'body'
 });
 
-/* Configure BrowserSync */
-const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
-const BrowserSyncPluginConfig = new BrowserSyncPlugin({
-    host: 'localhost',
-    port: 3000,
-}, config = {
-    reload: false
-});
-
 module.exports = {
     mode: "development",
     // devtool: "inline-source-map",
@@ -51,6 +42,6 @@ module.exports = {
             }
         ]
     },
-    plugins: [HTMLWebpackPluginConfig, BrowserSyncPluginConfig]
+    plugins: [HTMLWebpackPluginConfig]
 };
 

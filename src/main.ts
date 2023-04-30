@@ -1,5 +1,3 @@
-// Import required modules
-import * as THREE from "three";
 import SetScene from "./SetScene";
 import SetListeners from "./SetListeners";
 
@@ -48,17 +46,43 @@ export var {
   geometry,
 } = SetScene();
 
-// Animation loop
 export var scrollPercent = 0;
 export const mouseState = {
   mouseOverLink: false,
 };
 
-const animate = () => {
-  time += 0.01;
-  timeSinceLast++;
-  requestAnimationFrame(animate);
+const CreateSpheres = () => {
+  // Create new spheres at regular intervals
+  if (spheres.length < numberOfSpheres && timeSinceLast > maxTime) {
+    setCreate(true);
+    spheres.push(1);
+    timeSinceLast = 0;
+  }
+}
 
+const HandleMouse = () => {
+  // Mouse Logic:
+  if (isOnTouchScreen) {
+    mouseTarget.set(Math.cos(time * Math.PI) * 0.25, Math.cos(time) * 0.5);
+  }
+
+  mouse.lerp(mouseTarget, 0.15); // Lagging of spheres before they follow mouse
+  mouseBall.position.copy(move);
+
+  // Scale and rotate the mouseBall based on mouse interactions
+  mouseScaleTarget.setScalar(
+    mouseState.mouseOverLink
+      ? 0.25 + mouse.distanceToSquared(mouseTarget) * 0.5
+      : 0.1
+  );
+  mouseBall.rotateZ(-0.2 * mouseBall.scale.x);
+
+  mouseBall.rotateZ(-0.2 * mouseBall.scale.x);
+
+  mouseBall.scale.lerp(mouseScaleTarget, 0.06);
+}
+
+const HandleScrolling = () => {
   // scrolling data
   var doc = document.documentElement;
   var cachedClientHeight = doc.clientHeight;
@@ -67,13 +91,19 @@ const animate = () => {
   var targetScollPercent =
     doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
 
-  // Create new spheres at regular intervals
-  if (spheres.length < numberOfSpheres && timeSinceLast > maxTime) {
-    setCreate(true);
-    spheres.push(1);
-    timeSinceLast = 0;
-  }
+  // Update scroll percentage based on scrolling position
+  targetScollPercent =
+    doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
+  scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
+}
 
+// Animation loop
+const animate = () => {
+  time += 0.01;
+  timeSinceLast++;
+  requestAnimationFrame(animate);
+
+  CreateSpheres();
   // Update positions, orientations, and scales of spheres
   spheres.forEach((s, i) => {
     offset.set(
@@ -98,33 +128,12 @@ const animate = () => {
   geometry.setAttribute("instanceScale", instanceScaleAttribute);
   mesh.instanceMatrix.needsUpdate = true;
 
-  // Update scroll percentage based on scrolling position
-  targetScollPercent =
-    doc.scrollTop / (cachedScrollHeight - cachedClientHeight);
-  scrollPercent += (targetScollPercent - scrollPercent) * 0.01;
-
-  if (isOnTouchScreen) {
-    mouseTarget.set(Math.cos(time * Math.PI) * 0.25, Math.cos(time) * 0.5);
-  }
-
-  mouse.lerp(mouseTarget, 0.15); // Lagging of spheres before they follow mouse
-
   // Cast a ray from the mouse position and intersect with the plane
   raycaster.setFromCamera(mouse, camera);
   raycaster.ray.intersectPlane(plane, move);
-  mouseBall.position.copy(move);
 
-  // Scale and rotate the mouseBall based on mouse interactions
-  mouseScaleTarget.setScalar(
-    mouseState.mouseOverLink
-      ? 0.25 + mouse.distanceToSquared(mouseTarget) * 0.5
-      : 0.1
-  );
-  mouseBall.rotateZ(-0.2 * mouseBall.scale.x);
-
-  mouseBall.rotateZ(-0.2 * mouseBall.scale.x);
-
-  mouseBall.scale.lerp(mouseScaleTarget, 0.06);
+  HandleScrolling();
+  HandleMouse();
 
   // Render the scene
   renderer.render(scene, camera);
