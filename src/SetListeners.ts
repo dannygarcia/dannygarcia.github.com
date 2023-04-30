@@ -1,6 +1,5 @@
 import {
   isOnTouchScreen,
-  container,
   camera,
   renderer,
   mouseTarget,
@@ -9,10 +8,10 @@ import {
 
 const SetListeners = () => {
   window.onresize = function () {
-    var windowAspect = window.innerWidth / container.offsetHeight;
+    var windowAspect = window.innerWidth / window.innerHeight;
     camera.aspect = windowAspect;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, container.offsetHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
   };
 
   if (window.PointerEvent) {
@@ -33,7 +32,7 @@ const SetListeners = () => {
 
       mouseTarget.set(
         (e.clientX / window.innerWidth) * 2 - 1,
-        -(e.clientY / container.offsetHeight) * 2 + 1
+        -(e.clientY / window.innerHeight) * 2 + 1
       );
     }
   }

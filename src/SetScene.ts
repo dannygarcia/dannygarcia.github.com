@@ -2,19 +2,18 @@ import * as THREE from "three";
 
 import { PBRSkin } from "./Classes";
 import {
-  container,
   isOnTouchScreen,
   scrollPercent,
 } from "./main";
 
 import { geometryData, numberOfSpheres } from "./PhysicsUtils";
 
-export const SetScene = () => {
+export const SetScene = (container) => {
   // Create Scene
   let scene = new THREE.Scene();
   let camera = new THREE.PerspectiveCamera(
     10,
-    window.innerWidth / container.offsetHeight,
+    window.innerWidth / window.innerHeight,
     10,
     50
   );
@@ -29,7 +28,7 @@ export const SetScene = () => {
     depth: false,
     antialias: true,
   });
-  renderer.setSize(window.innerWidth, container.offsetHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.BasicShadowMap;
   renderer.toneMapping = THREE.ReinhardToneMapping;
@@ -153,6 +152,7 @@ export const SetScene = () => {
     mesh,
     instanceScaleAttribute,
     geometry,
+    container,
   };
 };
 

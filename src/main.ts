@@ -44,7 +44,8 @@ export var {
   mesh,
   instanceScaleAttribute,
   geometry,
-} = SetScene();
+  container: newContainer,
+} = SetScene(container);
 
 export var scrollPercent = 0;
 export const mouseState = {
