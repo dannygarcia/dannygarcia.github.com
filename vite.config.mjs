@@ -34,9 +34,7 @@ export default defineConfig({
                 linkify: true,
                 typographer: true,
             },
-            markdownItUses: [
-                require('markdown-it-toc-done-right')
-            ],
+            markdownItUses: [],
             transforms: {
                 before: (content) => {
                     return content;
