@@ -35,7 +35,6 @@ export default defineConfig({
                 typographer: true,
             },
             markdownItUses: [
-                [require('markdown-it-anchor'), { permalink: true, permalinkBefore: true, permalinkSymbol: '#' }],
                 require('markdown-it-toc-done-right')
             ],
             transforms: {
