@@ -957,6 +957,15 @@ fs-extra@^11.1.0:
     jsonfile "^6.0.1"
     universalify "^2.0.0"
 
+fs-extra@^11.1.1:
+  version "11.3.0"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.3.0.tgz#0daced136bbaf65a555a326719af931adc7a314d"
+  integrity sha512-Z4XaCL6dUDHfP/jT25jJKMmtxvuwbkrD1vNSMFlo9lNLY2c5FHYSQgHPRZUjAB26TpDEoW9HCOgplrdbaPV/ew==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
 fsevents@~2.3.2, fsevents@~2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
@@ -1154,6 +1163,21 @@ lower-case@^2.0.2:
   integrity sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==
   dependencies:
     tslib "^2.0.3"
+
+markdown-it-attrs@^4.1.6:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/markdown-it-attrs/-/markdown-it-attrs-4.3.1.tgz#1e1f9bd2c87276d8f4ed74ad4268df428b7deee6"
+  integrity sha512-/ko6cba+H6gdZ0DOw7BbNMZtfuJTRp9g/IrGIuz8lYc/EfnmWRpaR3CFPnNbVz0LDvF8Gf1hFGPqrQqq7De0rg==
+
+markdown-it-footnote@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/markdown-it-footnote/-/markdown-it-footnote-3.0.3.tgz#e0e4c0d67390a4c5f0c75f73be605c7c190ca4d8"
+  integrity sha512-YZMSuCGVZAjzKMn+xqIco9d1cLGxbELHZ9do/TSYVzraooV8ypsppKNmUJ0fVH5ljkCInQAtFpm8Rb3eXSrt5w==
+
+markdown-it-modify-token@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/markdown-it-modify-token/-/markdown-it-modify-token-1.0.2.tgz#542471a323270a5c102a635b07fe3b47c278eea0"
+  integrity sha512-A1z8SrRYM0NfFwAhTN1NAiodKmP66HsvdZE/pchfWzcIW/UW8c4r7gXcQKxHr+dSzBndRz5Jsa/ApxAQUrzwbA==
 
 markdown-it@^13.0.1:
   version "13.0.2"
@@ -1594,6 +1618,18 @@ vite-plugin-html@^3.2.2:
     html-minifier-terser "^6.1.0"
     node-html-parser "^5.3.3"
     pathe "^0.2.0"
+
+vite-plugin-markdownify@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/vite-plugin-markdownify/-/vite-plugin-markdownify-0.2.1.tgz#d1d33181f7132fbcd698d6141978d835657bef8a"
+  integrity sha512-ckVtkcViAq6OpexuBdQwfQDGkRzlocIUqhEim1R+bYNMqABBNBRF07iBtE//PeI37zBH+Tp6YqvSCn9DlU1MQQ==
+  dependencies:
+    fs-extra "^11.1.1"
+    gray-matter "^4.0.3"
+    markdown-it "^13.0.1"
+    markdown-it-attrs "^4.1.6"
+    markdown-it-footnote "^3.0.3"
+    markdown-it-modify-token "^1.0.2"
 
 vite-plugin-md@>=0.22.5:
   version "0.22.5"

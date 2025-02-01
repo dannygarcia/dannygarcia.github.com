@@ -21,6 +21,7 @@
     "markdown-it": "^14.1.0",
     "three": "^0.112.0",
     "vite-plugin-html": "^3.2.2",
+    "vite-plugin-markdownify": "^0.2.1",
     "vite-plugin-md": "^0.21.5"
   }
 }

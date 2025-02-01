@@ -1,12 +1,12 @@
 import { defineConfig } from 'vite';
 import glsl from 'vite-plugin-glsl';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
-import markdown from 'vite-plugin-md';
 import { createHtmlPlugin } from 'vite-plugin-html';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import markdownIt from 'markdown-it';
+import markdownify from 'vite-plugin-markdownify';
 
 export default defineConfig({
     plugins: [
@@ -17,32 +17,8 @@ export default defineConfig({
                 { src: 'src/libs/cannon.build.js', dest: 'src/libs'}
             ]
         }),
-        markdown({
-            mode: 'html',
-            markdownIt: {
-                html: true,
-                linkify: true,
-                typographer: true,
-            },
-            markdownItSetup(md) {
-                md.renderer.rules.table_open = function() {
-                    return '<table class="table">';
-                };
-            },
-            markdownItOptions: {
-                html: true,
-                linkify: true,
-                typographer: true,
-            },
-            markdownItUses: [],
-            transforms: {
-                before: (content) => {
-                    return content;
-                },
-                after: (content) => {
-                    return content;
-                }
-            }
+        markdownify({
+            pages: generateHtmlPages()
         }),
         createHtmlPlugin({
             pages: generateHtmlPages()
