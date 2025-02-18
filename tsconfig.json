@@ -1,4 +1,5 @@
 {
+    "extends": "astro/tsconfigs/strict",
     "compilerOptions": {
         "target": "es6",
         "module": "es6",
@@ -6,11 +7,11 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "preserveConstEnums": true,
-        "rootDir": "./src",
-        "outDir": "./build"
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        }
     },
-    "compileOnSave": true,
-    "buildOnSave": false,
     "exclude": [
         "node_modules"
     ]
