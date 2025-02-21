@@ -43,7 +43,7 @@ import { sRGBEncoding } from 'three/src/constants';
 // import { NormalMapShader } from 'three/examples/jsm/shaders/NormalMapShader';
 // import { MeshPhysicalMaterial } from 'three/src/materials/MeshPhysicalMaterial';
 // import * as Nodes from 'three/examples/jsm/nodes/Nodes';
-import { CustomMeshPhysicalShader } from '../shaders/custom_meshphysical.glsl';
+import { CustomMeshPhysicalShader } from './shaders/custom_meshphysical.glsl';
 
 const isNarrowScreen = !!navigator.platform.match(/iPhone|iPod/) || !!window.matchMedia('(max-width: 736px)').matches;
 
@@ -154,7 +154,7 @@ function map(value: number, min1: number, max1: number, min2: number, max2: numb
     return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 }
 
-const physicsWorker = new Worker("/src/worker-physics.js");
+const physicsWorker = new Worker("/public/worker-physics.js");
 
 const dt = 1 / 60, N = Math.round(map(window.innerWidth, 300, 2000, 5, 30));
 let physicsData = {
