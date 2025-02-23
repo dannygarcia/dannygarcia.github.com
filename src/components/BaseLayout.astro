@@ -1,0 +1,42 @@
+---
+import Header from './Header.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  headerVariant?: 'default' | 'small';
+}
+
+const {
+  title = "Danny Garcia | Engineer",
+  description = "Danny Garcia, senior frontend engineer at Shopify. Building nice things for good people.",
+  headerVariant = 'default'
+} = Astro.props;
+
+import '../styles/global.css';
+---
+<!DOCTYPE html>
+<html class="no-js" lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content={description} />
+    <meta name="author" content="Danny Garcia" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href}>
+    <script is:inline>document.documentElement.classList.remove('no-js');</script>
+</head>
+<body>
+    <main>
+        <Header variant={headerVariant} />
+        <slot />
+        <footer>
+            <div class="footer-content">
+                <p>You can follow me on <a href="https://www.threads.net/@dannygarcia">Threads</a>, <a href="https://www.instagram.com/dannygarcia/">Instagram</a>, and <a href="https://www.linkedin.com/in/dannygarcia1">LinkedIn</a>. Here's my <a href="mailto:hey@danny-garcia.com">Email</a>.</p>
+            </div>
+        </footer>
+    </main>
+    <script is:inline data-goatcounter="https://dannygarcia.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

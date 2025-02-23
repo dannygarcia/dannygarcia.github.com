@@ -1,0 +1,95 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../components/BaseLayout.astro';
+
+export async function getStaticPaths() {
+    const posts = await getCollection('blog');
+    return posts.map(post => ({
+        params: { slug: post.slug },
+        props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const title = `${post.data.title} | Danny Garcia`;
+---
+<BaseLayout title={title} description={post.data.description} headerVariant="small">
+    <div class="blog-timeline">
+        <article class="timeline-entry">
+                <h2 class="timeline-co type-primary">
+                    {post.data.title}
+                    <span class="timeline-time type-secondary">{post.data.publishDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                </h2>
+            <div class="timeline-description">
+                <Content />
+            </div>
+        </article>
+    </div>
+</BaseLayout>
+
+    <style>
+    /* Override main grid to exclude intro area */
+    :global(main) {
+        grid-template-areas:
+            ". header ."
+            ". blog ."
+            ". footer .";
+        grid-template-rows: 1fr auto auto;
+        grid-template-columns: 1fr minmax(auto, 800px) 1fr;
+    }
+
+    :global(.logo) {
+        margin: var(--v-space) 0;
+    }
+
+    /* Override timeline entry grid for blog posts */
+    :global(.timeline-entry) {
+        grid-template-areas:
+            ". co ."
+            ". description .";
+        grid-template-rows: auto 1fr;
+        grid-template-columns: 1fr 10fr 1fr;
+        padding: calc(var(--v-space)/2) 0;
+        backdrop-filter: none;
+    }
+
+    :global(.timeline-co) {
+        margin: calc(var(--v-space) * .25) 0 0;
+    }
+
+    @media only screen and (max-width: 834px) {
+        :global(main) {
+            grid-template-columns: 1fr 20fr 1fr;
+        }
+        :global(.timeline-entry) {
+            grid-template-columns: 1fr 20fr 1fr;
+        }
+    }
+
+    /* Enhance markdown content styling */
+    :global(.timeline-description) :global(h2) {
+        font-size: 2rem;
+        margin: 2rem 0 1rem;
+        font-weight: var(--f-weight);
+    }
+
+    :global(.timeline-description) :global(ul),
+    :global(.timeline-description) :global(ol) {
+        margin: 1rem 0;
+        padding-left: 1.5rem;
+    }
+
+    :global(.timeline-description) :global(li) {
+        margin: 0.5rem 0;
+    }
+
+    :global(.timeline-description) :global(p) {
+        margin: 1rem 0;
+    }
+
+    :global(.timeline-description) :global(strong) {
+        color: var(--c-primary);
+    }
+</style>

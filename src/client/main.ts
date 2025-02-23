@@ -102,7 +102,7 @@ class PBRSkin implements Skin {
         // this.material.color = new Nodes.MathNode(col1, col2, smoothScale, Nodes.MathNode.MIX);
     }
 
-    update(target) {
+    update(target: { scale: { x: number; }; }) {
         this.uniforms.uTime.value += .01;
         this.uniforms.uScale.value = target.scale.x * Math.max(1. - scrollPercent, .25);
         // when the sphere goes small, reset material
@@ -168,7 +168,7 @@ let geometryData = {
     scales: new Float32Array(N * 4)
 };
 
-let sendTime;
+let sendTime: number;
 let create = false;
 let needsupdate = true;
 physicsWorker.onmessage = function (e) {
@@ -209,7 +209,7 @@ function updateWorker() {
 
 const spheresCenter = new Object3D();
 scene.add(spheresCenter);
-let spheres = [];
+let spheres: number[] = [];
 var geometry = new InstancedBufferGeometry();
 var ballGeometry = new IcosahedronBufferGeometry(1, 3);
 geometry.copy(ballGeometry);
@@ -360,27 +360,15 @@ if (window.PointerEvent) {
     document.addEventListener('mousemove', onmove, false);
 }
 
-function onmove(e) {
+function onmove(e: PointerEvent | MouseEvent) {
     if (isNarrowScreen) {
         mouseTarget.set(0, 0);
         return e;
     } else {
-        mosueOverLink = !!(e.target.nodeName.toLowerCase() == 'a');
+        mosueOverLink = !!(e.target && (e.target as Element).nodeName.toLowerCase() === 'a');
         mouseTarget.set(
             (e.clientX / window.innerWidth) * 2 - 1,
             (-(e.clientY / (getHeight())) * 2 + 1)
         );
     }
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.documentElement.classList.add('loaded');
-}, false);
-
-console.info(`Welcome fellow internet explorer! Thanks for visiting. 🙇🏻‍♂️
-
-Let me tell you a bit about this site. The interactive component was written in TypeScript using Three.js but the physics portion is vanilla JavaScript running in a Web Worker. The worker transfers and computes a few buffers for the position, quaternion, scale and velocity data of each sphere. The fragment shader is a hand-modified version of the standard Mesh Physical Shader. It works pretty well but has performance issues on some mobile devices. The structure and layout is plain HTML and CSS. Hooray for CSS Variables and Grid Layout!
-
-Anyway, have a look around. 👀 https://github.com/dannygarcia/dannygarcia.github.com
-
-If you have any questions or issues let me know: @dannygarcia. 😎 My condolences for your GPU. 🙏🏻`);

@@ -1,9 +1,41 @@
 /* CSS Mini Reset */
-html, body, div, form, fieldset, legend, label { margin: 0; padding: 0;  }
-table { border-collapse: collapse; border-spacing: 0; }
-th, td { text-align: left; vertical-align: top; }
-h1, h2, h3, h4, h5, h6, th, td, caption { font-weight:normal; }
-img { border: 0; }
+html,
+body,
+div,
+form,
+fieldset,
+legend,
+label {
+    margin: 0;
+    padding: 0;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+th,
+td {
+    text-align: left;
+    vertical-align: top;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+th,
+td,
+caption {
+    font-weight: normal;
+}
+
+img {
+    border: 0;
+}
 
 /* Fonts */
 
@@ -89,15 +121,16 @@ img { border: 0; }
     src: local('AvenirNext-UltraLightItalic'), url('./fonts/AvenirNext-UltraLightItalic.woff2');
     font-weight: 200;
     font-style: italic;
-}  
+}
 
 /* Site Styles */
 
 :root {
     --c-primary: rgb(209, 197, 173);
-    --c-secondary: rgba(200,200,200,.85);
+    --c-secondary: rgba(200, 200, 200, .85);
     --c-tertiary: hsl(88, 25%, 11%, .5);
-    
+    --c-fourth: hsl(88, 28%, 6%, .85);
+
     --v-space: 6rem;
     --canvas-height: 80vh;
     --f-weight: 600;
@@ -138,23 +171,27 @@ main {
     /* visibility: hidden; */
     display: grid;
     grid-template-columns: 1fr 6fr 4fr 1fr;
-    grid-template-rows: 1fr 3fr auto;
+    grid-template-rows: 1fr 3fr auto auto auto;
     grid-template-areas:
-    ". header header ."
-    ". intro . ."
-    ". timeline timeline ."
-    "footer footer footer footer";
+        ". header header ."
+        ". intro . ."
+        ". blog blog ."
+        ". work work ."
+        "footer footer footer footer";
 }
 
 .logo {
     margin: var(--v-space) 0 0 0;
     opacity: 0;
     will-change: opacity;
-    
+
     grid-area: header;
     align-self: end;
 }
-.no-js .logo { opacity: 1; }
+
+.no-js .logo {
+    opacity: 1;
+}
 
 .loaded .logo {
     animation-name: fadeIn;
@@ -171,10 +208,32 @@ main {
     text-decoration: none;
 }
 
+.logo-small a {
+    font-size: 3rem;
+}
+
+.logo-small br {
+    display: none;
+}
+
 .type-primary {
     font-weight: var(--f-weight);
     font-size: 3rem;
     line-height: 1.4;
+}
+
+.type-secondary {
+    font-weight: var(--f-weight);
+    font-size: 1.4rem;
+    line-height: 1.4;
+}
+
+.type-header {
+    font-weight: var(--f-weight);
+    font-size: 2rem;
+    line-height: 1.4;
+    text-align: center;
+    font-variant-caps: all-petite-caps;
 }
 
 .intro {
@@ -182,11 +241,14 @@ main {
     opacity: 0;
     will-change: opacity;
     margin: var(--v-space) 0;
-    
+
     grid-area: intro;
     align-self: end;
 }
-.no-js .intro { opacity: 1; }
+
+.no-js .intro {
+    opacity: 1;
+}
 
 .loaded .intro {
     animation-name: fadeIn;
@@ -196,8 +258,12 @@ main {
     animation-fill-mode: forwards;
 }
 
-.timeline {
-    grid-area: timeline;
+.blog-timeline {
+    grid-area: blog;
+}
+
+.work-timeline {
+    grid-area: work;
 }
 
 .timeline-entry {
@@ -205,15 +271,23 @@ main {
     background: var(--c-tertiary);
     backdrop-filter: saturate(180%) blur(40px);
     -webkit-backdrop-filter: saturate(180%) blur(40px);
-    
+
     position: relative;
-    padding: calc(var(--v-space)/2) 0;
-    
+    padding: calc(var(--v-space)/2) 0 var(--v-space);
+
     display: grid;
     grid-template-columns: 1fr 5fr 5fr 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-    ". co description .";
+        ". co description .";
+    text-wrap: pretty;
+}
+
+.timeline-header {
+    padding: 0 0 calc(var(--v-space)/2);
+    grid-template-areas: ". co co .";
+    background: var(--c-fourth);
+    backdrop-filter: saturate(180%) blur(60px);
 }
 
 .timeline-entry:first-child {
@@ -244,18 +318,17 @@ main {
     font-weight: normal;
     font-size: 1.5rem;
     line-height: 1.4;
-    
     grid-area: description;
 }
 
 footer {
     grid-area: footer;
-    
+
     display: grid;
     grid-template-columns: 1fr 5fr 5fr 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-    ". p p ."
+        ". p p ."
 }
 
 footer .footer-content {
@@ -264,7 +337,7 @@ footer .footer-content {
     font-weight: var(--f-weight);
     font-size: 1.5rem;
     line-height: 1.4;
-    
+
     grid-area: p;
 }
 
@@ -272,9 +345,11 @@ footer .footer-content {
     :root {
         --v-space: 4rem;
     }
+
     html {
         font-size: 14px;
     }
+
     main {
         grid-template-columns: 1fr 8fr 2fr 1fr;
     }
@@ -284,23 +359,31 @@ footer .footer-content {
     :root {
         --v-space: 3rem;
     }
+
     html {
         font-size: 12px;
     }
+
     main {
         grid-template-columns: 1fr 10fr 0fr 1fr;
     }
+
     .timeline-entry {
         grid-template-columns: 1fr 5fr 5fr 1fr;
         grid-template-rows: 1fr auto;
         grid-template-areas:
-        ". hr hr ."
-        ". co co ."
-        ". description description .";
+            ". hr hr ."
+            ". co co ."
+            ". description description .";
     }
 }
 
 @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
