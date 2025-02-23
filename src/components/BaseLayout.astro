@@ -12,8 +12,6 @@ const {
   description = "Danny Garcia, senior frontend engineer at Shopify. Building nice things for good people.",
   headerVariant = 'default'
 } = Astro.props;
-
-import '../styles/global.css';
 ---
 <!DOCTYPE html>
 <html class="no-js" lang="en-US">
@@ -26,6 +24,7 @@ import '../styles/global.css';
     <meta name="author" content="Danny Garcia" />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href}>
     <script is:inline>document.documentElement.classList.remove('no-js');</script>
+    <link rel="stylesheet" href="/global.css" />
 </head>
 <body>
     <main>
