@@ -29,67 +29,67 @@ const title = `${post.data.title} | Danny Garcia`;
     </div>
 </BaseLayout>
 
-    <style>
-    /* Override main grid to exclude intro area */
+<style is:global>
+/* Override main grid to exclude intro area */
+main {
+    grid-template-areas:
+        ". header ."
+        ". blog ."
+        ". footer .";
+    grid-template-rows: 1fr auto auto;
+    grid-template-columns: 1fr minmax(auto, 800px) 1fr;
+}
+
+.logo {
+    margin: var(--v-space) 0;
+}
+
+/* Override timeline entry grid for blog posts */
+.timeline-entry {
+    grid-template-areas:
+        ". co ."
+        ". description .";
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr 10fr 1fr;
+    padding: calc(var(--v-space)/2) 0;
+    backdrop-filter: none;
+}
+
+.timeline-co {
+    margin: calc(var(--v-space) * .25) 0 0;
+}
+
+@media only screen and (max-width: 834px) {
     :global(main) {
-        grid-template-areas:
-            ". header ."
-            ". blog ."
-            ". footer .";
-        grid-template-rows: 1fr auto auto;
-        grid-template-columns: 1fr minmax(auto, 800px) 1fr;
+        grid-template-columns: 1fr 20fr 1fr;
     }
-
-    :global(.logo) {
-        margin: var(--v-space) 0;
-    }
-
-    /* Override timeline entry grid for blog posts */
     :global(.timeline-entry) {
-        grid-template-areas:
-            ". co ."
-            ". description .";
-        grid-template-rows: auto 1fr;
-        grid-template-columns: 1fr 10fr 1fr;
-        padding: calc(var(--v-space)/2) 0;
-        backdrop-filter: none;
+        grid-template-columns: 1fr 20fr 1fr;
     }
+}
 
-    :global(.timeline-co) {
-        margin: calc(var(--v-space) * .25) 0 0;
-    }
+/* Enhance markdown content styling */
+:global(.timeline-description) :global(h2) {
+    font-size: 2rem;
+    margin: 2rem 0 1rem;
+    font-weight: var(--f-weight);
+}
 
-    @media only screen and (max-width: 834px) {
-        :global(main) {
-            grid-template-columns: 1fr 20fr 1fr;
-        }
-        :global(.timeline-entry) {
-            grid-template-columns: 1fr 20fr 1fr;
-        }
-    }
+:global(.timeline-description) :global(ul),
+:global(.timeline-description) :global(ol) {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
 
-    /* Enhance markdown content styling */
-    :global(.timeline-description) :global(h2) {
-        font-size: 2rem;
-        margin: 2rem 0 1rem;
-        font-weight: var(--f-weight);
-    }
+:global(.timeline-description) :global(li) {
+    margin: 0.5rem 0;
+}
 
-    :global(.timeline-description) :global(ul),
-    :global(.timeline-description) :global(ol) {
-        margin: 1rem 0;
-        padding-left: 1.5rem;
-    }
+:global(.timeline-description) :global(p) {
+    margin: 1rem 0;
+}
 
-    :global(.timeline-description) :global(li) {
-        margin: 0.5rem 0;
-    }
-
-    :global(.timeline-description) :global(p) {
-        margin: 1rem 0;
-    }
-
-    :global(.timeline-description) :global(strong) {
-        color: var(--c-primary);
-    }
+:global(.timeline-description) :global(strong) {
+    color: var(--c-primary);
+}
 </style>
