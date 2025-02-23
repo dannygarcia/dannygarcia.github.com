@@ -5,6 +5,7 @@ export default defineConfig({
   site: 'https://danny-garcia.com',
   output: 'static',
   adapter: netlify(),
+  scopedStyleStrategy: 'class',
   vite: {
     ssr: {
       noExternal: ['three']
