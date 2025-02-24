@@ -1,5 +1,5 @@
 // helpers
-importScripts("/src/libs/cannon.build.js");
+importScripts("/libs/cannon.build.js");
 function random(min, max) {
     if (!min) {
         min = 1;

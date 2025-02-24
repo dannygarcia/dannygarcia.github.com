@@ -5,8 +5,9 @@
   "main": "index.html",
   "scripts": {
     "test": "nil",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +18,8 @@
     "vite-plugin-static-copy": "^1.0.6"
   },
   "dependencies": {
+    "@astrojs/netlify": "^6.1.0",
+    "astro": "^5.2.5",
     "three": "^0.112.0"
   }
 }

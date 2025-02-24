@@ -20,8 +20,8 @@ var CustomMeshPhysicalShader = {
 		{
 			map: {value: null},
 			emissive: { value: new Color( 0x000000 ) },
-			roughness: { value: 0.5 },
-			metalness: { value: 0.5 },
+			roughness: { value: 0.7 },
+			metalness: { value: 0.0 },
 			envMapIntensity: { value: 1 }, // temporary
 			mouse: { value: 1 } // temporary
 		}
@@ -200,7 +200,7 @@ var CustomMeshPhysicalShader = {
 		float alpha = clamp(mix(0.,6., depthFactor), 0.25, 1.);
 		vec4 diffuseColor = vec4( clamp(c, 0., 1.), alpha );
 		ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
-		vec3 totalEmissiveRadiance = emissive + c * clamp(vScale, .35, 1.);
+		vec3 totalEmissiveRadiance = emissive + c * clamp(vScale, .55, 1.);
 	
 		//<map_fragment>
 		//<color_fragment>

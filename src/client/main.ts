@@ -63,7 +63,7 @@ function getHeight() {
 interface Position {
     x: number,
     y: number,
-    z: number
+    z: number;
 }
 
 interface Skin {
@@ -72,7 +72,7 @@ interface Skin {
     fragment?: string,
     vertex?: string,
     // camera?: CubeCamera,
-    update(target?: any): void
+    update(target?: any): void;
 }
 
 class PBRSkin implements Skin {
@@ -89,22 +89,22 @@ class PBRSkin implements Skin {
         this.uniforms.uRandom = { value: Math.random() };
         this.uniforms.uScale = { value: 0.001 };
 
-        this.material = new ShaderMaterial( {
+        this.material = new ShaderMaterial({
             uniforms: this.uniforms,
             vertexShader: this.vertex,
             fragmentShader: this.fragment,
             lights: true,
-        } );
+        });
         // this.material = new Nodes.MeshStandardNodeMaterial();
         // const col1 = new Nodes.ColorNode(0x000000);
         // const col2 = new Nodes.ColorNode(0xffffff);
         // const smoothScale = new Nodes.MathNode(new Nodes.FloatNode(this.uniforms.uScale.value), new Nodes.FloatNode(0.5), Nodes.MathNode.POW);
         // this.material.color = new Nodes.MathNode(col1, col2, smoothScale, Nodes.MathNode.MIX);
     }
-    
-    update(target) {
+
+    update(target: { scale: { x: number; }; }) {
         this.uniforms.uTime.value += .01;
-        this.uniforms.uScale.value = target.scale.x * Math.max(1.-scrollPercent, .25);
+        this.uniforms.uScale.value = target.scale.x * Math.max(1. - scrollPercent, .25);
         // when the sphere goes small, reset material
         if (target.scale.x <= 0.001) {
             this.uniforms.uRandom.value = Math.random();
@@ -127,7 +127,7 @@ function randomFrom(list: any[]): any {
 
 var scene = new Scene();
 // scene.overrideMaterial = new MeshDepthMaterial();
-var camera = new PerspectiveCamera( 10, window.innerWidth / getHeight(), 10, 50 );
+var camera = new PerspectiveCamera(10, window.innerWidth / getHeight(), 10, 50);
 camera.position.z = 30;
 
 var renderer = new WebGLRenderer({
@@ -138,7 +138,7 @@ var renderer = new WebGLRenderer({
     depth: false,
     antialias: true
 });
-renderer.setSize( window.innerWidth, getHeight() );
+renderer.setSize(window.innerWidth, getHeight());
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = BasicShadowMap;
 renderer.toneMapping = ReinhardToneMapping;
@@ -148,34 +148,34 @@ renderer.physicallyCorrectLights = true;
 ((renderer.domElement.getContext('webgl') ||
     renderer.domElement.getContext('experimental-webgl')) as WebGLRenderingContext).getExtension('OES_standard_derivatives');
 
-container.appendChild( renderer.domElement );
+container.appendChild(renderer.domElement);
 
 function map(value: number, min1: number, max1: number, min2: number, max2: number): number {
     return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 }
-  
-const physicsWorker = new Worker("/src/worker-physics.js");
 
-const dt = 1/60, N = Math.round(map(window.innerWidth, 300, 2000, 5, 30));
+const physicsWorker = new Worker("/worker-physics.js");
+
+const dt = 1 / 60, N = Math.round(map(window.innerWidth, 300, 2000, 5, 30));
 let physicsData = {
-    positions: new Float32Array(N*3),
-    quaternions: new Float32Array(N*4),
-    scales: new Float32Array(N*4)
+    positions: new Float32Array(N * 3),
+    quaternions: new Float32Array(N * 4),
+    scales: new Float32Array(N * 4)
 };
 let geometryData = {
-    positions: new Float32Array(N*3),
-    quaternions: new Float32Array(N*4),
-    scales: new Float32Array(N*4)
+    positions: new Float32Array(N * 3),
+    quaternions: new Float32Array(N * 4),
+    scales: new Float32Array(N * 4)
 };
 
-let sendTime;
+let sendTime: number;
 let create = false;
 let needsupdate = true;
-physicsWorker.onmessage = function(e) {
+physicsWorker.onmessage = function (e) {
     physicsData.positions = e.data.positions;
     physicsData.quaternions = e.data.quaternions;
     physicsData.scales = e.data.scales;
-    
+
     geometryData.positions.set(physicsData.positions);
     geometryData.quaternions.set(physicsData.quaternions);
     geometryData.scales.set(physicsData.scales);
@@ -189,7 +189,7 @@ function updateWorker() {
         return;
     }
     needsupdate = false;
-    
+
     sendTime = Date.now();
     physicsWorker.postMessage({
         create: create,
@@ -199,7 +199,7 @@ function updateWorker() {
         quaternions: physicsData.quaternions,
         scales: physicsData.scales,
         mouse: move
-    },[
+    }, [
         physicsData.positions.buffer,
         physicsData.quaternions.buffer,
         physicsData.scales.buffer
@@ -209,15 +209,15 @@ function updateWorker() {
 
 const spheresCenter = new Object3D();
 scene.add(spheresCenter);
-let spheres = [];
+let spheres: number[] = [];
 var geometry = new InstancedBufferGeometry();
 var ballGeometry = new IcosahedronBufferGeometry(1, 3);
-geometry.copy( ballGeometry );
+geometry.copy(ballGeometry);
 var randomData = new Float32Array(N).map(_ => Math.random());
-let instanceRandomAttribute = new InstancedBufferAttribute( randomData, 1 );
+let instanceRandomAttribute = new InstancedBufferAttribute(randomData, 1);
 geometry.setAttribute('instanceRandom', instanceRandomAttribute);
-var scaleData = new Float32Array(N).map((s, i) => geometryData.scales[i*4 + 4]);
-let instanceScaleAttribute = new InstancedBufferAttribute( scaleData, 1 ).setUsage(DynamicDrawUsage);
+var scaleData = new Float32Array(N).map((s, i) => geometryData.scales[i * 4 + 4]);
+let instanceScaleAttribute = new InstancedBufferAttribute(scaleData, 1).setUsage(DynamicDrawUsage);
 geometry.setAttribute('instanceScale', instanceScaleAttribute);
 let material = new PBRSkin(1).material;
 let mesh = new InstancedMesh(geometry, material, N);
@@ -226,9 +226,9 @@ mesh.castShadow = true;
 mesh.receiveShadow = true;
 // mesh.customDepthMaterial = customDepthMaterial;
 
-let mouseGeometry = new CircleGeometry( 1, 10);
+let mouseGeometry = new CircleGeometry(1, 10);
 mouseGeometry.vertices.shift(); // removes center vertex
-let mouseBall = new LineLoop( mouseGeometry, new LineBasicMaterial( { color: getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() } ) );
+let mouseBall = new LineLoop(mouseGeometry, new LineBasicMaterial({ color: getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() }));
 if (!isNarrowScreen) {
     scene.add(mouseBall);
 }
@@ -238,11 +238,11 @@ function makeSphere() {
     spheres.push(1);
 }
 
-var topLight = new DirectionalLight( 0xffffff, 3 );
-topLight.color.setHSL( 0.1, 1, 0.95 );
-topLight.position.set( - 1, 1.75, 1 );
-topLight.position.multiplyScalar( 2 );
-scene.add( topLight );
+var topLight = new DirectionalLight(0xffffff, 3);
+topLight.color.setHSL(0.1, 1, 0.95);
+topLight.position.set(- 1, 1.75, 1);
+topLight.position.multiplyScalar(2);
+scene.add(topLight);
 topLight.castShadow = true;
 topLight.shadow.mapSize.width = topLight.shadow.mapSize.height = 2048;
 var d = 4;
@@ -267,8 +267,8 @@ const planeNormal = new Vector3(0, 0, 1);
 const plane = new Plane(planeNormal, 0);
 
 const raycaster = new Raycaster();
-let mouse = new Vector2(0.,-2.);
-let mouseTarget = new Vector2(0.,0);
+let mouse = new Vector2(0., -2.);
+let mouseTarget = new Vector2(0., 0);
 let mouseScaleTarget = new Vector3();
 let mosueOverLink = false;
 let move = new Vector3();
@@ -285,36 +285,36 @@ let time = 0;
 var animate = function () {
     time += 0.01;
     timeSinceLast++;
-    requestAnimationFrame( animate );
-    
+    requestAnimationFrame(animate);
+
     if (spheres.length < N && timeSinceLast > maxTime) {
         makeSphere();
         timeSinceLast = 0;
         // maxTime = random(20,50);
     }
-    
+
     spheres.forEach((s, i) => {
         offset.set(
-            geometryData.positions[3*i+0],
-            geometryData.positions[3*i+1],
-            geometryData.positions[3*i+2]
+            geometryData.positions[3 * i + 0],
+            geometryData.positions[3 * i + 1],
+            geometryData.positions[3 * i + 2]
         );
         orientation.set(
-            geometryData.quaternions[4*i+0],
-            geometryData.quaternions[4*i+1],
-            geometryData.quaternions[4*i+2],
-            geometryData.quaternions[4*i+3]
+            geometryData.quaternions[4 * i + 0],
+            geometryData.quaternions[4 * i + 1],
+            geometryData.quaternions[4 * i + 2],
+            geometryData.quaternions[4 * i + 3]
         );
         scale.setScalar(geometryData.scales[4 * i + 0]);
-        tmpM.compose( offset, orientation, scale );
-        mesh.setMatrixAt( i, tmpM );
+        tmpM.compose(offset, orientation, scale);
+        mesh.setMatrixAt(i, tmpM);
 
-        instanceScaleAttribute.setX(i, geometryData.scales[4*i + 3] / 4);
-        
+        instanceScaleAttribute.setX(i, geometryData.scales[4 * i + 3] / 4);
+
         // TODO: change color when scale is 0
         // if (geometryData.scales[3*i] <= 0.001) {
-            //     this.uniforms.uRandom.value = Math.random();
-            // }
+        //     this.uniforms.uRandom.value = Math.random();
+        // }
     });
     instanceScaleAttribute.needsUpdate = true;
     geometry.setAttribute('instanceScale', instanceScaleAttribute);
@@ -338,49 +338,37 @@ var animate = function () {
 
     mouseBall.scale.lerp(mouseScaleTarget, .06);
 
-    renderer.render( scene, camera );
+    renderer.render(scene, camera);
 };
 
 updateWorker();
 animate();
 
-window.onresize = function() {
+window.onresize = function () {
     var windowAspect = window.innerWidth / getHeight();
     cachedClientHeight = doc.clientHeight;
     cachedScrollHeight = doc.scrollHeight;
     // camera.fov = (Math.atan(getHeight() / 2 / camera.position.z) * 2 * RAD2DEG) * .1;
     camera.aspect = windowAspect;
     camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, getHeight() );
+    renderer.setSize(window.innerWidth, getHeight());
 };
 
 if (window.PointerEvent) {
-    document.addEventListener('pointermove', onmove, false)
+    document.addEventListener('pointermove', onmove, false);
 } else {
-    document.addEventListener('mousemove', onmove, false)
+    document.addEventListener('mousemove', onmove, false);
 }
 
-function onmove(e) {
+function onmove(e: PointerEvent | MouseEvent) {
     if (isNarrowScreen) {
-        mouseTarget.set(0,0);
+        mouseTarget.set(0, 0);
         return e;
     } else {
-        mosueOverLink = !!(e.target.nodeName.toLowerCase() == 'a');
+        mosueOverLink = !!(e.target && (e.target as Element).nodeName.toLowerCase() === 'a');
         mouseTarget.set(
             (e.clientX / window.innerWidth) * 2 - 1,
             (-(e.clientY / (getHeight())) * 2 + 1)
         );
     }
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.documentElement.classList.add('loaded');
-}, false);
-
-console.info(`Welcome fellow internet explorer! Thanks for visiting. 🙇🏻‍♂️
-
-Let me tell you a bit about this site. The interactive component was written in TypeScript using Three.js but the physics portion is vanilla JavaScript running in a Web Worker. The worker transfers and computes a few buffers for the position, quaternion, scale and velocity data of each sphere. The fragment shader is a hand-modified version of the standard Mesh Physical Shader. It works pretty well but has performance issues on some mobile devices. The structure and layout is plain HTML and CSS. Hooray for CSS Variables and Grid Layout!
-
-Anyway, have a look around. 👀 https://github.com/dannygarcia/dannygarcia.github.com
-
-If you have any questions or issues let me know: @dannygarcia. 😎 My condolences for your GPU. 🙏🏻`);

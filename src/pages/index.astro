@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../components/BaseLayout.astro';
+import Canvas from '../components/Canvas.astro';
+
+const posts = await getCollection('blog');
+posts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+---
+<BaseLayout>
+    <Canvas />
+    <p class="intro type-primary">Senior frontend engineer with over a decade of experience building nice things for good&nbsp;people.</p>
+    <section class="blog-timeline">
+        <header class="timeline-entry timeline-header">
+            <h2 class="timeline-co type-header">Writing</h2>
+        </header>
+        {posts.map(post => (
+            <article class="timeline-entry">
+                <h2 class="timeline-co type-primary">
+                    <a href={`/${post.data.publishDate.getFullYear()}/${String(post.data.publishDate.getMonth() + 1).padStart(2, '0')}/${post.slug.replace(/^\d{4}-\d{2}-/, '')}`}>{post.data.title}</a>
+                    <span class="timeline-time type-secondary">{post.data.publishDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                </h2>
+                <div class="timeline-description">
+                    <p>{post.data.description}</p>
+                </div>
+            </article>
+        ))}
+    </section>
+
+    <section class="work-timeline" style="margin-top: var(--v-space);">
+        <header class="timeline-entry timeline-header">
+            <h2 class="timeline-co type-header">Work</h2>
+        </header>
+        <article class="timeline-entry">
+            <h3 class="timeline-co type-primary"><a href="https://shopify.com">Shopify</a> <span class="timeline-time type-secondary">2024–Present</span></h3>
+            <div class="timeline-description">
+                <p>
+                    Engineering on the Quality &amp; Trust team.
+                </p>
+            </div>
+        </article>
+        <article class="timeline-entry">
+            <h3 class="timeline-co type-primary"><a href="https://ambrook.com">Ambrook</a> <span class="timeline-time type-secondary">2023–2024</span></h3>
+            <div class="timeline-description">
+                <p>Consistently shipped full-stack features that directly addressed user feedback, contributing to the improvement of our Net Promoter Score (NPS) metric from ~30% to &gt;60%. These projects enhanced user workflows in bookkeeping and payment/invoice management.</p>
+                <p>Led a series of client-side performance projects that improved UI interaction and navigation speeds up to 93% across desktop and native platforms, achieving &lt;400ms P99 latency in key workflows. Helped establish a "measure-first" engineering culture, improving team effectiveness for time spent on performance efforts.</p>
+                <p>Designed and engineered client-side infrastructure features including a cross-platform modal routing system, an extensible search and filter system for various list views, and the implementation of a functional and visual cross-platform design system redesign.</p>
+            </div>
+        </article>
+        <article class="timeline-entry">
+            <h3 class="timeline-co type-primary"><a href="https://stripe.com">Stripe</a> <span class="timeline-time type-secondary">2021–2022</span></h3>
+            <div class="timeline-description">
+                <p>
+                    Helped launch the <a href="https://stripe.com/apps">Stripe Apps platform</a> to merchants and developer partners.
+                </p>
+                <ul>
+                    <li>Proposed, wrote technical designs, documented, and implemented various platform features and components for the <a href="https://stripe.com/docs/stripe-apps/reference/extensions-sdk-api">distributed UI toolkit</a>.</li>
+                </ul>
+                <p>
+                    Successfully shipped a <strong>redesign of the Stripe Dashboard navigation</strong> that led to a measurable improvement in user engagement.
+                </p>
+                <p>
+                    Architected and patented part of an <strong>internal view container mechanism</strong>.
+                </p>
+            </div>
+        </article>
+        <article class="timeline-entry">
+            <h3 class="timeline-co type-primary"><a href="https://apple.com">Apple</a> <span class="timeline-time type-secondary">2014–2021</span></h3>
+            <div class="timeline-description">
+                <p>I designed prototypes, built custom tooling for designers, and engineered web and native applications across various platforms. Most of my work has launched as interactive web experiences on <a href="https://apple.com">apple.com</a>.</p>
+                <p>I also spearheaded collaborative efforts with designers while leading large teams of talented developers.</p>
+            </div>
+        </article>
+        <article class="timeline-entry">
+            <h3 class="timeline-co type-primary">RED Interactive <span class="timeline-time type-secondary">2012–2014</span></h3>
+            <div class="timeline-description">
+                <p>Helped the front-end team to define the technical process and strategy for projects. I interviewed and evaluated candidates, assessed the team's skills to distribute appropriate workloads and coordinated with other teams to establish cross-departmental continuity. I also did hands-on development for various projects and worked with project team members to successfully ship responsive, aesthetically-pleasing, engaging user experiences for the web.</p>
+            </div>
+        </article>
+    </section>
+</BaseLayout>
