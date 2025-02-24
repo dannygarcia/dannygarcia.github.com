@@ -1,13 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../components/BaseLayout.astro';
-import Canvas from '../components/Canvas.astro';
 
 const posts = await getCollection('blog');
 posts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 ---
 <BaseLayout>
-    <Canvas />
+    <div class="canvas-container"></div>
     <p class="intro type-primary">Senior frontend engineer with over a decade of experience building nice things for good&nbsp;people.</p>
     <section class="blog-timeline">
         <header class="timeline-entry timeline-header">
@@ -77,4 +76,5 @@ posts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
             </div>
         </article>
     </section>
+    <script src="../client/main.ts"></script>
 </BaseLayout>

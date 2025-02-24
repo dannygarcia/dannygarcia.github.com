@@ -129,7 +129,7 @@ img {
     --c-primary: rgb(209, 197, 173);
     --c-secondary: rgba(200, 200, 200, .85);
     --c-tertiary: hsl(88, 25%, 11%, .5);
-    --c-fourth: hsl(88, 28%, 6%, .85);
+    --c-fourth: hsl(88, 28%, 6%, .65);
 
     --v-space: 6rem;
     --canvas-height: 80vh;
@@ -311,13 +311,14 @@ main {
 
 .timeline-time {
     display: block;
+    font-style: oblique;
 }
 
 .timeline-description {
     margin: calc(var(--v-space) * .5) 0 0;
     font-weight: normal;
     font-size: 1.5rem;
-    line-height: 1.4;
+    line-height: 1.5;
     grid-area: description;
 }
 
@@ -375,6 +376,11 @@ footer .footer-content {
             ". hr hr ."
             ". co co ."
             ". description description .";
+    }
+
+    .type-primary {
+        font-size: 2.5rem;
+        line-height: 1.2;
     }
 }
 
