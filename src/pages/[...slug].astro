@@ -4,10 +4,19 @@ import BaseLayout from '../components/BaseLayout.astro';
 
 export async function getStaticPaths() {
     const posts = await getCollection('blog');
-    return posts.map(post => ({
-        params: { slug: post.slug },
-        props: { post },
-    }));
+    return posts.map(post => {
+        const publishDate = post.data.publishDate;
+        const year = publishDate.getFullYear();
+        const month = String(publishDate.getMonth() + 1).padStart(2, '0');
+        const baseSlug = post.slug.replace(/^\d{4}-\d{2}-/, '');
+        
+        return {
+            params: { 
+                slug: `${year}/${month}/${baseSlug}`
+            },
+            props: { post },
+        };
+    });
 }
 
 const { post } = Astro.props;
@@ -60,36 +69,36 @@ main {
 }
 
 @media only screen and (max-width: 834px) {
-    :global(main) {
+    main {
         grid-template-columns: 1fr 20fr 1fr;
     }
-    :global(.timeline-entry) {
+    .timeline-entry {
         grid-template-columns: 1fr 20fr 1fr;
     }
 }
 
 /* Enhance markdown content styling */
-:global(.timeline-description) :global(h2) {
+.timeline-description h2 {
     font-size: 2rem;
     margin: 2rem 0 1rem;
     font-weight: var(--f-weight);
 }
 
-:global(.timeline-description) :global(ul),
-:global(.timeline-description) :global(ol) {
+.timeline-description ul,
+.timeline-description ol {
     margin: 1rem 0;
     padding-left: 1.5rem;
 }
 
-:global(.timeline-description) :global(li) {
+.timeline-description li {
     margin: 0.5rem 0;
 }
 
-:global(.timeline-description) :global(p) {
+.timeline-description p {
     margin: 1rem 0;
 }
 
-:global(.timeline-description) :global(strong) {
+.timeline-description strong {
     color: var(--c-primary);
 }
 </style>

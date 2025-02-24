@@ -8,7 +8,7 @@ posts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
 ---
 <BaseLayout>
     <Canvas />
-    <p class="intro type-primary">Senior frontend engineer with over a decade of experience building nice things for good people.</p>
+    <p class="intro type-primary">Senior frontend engineer with over a decade of experience building nice things for good&nbsp;people.</p>
     <section class="blog-timeline">
         <header class="timeline-entry timeline-header">
             <h2 class="timeline-co type-header">Writing</h2>
@@ -16,7 +16,7 @@ posts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
         {posts.map(post => (
             <article class="timeline-entry">
                 <h2 class="timeline-co type-primary">
-                    <a href={`/${post.slug}`}>{post.data.title}</a>
+                    <a href={`/${post.data.publishDate.getFullYear()}/${String(post.data.publishDate.getMonth() + 1).padStart(2, '0')}/${post.slug.replace(/^\d{4}-\d{2}-/, '')}`}>{post.data.title}</a>
                     <span class="timeline-time type-secondary">{post.data.publishDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
                 </h2>
                 <div class="timeline-description">

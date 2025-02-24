@@ -1,7 +1,7 @@
 ---
 title: "Writing here now"
 publishDate: 2025-02-22
-description: "The beginning of a series of articles written without much refinement."
+description: "The beginning of a series of articles written into the void without much refinement."
 ---
 
 This post marks the beginning of a series of articles written without much refinement. It represents a chance to shake the cruft off and refine some thoughts, challenge points of view, revise grammar, and refine process. Just getting them all out and learning from them will be valuable enough.
@@ -16,4 +16,4 @@ Writing elsewhere feels just as much like shouting into the void as this. Except
 
 My current authoring process (at least for this post) looks something like: write in [Cursor](https://www.cursor.com/en) with AI tools disabled > save/preview in local dev server (Astro) > ask Cline to provide editing notes, focusing on grammatical errors (ESL kid here) > publish! Previewing while writing currently feels a lot like [chimping](https://en.wikipedia.org/wiki/Chimping) in photography but this helps me repeatedly visualize the reader experience given that this is the first post and I'm still refining what the typography and layout should look like.
 
-Ok, I'm sitting here on the living room sofa wrapping this up at the end of a long day of my youngest's 6th birthday party, feeling pleasantly surprised by what I managed to throw together at the last minute. I still need to format some markup and styles so dates look good, sections are formatted correctly, and the layout looks decent on mobile. After revising once, I'm locking down the contents of this first post and likely polishing and publishing this soon. ✌🏼
+Ok, I'm sitting here on the living room sofa wrapping this up at the end of a perfect long day, having just wrapped up my youngest's 6th birthday party, feeling pleasantly surprised by what I managed to throw together at the last minute. I still need to format some markup and styles so dates look good, sections are formatted correctly, and the layout looks decent on mobile. After one revision, I'm locking down the contents of this first post and publishing it. ✌🏼
