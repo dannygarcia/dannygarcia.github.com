@@ -341,8 +341,10 @@ var animate = function () {
     renderer.render(scene, camera);
 };
 
-updateWorker();
-animate();
+document.addEventListener('DOMContentLoaded', function () {
+    updateWorker();
+    animate();
+}, false);
 
 window.onresize = function () {
     var windowAspect = window.innerWidth / getHeight();
