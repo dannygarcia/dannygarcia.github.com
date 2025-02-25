@@ -341,12 +341,7 @@ var animate = function () {
     renderer.render(scene, camera);
 };
 
-document.addEventListener('DOMContentLoaded', function () {
-    updateWorker();
-    animate();
-}, false);
-
-window.onresize = function () {
+function updateCanvasSize() {
     var windowAspect = window.innerWidth / getHeight();
     cachedClientHeight = doc.clientHeight;
     cachedScrollHeight = doc.scrollHeight;
@@ -354,7 +349,18 @@ window.onresize = function () {
     camera.aspect = windowAspect;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, getHeight());
-};
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Force a layout recalculation to ensure container dimensions are correct
+    setTimeout(() => {
+        updateCanvasSize();
+        updateWorker();
+        animate();
+    }, 0);
+}, false);
+
+window.onresize = updateCanvasSize;
 
 if (window.PointerEvent) {
     document.addEventListener('pointermove', onmove, false);
