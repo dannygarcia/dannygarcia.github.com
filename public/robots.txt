@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://danny-garcia.com/sitemap-index.xml
