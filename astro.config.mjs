@@ -21,12 +21,26 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      changefreq: 'daily',
-      priority: 0.7,
       lastmod: new Date(),
       filter: (page) => page !== undefined,
       customPages: [],
-      entryLimit: 10000
+      entryLimit: 10000,
+      serialize: (item) => {
+        // Homepage gets daily updates, everything else weekly
+        if (item.url === 'https://danny-garcia.com/') {
+          return {
+            ...item,
+            changefreq: 'daily',
+            priority: 0.8
+          };
+        } else {
+          return {
+            ...item,
+            changefreq: 'weekly',
+            priority: 0.7
+          };
+        }
+      }
     })
   ]
 });
