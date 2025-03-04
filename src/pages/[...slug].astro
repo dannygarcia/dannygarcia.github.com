@@ -27,10 +27,13 @@ const title = `${post.data.title} | Danny Garcia`;
 <BaseLayout title={title} description={post.data.description} headerVariant="small">
     <div class="blog-timeline">
         <article class="timeline-entry">
-                <h2 class="timeline-co type-primary">
-                    {post.data.title}
+                <div class="post-header">
+                    <h2 class="timeline-co type-primary">
+                        {post.data.title}
+                    </h2>
+                    {post.data.description && <div class="post-description">{post.data.description}</div>}
                     <span class="timeline-time type-secondary">{post.data.publishDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                </h2>
+                </div>
             <div class="timeline-description">
                 <Content />
             </div>
@@ -64,8 +67,25 @@ main {
     backdrop-filter: none;
 }
 
-.timeline-co {
+.post-header {
+    grid-area: co;
     margin: calc(var(--v-space) * .25) 0 0;
+}
+
+.timeline-co {
+    margin: 0 0 calc(var(--v-space) * .25) 0;
+}
+
+.post-description {
+    font-size: 1.2rem;
+    margin: calc(var(--v-space) * .25) 0;
+    color: var(--c-secondary);
+    font-style: italic;
+}
+
+.timeline-time {
+    display: block;
+    margin-top: calc(var(--v-space) * .25);
 }
 
 @media only screen and (max-width: 834px) {
