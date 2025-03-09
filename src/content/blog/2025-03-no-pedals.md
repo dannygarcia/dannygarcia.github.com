@@ -1,0 +1,13 @@
+---
+title: "No training wheels. No pedals."
+publishDate: 2025-03-08
+description: "No giving up."
+---
+
+Today, my youngest learned to ride a bike. He recently got that bike for his birthday. It was his size, didn’t come with training wheels, and most importantly, is green. As I was assembling it last week, it dawned on me that he had gotten so used to the training wheels on his previous bike, he likely needed time to get used to just balancing[^1]. At first, he didn’t like this and asked to put the pedals on. He was eager to try pedaling so I obliged, and let him give it a go. Almost immediately, he was challenged with having to simultaneously balance and accelerate; this was tricky, especially from a full stop. I pushed him around a bit in the yard to see if some free momentum would give him enough of a chance to learn how to continue pedaling but it didn’t help much. He tried over and over again, with and without my help, but either the timing was off or he’d run out of room or some other obstacle kept him from progressing. The pedals really seemed to get in his way more than they served their function.
+
+I asked if he would like to try again without pedals so he could focus getting good at balancing and he agreed. After a few days of practicing without pedals in the back yard, the front yard, down the sidewalk with Mom, and even around the house, he gradually became an expert! Within a week he was gliding from place to place without a foot on the ground in between.
+
+Finally this morning, after some yard work around the house, I asked him if he’d like to try riding his bike with the pedals on. He was stoked to say the least. We got the tool out and slapped those suckers back on. Our driveway has a fairly shallow slope and is the perfect length for riding circles around in a bike. He immediately got the hang of it, and nailed it on his first try! Perfect proud parenting moment. We watched him ride around the driveway for a good long while before venturing out around town together. It’s an incredible feeling being inspired by your own children. It’s a feeling beyond contentment and more like undeserved grace. Their accomplishments are really their own and we’re just lucky to stand beside and watch them go.
+
+[^1]: They don’t make balance bikes for his size/age and while he did have one when he was younger I don’t think it would have been a good choice now given how quickly he graduated.
