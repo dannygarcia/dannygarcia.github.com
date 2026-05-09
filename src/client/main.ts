@@ -58,8 +58,12 @@ const shaders = {
 const container = document.querySelector('.canvas-container') as HTMLElement;
 if (container) {
 
-    function getHeight() {
-        return container.offsetHeight;
+    function getViewportWidth() {
+        return window.visualViewport?.width || window.innerWidth || document.documentElement.clientWidth;
+    }
+
+    function getViewportHeight() {
+        return window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight || container.offsetHeight;
     }
 
     interface Position {
@@ -129,7 +133,7 @@ if (container) {
 
     var scene = new Scene();
     // scene.overrideMaterial = new MeshDepthMaterial();
-    var camera = new PerspectiveCamera(10, window.innerWidth / getHeight(), 10, 50);
+    var camera = new PerspectiveCamera(10, getViewportWidth() / getViewportHeight(), 10, 50);
     camera.position.z = 30;
 
     var renderer = new WebGLRenderer({
@@ -140,7 +144,7 @@ if (container) {
         depth: false,
         antialias: true
     });
-    renderer.setSize(window.innerWidth, getHeight());
+    renderer.setSize(getViewportWidth(), getViewportHeight());
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = BasicShadowMap;
     renderer.toneMapping = ReinhardToneMapping;
@@ -344,20 +348,29 @@ if (container) {
     };
 
     function updateCanvasSize() {
-        var windowAspect = window.innerWidth / getHeight();
+        const viewportWidth = getViewportWidth();
+        const viewportHeight = getViewportHeight();
+
+        container.style.height = `${viewportHeight}px`;
+
+        var windowAspect = viewportWidth / viewportHeight;
         cachedClientHeight = doc.clientHeight;
         cachedScrollHeight = doc.scrollHeight;
         // camera.fov = (Math.atan(getHeight() / 2 / camera.position.z) * 2 * RAD2DEG) * .1;
         camera.aspect = windowAspect;
         camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, getHeight());
+        renderer.setSize(viewportWidth, viewportHeight);
     }
 
     updateCanvasSize();
+    requestAnimationFrame(updateCanvasSize);
+    window.addEventListener('load', updateCanvasSize, { once: true });
+    window.addEventListener('pageshow', updateCanvasSize);
     updateWorker();
     animate();
 
-    window.onresize = updateCanvasSize;
+    window.addEventListener('resize', updateCanvasSize);
+    window.visualViewport?.addEventListener('resize', updateCanvasSize);
 
     if (window.PointerEvent) {
         document.addEventListener('pointermove', onmove, false);
@@ -372,8 +385,8 @@ if (container) {
         } else {
             mosueOverLink = !!(e.target && (e.target as Element).nodeName.toLowerCase() === 'a');
             mouseTarget.set(
-                (e.clientX / window.innerWidth) * 2 - 1,
-                (-(e.clientY / (getHeight())) * 2 + 1)
+                (e.clientX / getViewportWidth()) * 2 - 1,
+                (-(e.clientY / getViewportHeight()) * 2 + 1)
             );
         }
     }
