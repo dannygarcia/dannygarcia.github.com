@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../components/BaseLayout.astro';
 
 export async function getStaticPaths() {
-    const posts = await getCollection('blog');
+    const posts = await getCollection('blog', ({ data }) => data.isPublished);
     return posts.map(post => {
         const publishDate = post.data.publishDate;
         const year = publishDate.getFullYear();
