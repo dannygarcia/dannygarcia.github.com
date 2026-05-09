@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 
-const DEFAULT_IS_PUBLISHED = true;
+const DEFAULT_IS_PUBLISHED = false;
 
 export const collections = {
   blog: defineCollection({
