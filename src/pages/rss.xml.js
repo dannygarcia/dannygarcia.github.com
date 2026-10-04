@@ -11,7 +11,7 @@ export async function GET(context) {
   
   return rss({
     title: 'Danny Garcia | Blog',
-    description: 'Danny Garcia, senior frontend engineer at Shopify. Building nice things for good people.',
+    description: 'Danny Garcia, senior product engineer at Shopify. Building nice things for good people.',
     site: context.site,
     items: sortedPosts.map((post) => {
       const publishDate = post.data.publishDate;
