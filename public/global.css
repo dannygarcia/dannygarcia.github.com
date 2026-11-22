@@ -153,9 +153,18 @@ html {
     right: 0;
     left: 0;
     height: 100vh;
-    height: 100dvh;
+    /* Keep drawing behind browser controls and the home indicator, including
+       while Safari expands/collapses its toolbar. viewport-fit=cover lets this
+       layer extend into safe areas; it deliberately has no safe-area padding. */
+    height: 100lvh;
     z-index: 1;
     pointer-events: none;
+}
+
+.canvas-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 a {

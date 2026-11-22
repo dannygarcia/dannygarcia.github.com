@@ -4,7 +4,7 @@
   "description": "Personal website.",
   "main": "index.html",
   "scripts": {
-    "test": "nil",
+    "test": "node --test tests/*.test.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview"
