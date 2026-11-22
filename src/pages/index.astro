@@ -7,7 +7,7 @@ posts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
 ---
 <BaseLayout>
     <div class="canvas-container"></div>
-    <p class="intro type-primary">Senior product engineer with over a decade of experience building nice things for good&nbsp;people.</p>
+    <p class="intro type-primary">Senior product software engineer at Shopify. I turn an understanding of people’s needs into useful software, from early systems design to the details of the interface.</p>
     {posts.length > 0 && (
         <section class="blog-timeline">
             <header class="timeline-entry timeline-header">
@@ -28,19 +28,32 @@ posts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
     )}
 
     <section class="work-timeline" style="margin-top: var(--v-space);">
+        <div class="timeline-entry">
+            <h2 class="timeline-co type-header">How I work</h2>
+            <div class="timeline-description">
+                <p>AI gives me more room to explore before committing to a solution. I use it to understand existing systems and examine design options, then work with product managers to shape requirements around the problem we need to solve.</p>
+                <p>From there, I use agents to move implementation tasks forward in parallel, review changes, and check and improve performance and security. That workflow extends through shipping and monitoring outcomes, with me guiding the work and staying accountable for the product we deliver.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="work-timeline" style="margin-top: var(--v-space);">
         <header class="timeline-entry timeline-header">
             <h2 class="timeline-co type-header">Work</h2>
         </header>
         <article class="timeline-entry">
             <h3 class="timeline-co type-primary"><a href="https://shopify.com">Shopify</a> <span class="timeline-time type-secondary">2024–Present</span></h3>
             <div class="timeline-description">
+                <p>I build products and systems for Shopify’s developer ecosystem, spanning partner monetization, app publishing, automated review, and marketplace security. Led engineering for app add-ons that give partners new revenue opportunities, contributed to the launch of an agentic review system, and led engineering work on identity verification.</p>
                 <p>
-                    Engineering on the Quality &amp; Trust team.
+                    Led a rewrite that simplified the App Store’s app publishing system and shipped a full Theme Store redesign. Together, this work contributed to approximately 20% growth in the install base and a 10% improvement in click-through rate.
                 </p>
+                <p>Designed and built an internal app review tool with web components, replacing an email-based process and streamlining the review team’s workflow.</p>
+                <p>Introduced Cursor as the first engineer to bring it into the organization and helped shape AI-assisted development practices. Work across teams on technical proposals and system design, and mentor engineers through implementation and code review.</p>
             </div>
         </article>
         <article class="timeline-entry">
-            <h3 class="timeline-co type-primary"><a href="https://ambrook.com">Ambrook</a> <span class="timeline-time type-secondary">2023–2024</span></h3>
+            <h3 class="timeline-co type-primary"><a href="https://ambrook.com">Ambrook</a> <span class="timeline-time type-secondary">2022–2024</span></h3>
             <div class="timeline-description">
                 <p>Consistently shipped full-stack features that directly addressed user feedback, contributing to the improvement of our Net Promoter Score (NPS) metric from ~30% to &gt;60%. These projects enhanced user workflows in bookkeeping and payment/invoice management.</p>
                 <p>Led a series of client-side performance projects that improved UI interaction and navigation speeds up to 93% across desktop and native platforms, achieving &lt;400ms P99 latency in key workflows. Helped establish a "measure-first" engineering culture, improving team effectiveness for time spent on performance efforts.</p>
@@ -67,8 +80,8 @@ posts.sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
         <article class="timeline-entry">
             <h3 class="timeline-co type-primary"><a href="https://apple.com">Apple</a> <span class="timeline-time type-secondary">2014–2021</span></h3>
             <div class="timeline-description">
-                <p>I designed prototypes, built custom tooling for designers, and engineered web and native applications across various platforms. Most of my work has launched as interactive web experiences on <a href="https://apple.com">apple.com</a>.</p>
-                <p>I also spearheaded collaborative efforts with designers while leading large teams of talented developers.</p>
+                <p>Led teams of up to 12 developers building flagship product pages for <a href="https://apple.com">apple.com</a>. Established the first internal build systems, modernizing a decades-old authoring process.</p>
+                <p>Built sites, apps, and interactive prototypes for Apple Developer Relations, including UI and UX flows for Apple Developer Program enrollment, Developer Forums, and <a href="https://developer.apple.com">developer.apple.com</a>. Worked closely with designers and built custom tooling to support their work.</p>
             </div>
         </article>
         <article class="timeline-entry">
