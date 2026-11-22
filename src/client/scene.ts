@@ -253,6 +253,7 @@ export function startScene(canvas: HTMLCanvasElement | OffscreenCanvas, initial:
     geometry.setAttribute('instanceScale', instanceScaleAttribute);
     let material = new PBRSkin(1).material;
     let mesh = new InstancedMesh(geometry, material, N);
+    mesh.instanceMatrix.setUsage(DynamicDrawUsage);
     spheresCenter.add(mesh);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
@@ -377,7 +378,6 @@ export function startScene(canvas: HTMLCanvasElement | OffscreenCanvas, initial:
             // }
         });
         instanceScaleAttribute.needsUpdate = true;
-        geometry.setAttribute('instanceScale', instanceScaleAttribute);
         mesh.instanceMatrix.needsUpdate = true;
 
         targetScollPercent = state.scroll;

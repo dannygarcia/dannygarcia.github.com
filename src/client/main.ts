@@ -25,11 +25,12 @@ if (container) {
         if (fallback) fallback.setState({ ...state });
     };
     const resize = () => {
-        state.width = window.visualViewport?.width || window.innerWidth || doc.clientWidth;
-        state.height = window.visualViewport?.height || window.innerHeight || doc.clientHeight;
-        container.style.height = `${state.height}px`;
-        canvas.style.width = `${state.width}px`;
-        canvas.style.height = `${state.height}px`;
+        // CSS owns the full-viewport surface. The visual viewport excludes
+        // browser controls and also shrinks during pinch zoom / keyboard use.
+        // Match the drawing buffer and camera to the actual surface instead.
+        const bounds = container.getBoundingClientRect();
+        state.width = Math.max(1, Math.round(bounds.width));
+        state.height = Math.max(1, Math.round(bounds.height));
         state.scroll = doc.scrollTop / Math.max(1, doc.scrollHeight - doc.clientHeight);
         sendState();
     };
@@ -68,7 +69,10 @@ if (container) {
     }
 
     window.addEventListener('resize', resize);
-    window.visualViewport?.addEventListener('resize', resize);
+    // Also catches orientation, standalone mode, and CSS viewport changes that
+    // do not produce a window resize. Toolbar animations leave 100lvh stable.
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(container);
     window.addEventListener('load', resize, { once: true });
     window.addEventListener('pageshow', () => {
         state.visible = !document.hidden;
