@@ -197,6 +197,7 @@ var CustomMeshPhysicalShader = {
 		//gl_FragColor = vec4(vec3(cos(timeOffset+vPosition)), 1.); return; // test offset position
 		float depthFactor = smoothstep(-1., 1., cameraPosition.z-vViewPosition.z); // camera-based depth
 		c = mix(c * .2,c, depthFactor); // apply depth factor to color
+		// Preserve the nearest surface's alpha for compositing over the page text.
 		float alpha = clamp(mix(0.,6., depthFactor), 0.25, 1.);
 		vec4 diffuseColor = vec4( clamp(c, 0., 1.), alpha );
 		ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
